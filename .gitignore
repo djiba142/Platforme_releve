@@ -1,0 +1,16 @@
+*.pyc
+*~
+__pycache__
+myvenv
+db.sqlite3
+/static/
+.DS_Store
+.env
+*.log
+*.pot
+*.py[co]
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connexion Administration{% endblock %}
+
+{% block body %}
+<!-- ══ NAVBAR ══ -->
+<nav class="nav-landing">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Plateforme Relevés
+        </a>
+        <div class="nav-links">
+            <a href="{% url 'login' %}" class="nav-link-text">
+                Connexion Étudiant
+            </a>
+            <a href="/" class="nav-link-outline">
+                <i class="fa-solid fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="auth-page">
+    <div class="auth-card" style="box-shadow: 0 20px 60px rgba(0, 195, 163, 0.2);">
+        <h3><i class="fa-solid fa-shield-halved" style="color:var(--navy);"></i> Administration</h3>
+        <p class="auth-subtitle">Accès sécurisé pour le personnel</p>
+
+        {% if messages %}
+        {% for msg in messages %}
+        <div
+            class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
+            <i class="fa-solid fa-circle-info"></i> {{ msg }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label><i class="fa-solid fa-user-tie"></i> Identifiant</label>
+                <input type="text" name="username" placeholder="Nom d'utilisateur admin" required>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-key"></i> Mot de passe</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-submit"
+                style="background: linear-gradient(135deg, var(--navy), var(--navy-light));">
+                Accéder au panel <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

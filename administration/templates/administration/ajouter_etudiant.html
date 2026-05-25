@@ -1,0 +1,143 @@
+{% extends 'administration/dashboard.html' %}
+
+{% block title %}Inscrire un Étudiant — Admin{% endblock %}
+
+{% block body %}
+<div class="admin-sidebar">
+    <div class="admin-sidebar-header">
+        <i class="fa-solid fa-shield-halved sidebar-logo"></i>
+        <div>
+            <h5 style="margin:0; font-weight:800; font-size:1.1rem;">Admin Panel</h5>
+            <small style="color:var(--teal); font-size:0.75rem;">Plateforme Univ</small>
+        </div>
+    </div>
+    <div class="admin-sidebar-nav">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-link">
+            <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
+        </a>
+        <a href="{% url 'liste_etudiants' %}" class="sidebar-link active">
+            <i class="fa-solid fa-users"></i> Étudiants
+        </a>
+        <a href="{% url 'gestion_demandes' %}" class="sidebar-link">
+            <i class="fa-solid fa-file-lines"></i> Demandes
+        </a>
+        <a href="{% url 'gestion_notes' %}" class="sidebar-link">
+            <i class="fa-solid fa-book-open"></i> Notes
+        </a>
+        <a href="{% url 'import_csv' %}" class="sidebar-link">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
+        </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </div>
+</div>
+
+<div class="admin-main">
+    <div class="topbar">
+        <h4 style="margin:0; font-weight:800; color:var(--navy);">
+            <i class="fa-solid fa-user-plus text-muted me-2"></i> Inscrire un nouvel étudiant
+        </h4>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <a href="{% url 'liste_etudiants' %}" class="btn-action btn-outline-custom" style="font-size:0.9rem;">
+                <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+            </a>
+            <div
+                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    {% for msg in messages %}
+    <div
+        class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
+        <i class="fa-solid fa-circle-info"></i> {{ msg }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="content-card mx-auto mt-3" style="max-width:700px; padding:2rem;">
+        <div class="text-center mb-4">
+            <div style="font-size:3rem; color:var(--teal); margin-bottom:1rem;"><i class="fa-solid fa-address-card"></i>
+            </div>
+            <h4 style="font-weight:800; color:var(--navy);">Création de Compte Étudiant</h4>
+            <p style="color:var(--text-light); font-size:0.95rem;">Remplissez les informations ci-dessous pour inscrire
+                l'étudiant dans la base de données de l'université.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-3 mb-3">
+                <div class="col-md-6 form-group">
+                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Prénom</label>
+                    <input type="text" name="prenom" required class="form-control"
+                        style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;"
+                        placeholder="Ex: Souleymane">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Nom de famille</label>
+                    <input type="text" name="nom" required class="form-control"
+                        style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;"
+                        placeholder="Ex: Kourouma">
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Matricule Unique (ID de
+                    connexion)</label>
+                <div style="position:relative;">
+                    <i class="fa-solid fa-id-badge"
+                        style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--teal);"></i>
+                    <input type="text" name="matricule" required class="form-control"
+                        style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem 1rem 0.7rem 2.5rem; font-family:monospace; font-weight:600;"
+                        placeholder="Ex: 22NT001">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6 form-group">
+                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Filière</label>
+                    <select name="filiere" required class="form-control"
+                        style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;">
+                        <option value="Sciences Informatiques">Sciences Informatiques</option>
+                        <option value="Réseaux et Télécoms">Réseaux et Télécoms</option>
+                        <option value="Génie Logiciel">Génie Logiciel</option>
+                        <option value="Intelligence Artificielle">Intelligence Artificielle</option>
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Niveau (Licence/Master)</label>
+                    <select name="niveau" required class="form-control"
+                        style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;">
+                        <option value="L1">L1 (Licence 1)</option>
+                        <option value="L2">L2 (Licence 2)</option>
+                        <option value="L3">L3 (Licence 3)</option>
+                        <option value="M1">M1 (Master 1)</option>
+                        <option value="M2">M2 (Master 2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group mb-4">
+                <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Mot de passe de première
+                    connexion</label>
+                <div class="alert-custom alert-warning-custom p-2 mb-2"
+                    style="font-size:0.8rem; background:rgba(255, 193, 7, 0.1); border:1px solid rgba(255, 193, 7, 0.3);">
+                    <i class="fa-solid fa-lock text-warning me-2"></i> Laissez vide pour utiliser :
+                    <strong>changeme123</strong>
+                </div>
+                <input type="password" name="password" class="form-control"
+                    style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;"
+                    placeholder="Mot de passe personnalisé (optionnel)">
+            </div>
+
+            <button type="submit" class="btn-submit w-100 py-3" style="font-size:1.05rem;">
+                <i class="fa-solid fa-user-check me-2"></i> Valider l'inscription
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

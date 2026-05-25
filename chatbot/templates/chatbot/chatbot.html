@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Assistant Virtuel{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Standalone chatbot page specific styles */
+    .chatbot-standalone-wrapper {
+        max-width: 800px;
+        margin: 2rem auto;
+        height: calc(100vh - 150px);
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chatbot-standalone-header {
+        background: linear-gradient(135deg, var(--navy), var(--navy-light));
+        padding: 1.5rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .cs-avatar {
+        width: 50px;
+        height: 50px;
+        background: var(--teal);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .cs-info h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .cs-info p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<nav class="dashboard-nav">
+    <div class="nav-container d-flex justify-content-between align-items-center flex-wrap">
+        <a href="{% url 'profil' %}" class="nav-brand fw-bold text-decoration-none">
+            <i class="fa-solid fa-graduation-cap me-2" style="color:var(--teal);"></i>
+            Plateforme Relevés
+        </a>
+        <div class="nav-menu">
+            <a href="{% url 'profil' %}"><i class="fa-solid fa-user"></i> Profil</a>
+            <a href="{% url 'historique' %}"><i class="fa-solid fa-clock-rotate-left"></i> Historique</a>
+            <a href="{% url 'chatbot' %}" class="active"><i class="fa-solid fa-robot"></i> Assistant</a>
+            <a href="{% url 'logout' %}" class="nav-logout ms-2"><i class="fa-solid fa-right-from-bracket"></i>
+                Déconnexion</a>
+        </div>
+    </div>
+</nav>
+
+<!-- The widget logic stays active, but we only show the standalone form -->
+<div class="container pb-4">
+    <div class="chatbot-standalone-wrapper">
+        <div class="chatbot-standalone-header">
+            <div class="cs-avatar"><i class="fa-solid fa-robot"></i></div>
+            <div class="cs-info">
+                <h3>Assistant Académique IA</h3>
+                <p>Discutez avec l'assistant pour gérer vos relevés et consulter vos notes.</p>
+            </div>
+        </div>
+
+        <div id="standalone-messages" class="chatbot-messages" style="flex:1;">
+            <!-- Initial Message -->
+            <div class="chat-msg chat-msg-bot">
+                👋 Bonjour <strong>{{ user.etudiant.prenom }}</strong> !<br><br>
+                Je suis votre assistant académique.<br>
+                Tapez <strong>bonjour</strong> pour commencer, ou <strong>aide</strong> pour voir les commandes.
+            </div>
+        </div>
+
+        <div class="chatbot-input" style="padding: 1.2rem;">
+            <input type="text" id="standalone-input" placeholder="Demander un relevé, voir mes notes..."
+                style="padding:0.8rem 1.5rem;">
+            <button id="standalone-send" style="width:50px; height:50px; font-size:1.2rem;"><i
+                    class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Hide the floating widget button on this page
+        const wToggle = document.getElementById('chatbot-toggle');
+        if (wToggle) wToggle.style.display = 'none';
+
+        // Standalone logic
+        const input = document.getElementById('standalone-input');
+        const sendBtn = document.getElementById('standalone-send');
+        const messagesDiv = document.getElementById('standalone-messages');
+
+        function sendMessage() {
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            // User Message
+            const uDiv = document.createElement('div');
+            uDiv.className = 'chat-msg chat-msg-user';
+            uDiv.textContent = msg;
+            messagesDiv.appendChild(uDiv);
+
+            input.value = '';
+            scrollToBottom();
+
+            // Typing dot
+            const tDiv = document.createElement('div');
+            tDiv.className = 'typing-dots';
+            tDiv.innerHTML = '<span></span><span></span><span></span>';
+            messagesDiv.appendChild(tDiv);
+            scrollToBottom();
+
+            // API Call
+            const csrfEl = document.querySelector('[name=csrfmiddlewaretoken]');
+            const csrfToken = csrfEl ? csrfEl.value : '';
+
+            fetch("{% url 'chatbot_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ message: msg })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    tDiv.remove();
+                    const bDiv = document.createElement('div');
+                    bDiv.className = 'chat-msg chat-msg-bot';
+                    bDiv.innerHTML = data.reponse;
+                    messagesDiv.appendChild(bDiv);
+                    scrollToBottom();
+                })
+                .catch(err => {
+                    tDiv.remove();
+                    const bDiv = document.createElement('div');
+                    bDiv.className = 'chat-msg chat-msg-bot';
+                    bDiv.innerHTML = "❌ Erreur de connexion.";
+                    messagesDiv.appendChild(bDiv);
+                    scrollToBottom();
+                });
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function scrollToBottom() {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    });
+</script>
+{% endblock %}

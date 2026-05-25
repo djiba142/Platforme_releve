@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes Demandes — Étudiant{% endblock %}
+
+{% block body %}
+<nav class="dashboard-nav">
+    <div class="nav-container d-flex justify-content-between align-items-center flex-wrap">
+        <a href="{% url 'profil' %}" class="nav-brand fw-bold text-decoration-none">
+            <i class="fa-solid fa-graduation-cap me-2" style="color:var(--teal);"></i>
+            Plateforme Relevés
+        </a>
+        <div class="nav-menu">
+            <a href="{% url 'profil' %}"><i class="fa-solid fa-user"></i> Profil</a>
+            <a href="{% url 'liste_notes' %}"><i class="fa-solid fa-list"></i> Mes Notes</a>
+            <a href="{% url 'historique' %}" class="active"><i class="fa-solid fa-clock-rotate-left"></i> Historique</a>
+            <a href="{% url 'logout' %}" class="nav-logout ms-2"><i class="fa-solid fa-right-from-bracket"></i>
+                Déconnexion</a>
+        </div>
+    </div>
+</nav>
+
+<div class="dashboard-content">
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card" style="background:var(--navy); color:white; border:none;">
+                <div class="stat-icon" style="background:rgba(255,255,255,0.1);"><i
+                        class="fa-solid fa-file-lines text-white"></i></div>
+                <div class="stat-info">
+                    <h3 style="color:white;">{{ demandes.count }}</h3>
+                    <p style="color:rgba(255,255,255,0.7);">Total demandes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card" style="background:var(--teal); color:white; border:none;">
+                <div class="stat-icon" style="background:rgba(255,255,255,0.2);"><i
+                        class="fa-solid fa-circle-check text-white"></i></div>
+                <div class="stat-info">
+                    <h3 style="color:white;">{{ nb_validees }}</h3>
+                    <p style="color:rgba(255,255,255,0.8);">Validées (Prêtes)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card" style="background:#FFC107; color:var(--navy); border:none;">
+                <div class="stat-icon" style="background:rgba(26,39,68,0.1);"><i
+                        class="fa-solid fa-clock text-dark"></i></div>
+                <div class="stat-info">
+                    <h3 style="color:var(--navy);">{{ nb_attente }}</h3>
+                    <p style="color:rgba(26,39,68,0.7);">En attente</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <div class="card-header-custom" style="padding:1.5rem 1.5rem 1rem;">
+            <h5 style="margin:0;"><i class="fa-solid fa-clock-rotate-left me-2"></i> Historique des demandes</h5>
+            <a href="{% url 'creer_demande' %}" class="btn-action btn-teal">
+                <i class="fa-solid fa-plus"></i> Nouvelle demande
+            </a>
+        </div>
+
+        {% if messages %}
+        <div style="padding:0 1.5rem;">
+            {% for msg in messages %}
+            <div
+                class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %} mb-0 mt-3">
+                <i class="fa-solid fa-circle-info"></i> {{ msg }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if demandes %}
+        <div class="table-responsive p-0 mt-2">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Date et Heure</th>
+                        <th>Session Demandée</th>
+                        <th>Statut</th>
+                        <th class="text-end">Action / Document</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for demande in demandes %}
+                    <tr>
+                        <td style="font-weight:700;">#{{ demande.id }}</td>
+                        <td>{{ demande.date_demande|date:"d M Y, H:i" }}</td>
+                        <td style="font-weight:600; color:var(--navy);">{{ demande.session }}</td>
+                        <td>
+                            {% if demande.statut == 'en_attente' %}
+                            <span class="badge-status badge-attente"><i class="fa-solid fa-hourglass-half"></i> En
+                                attente</span>
+                            {% elif demande.statut == 'validee' %}
+                            <span class="badge-status badge-validee"><i class="fa-solid fa-check"></i> Validée</span>
+                            {% else %}
+                            <span class="badge-status badge-rejetee"><i class="fa-solid fa-xmark"></i> Rejetée</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if demande.statut == 'validee' %}
+                            <a href="{% url 'telecharger_releve' demande.id %}" class="btn-action btn-navy">
+                                <i class="fa-solid fa-download"></i> PDF
+                            </a>
+                            {% else %}
+                            <span style="font-size:0.85rem; color:var(--text-light);"><i class="fa-solid fa-lock"></i>
+                                Indisponible</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-regular fa-folder-open"></i>
+            <p>Aucune demande pour le moment.</p>
+            <a href="{% url 'creer_demande' %}" class="btn-action btn-navy mt-2">Faire une demande</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

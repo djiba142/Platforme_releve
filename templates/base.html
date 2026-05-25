@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Plateforme Relevés{% endblock %}</title>
+    <meta name="description"
+        content="Plateforme intelligente de gestion automatisée des relevés de notes universitaires">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    {% block body %}{% endblock %}
+
+    {% block chatbot_widget %}
+    <!-- Bouton flottant chatbot -->
+    <div id="chatFloat" style="position:fixed;bottom:25px;right:25px;z-index:9999;">
+
+        <!-- Bulle notification -->
+        <div id="chatNotif" style="
+            position:absolute; top:-10px; right:-8px;
+            background:#DC3545; color:white;
+            width:20px; height:20px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.7rem; font-weight:700;">1</div>
+
+        <!-- Bouton -->
+        <button onclick="toggleChat()" style="
+            width:58px; height:58px;
+            background:#00C3A3; border:none;
+            border-radius:50%; color:white;
+            font-size:22px; cursor:pointer;
+            box-shadow:0 8px 25px rgba(0,195,163,0.4);
+            transition:all 0.3s;" id="chatBtn">
+            <i class="fa-solid fa-robot"></i>
+        </button>
+
+        <!-- Mini chat -->
+        <div id="miniChat" style="
+            display:none;
+            position:absolute; bottom:70px; right:0;
+            width:320px;
+            background:white; border-radius:18px;
+            box-shadow:0 20px 60px rgba(26,39,68,0.2);
+            overflow:hidden;">
+
+            <!-- Header mini chat -->
+            <div style="background:#1A2744;padding:14px 16px;
+                        display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;background:#00C3A3;
+                            border-radius:50%;display:flex;
+                            align-items:center;justify-content:center;">
+                    <i class="fa-solid fa-robot" style="color:white;font-size:15px;"></i>
+                </div>
+                <div>
+                    <div style="color:white;font-weight:700;font-size:0.88rem;">
+                        Assistant Académique
+                    </div>
+                    <div style="color:#00C3A3;font-size:0.72rem;">
+                        <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i>
+                        En ligne
+                    </div>
+                </div>
+                <button onclick="toggleChat()" style="
+                    margin-left:auto;background:none;
+                    border:none;color:rgba(255,255,255,0.6);
+                    font-size:18px;cursor:pointer;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Messages mini -->
+            <div id="miniMessages" style="
+                height:220px;overflow-y:auto;
+                padding:14px;background:#F8FAFF;
+                display:flex;flex-direction:column;gap:10px;">
+                <div style="background:white;border-radius:12px;
+                            border-bottom-left-radius:3px;
+                            padding:10px 13px;font-size:0.85rem;
+                            color:#1A2744;max-width:85%;
+                            box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+                    👋 Bonjour ! Comment puis-je vous aider ?<br>
+                    Tapez <strong>aide</strong> pour voir les commandes.
+                </div>
+            </div>
+
+            <!-- Saisie mini -->
+            <div style="padding:10px;background:white;
+                        border-top:1px solid #E0E8F5;
+                        display:flex;gap:8px;">
+                <input type="text" id="miniInput" placeholder="Votre message..." onkeypress="handleMiniKey(event)"
+                    style="flex:1;border:1.5px solid #D4E0F0;
+                              border-radius:20px;padding:7px 14px;
+                              font-size:0.83rem;outline:none;">
+                <button onclick="sendMiniMessage()" style="
+                    width:36px;height:36px;
+                    background:#00C3A3;border:none;
+                    border-radius:50%;color:white;
+                    cursor:pointer;flex-shrink:0;">
+                    <i class="fa-solid fa-paper-plane" style="font-size:13px;"></i>
+                </button>
+            </div>
+
+            <!-- Lien vers chat complet -->
+            <div style="text-align:center;padding:8px;
+                        background:#F0F4FF;font-size:0.78rem;">
+                <a href="{% url 'chatbot' %}" style="color:#1D6FA5;text-decoration:none;">
+                    <i class="fa-solid fa-expand me-1"></i>
+                    Ouvrir le chat complet
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSRF Token definition for fetch calls across all pages -->
+    {% csrf_token %}
+    <script>
+        function toggleChat() {
+            const chat = document.getElementById('miniChat');
+            const notif = document.getElementById('chatNotif');
+            const isHidden = chat.style.display === 'none' || chat.style.display === '';
+            chat.style.display = isHidden ? 'block' : 'none';
+            if (isHidden && notif) notif.style.display = 'none';
+        }
+
+        function sendMiniMessage() {
+            const input = document.getElementById('miniInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const container = document.getElementById('miniMessages');
+
+            // Message utilisateur
+            const userDiv = document.createElement('div');
+            userDiv.style.cssText = `
+            background:#1A2744;color:white;border-radius:12px;
+            border-bottom-right-radius:3px;padding:9px 13px;
+            font-size:0.83rem;max-width:85%;
+            align-self:flex-end;margin-left:auto;`;
+            userDiv.textContent = msg;
+            container.appendChild(userDiv);
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            const csrfEl = document.querySelector('[name=csrfmiddlewaretoken]');
+            const csrfToken = csrfEl ? csrfEl.value : '';
+
+            // Appel API
+            fetch("{% url 'chatbot_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ message: msg })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    const botDiv = document.createElement('div');
+                    botDiv.style.cssText = `
+                background:white;border-radius:12px;
+                border-bottom-left-radius:3px;padding:9px 13px;
+                font-size:0.83rem;max-width:85%;
+                box-shadow:0 2px 8px rgba(0,0,0,0.07);`;
+                    botDiv.innerHTML = data.reponse;
+                    container.appendChild(botDiv);
+                    container.scrollTop = container.scrollHeight;
+                }).catch(e => {
+                    console.error("Erreur Chatbot: ", e);
+                    const botDiv = document.createElement('div');
+                    botDiv.style.cssText = `background:white; color:red; padding:10px; border-radius:12px; font-size:0.85rem;`;
+                    botDiv.innerHTML = "Une erreur est survenue de notre côté. Veuillez nous excuser.";
+                    container.appendChild(botDiv);
+                });
+        }
+
+        function handleMiniKey(e) {
+            if (e.key === 'Enter') sendMiniMessage();
+        }
+    </script>
+    {% endblock %}
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

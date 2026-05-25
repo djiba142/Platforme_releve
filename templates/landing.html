@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plateforme Relevés — Accueil{% endblock %}
+
+{% block chatbot_widget %}{% endblock %}
+
+{% block body %}
+<!-- ══ NAVBAR ══ -->
+<nav class="nav-landing">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Plateforme Relevés
+        </a>
+        <div class="nav-links">
+            <a href="#features" class="nav-link-text">
+                <i class="fa-solid fa-star me-1"></i> Services
+            </a>
+            <a href="{% url 'login' %}" class="nav-link-outline">
+                <i class="fa-solid fa-user-graduate"></i> Étudiant
+            </a>
+            <a href="{% url 'login_admin' %}" class="nav-link-primary">
+                <i class="fa-solid fa-lock"></i> Administration
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="hero-badge">
+                <i class="fa-solid fa-bolt"></i>
+                Plateforme Universitaire Intelligente
+            </div>
+            <h1 class="hero-title">
+                Gestion <span class="highlight">automatisée</span><br>
+                des relevés de notes
+            </h1>
+            <p class="hero-desc">
+                Demandez, suivez et téléchargez vos relevés de notes en ligne.
+                Un assistant virtuel vous accompagne 24h/24 pour simplifier
+                vos démarches académiques.
+            </p>
+            <div class="hero-buttons">
+                <a href="{% url 'login' %}" class="btn-hero btn-hero-primary">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    Demander un relevé
+                </a>
+                <a href="#features" class="btn-hero btn-hero-outline">
+                    <i class="fa-solid fa-info-circle"></i>
+                    En savoir plus
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-card-stack">
+                <div class="floating-card fc-1">
+                    <div class="fc-icon"><i class="fa-solid fa-robot"></i></div>
+                    <div class="fc-title">Chatbot Intelligent</div>
+                    <div class="fc-desc">Assistant virtuel disponible 24h/24 pour vos demandes</div>
+                </div>
+                <div class="floating-card fc-2">
+                    <div class="fc-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="fc-title">Relevés PDF</div>
+                    <div class="fc-desc">Génération automatique et téléchargement instantané</div>
+                </div>
+                <div class="floating-card fc-3">
+                    <div class="fc-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="fc-title">100% Sécurisé</div>
+                    <div class="fc-desc">Authentification sécurisée et données protégées</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="features-section" id="features">
+    <div class="section-header">
+        <h2><i class="fa-solid fa-sparkles" style="color: var(--teal);"></i> Nos Services</h2>
+        <p>Tout ce dont vous avez besoin pour gérer vos relevés de notes</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon fi-teal">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <h3>Chatbot Intelligent</h3>
+            <p>Un assistant virtuel vous guide étape par étape pour demander votre relevé de notes en quelques clics.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-navy">
+                <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <h3>Génération PDF</h3>
+            <p>Vos relevés de notes sont générés automatiquement au format PDF professionnel, prêts à télécharger.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-success">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h3>Import Excel / CSV</h3>
+            <p>L'administration peut importer les notes en masse via des fichiers Excel ou CSV en un seul clic.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-warning">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <h3>Suivi en Temps Réel</h3>
+            <p>Suivez l'état de vos demandes en temps réel : en attente, validée ou rejetée, depuis votre dashboard.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-danger">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3>Sécurité Avancée</h3>
+            <p>Connexion sécurisée par matricule et mot de passe. Vos données personnelles sont protégées.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-purple">
+                <i class="fa-solid fa-mobile-screen"></i>
+            </div>
+            <h3>Accessible 24h/24</h3>
+            <p>Accédez à la plateforme depuis n'importe quel appareil, à tout moment, sans vous déplacer.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer-landing">
+    <div class="footer-brand">
+        <i class="fa-solid fa-graduation-cap"></i>
+        Plateforme Relevés
+    </div>
+    <p>© 2024 Université de Conakry — Tous droits réservés</p>
+    <p style="margin-top: 0.3rem; font-size: 0.8rem; opacity: 0.5;">
+        Plateforme intelligente de gestion automatisée des relevés de notes
+    </p>
+</footer>
+{% endblock %}

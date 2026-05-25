@@ -1,0 +1,180 @@
+{% extends 'administration/dashboard.html' %}
+
+{% block title %}Gestion des Notes — Admin{% endblock %}
+
+{% block body %}
+<div class="admin-sidebar">
+    <div class="admin-sidebar-header">
+        <i class="fa-solid fa-shield-halved sidebar-logo"></i>
+        <div>
+            <h5 style="margin:0; font-weight:800; font-size:1.1rem;">Admin Panel</h5>
+            <small style="color:var(--teal); font-size:0.75rem;">Plateforme Univ</small>
+        </div>
+    </div>
+    <div class="admin-sidebar-nav">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-link">
+            <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
+        </a>
+        <a href="{% url 'liste_etudiants' %}" class="sidebar-link">
+            <i class="fa-solid fa-users"></i> Étudiants
+        </a>
+        <a href="{% url 'gestion_demandes' %}" class="sidebar-link">
+            <i class="fa-solid fa-file-lines"></i> Demandes
+        </a>
+        <a href="{% url 'gestion_notes' %}" class="sidebar-link active">
+            <i class="fa-solid fa-book-open"></i> Notes
+        </a>
+        <a href="{% url 'import_csv' %}" class="sidebar-link">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
+        </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </div>
+</div>
+
+<div class="admin-main">
+    <div class="topbar">
+        <h4 style="margin:0; font-weight:800; color:var(--navy);">
+            <i class="fa-solid fa-book-open text-muted me-2"></i> Base de données Notes
+        </h4>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <a href="{% url 'import_csv' %}" class="btn-action btn-outline-custom" style="font-size:0.9rem;">
+                <i class="fa-solid fa-upload"></i> Import CSV/Excel
+            </a>
+            <div style="text-align:right;">
+                <h6 style="margin:0; font-weight:700;">{{ request.user.username }}</h6>
+                <small class="text-muted">Administrateur</small>
+            </div>
+            <div
+                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    {% for msg in messages %}
+    <div
+        class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
+        <i class="fa-solid fa-circle-info"></i> {{ msg }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="row gx-4">
+        <div class="col-md-4">
+            <!-- Formulaire d'ajout manuel de note -->
+            <div class="content-card">
+                <div class="card-header-custom" style="padding:1.5rem; padding-bottom:0.5rem; border:none;">
+                    <h5><i class="fa-solid fa-plus-circle text-teal me-2"></i> Ajouter manuellement</h5>
+                </div>
+                <div class="card-body-custom" style="padding:1.5rem; padding-top:0;">
+                    <form method="POST" action="{% url 'ajouter_note' %}">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <label style="font-size:0.85rem; font-weight:700;">Étudiant</label>
+                            <select name="etudiant" class="form-control"
+                                style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
+                                required>
+                                <option value="">Choisir un étudiant...</option>
+                                {% for etudiant in etudiants %}
+                                <option value="{{ etudiant.id }}">{{ etudiant.matricule }} - {{ etudiant.prenom }} {{
+                                    etudiant.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label style="font-size:0.85rem; font-weight:700;">Matière</label>
+                            <input type="text" name="matiere" class="form-control"
+                                style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
+                                placeholder="Ex: Mathématiques" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label style="font-size:0.85rem; font-weight:700;">Note / 20</label>
+                                <input type="number" step="0.25" min="0" max="20" name="note" class="form-control"
+                                    style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
+                                    required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label style="font-size:0.85rem; font-weight:700;">Année</label>
+                                <input type="text" name="annee" class="form-control"
+                                    style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
+                                    value="2023-2024" required>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label style="font-size:0.85rem; font-weight:700;">Session</label>
+                            <select name="session" class="form-control"
+                                style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
+                                required>
+                                <option value="Session 1">Session 1</option>
+                                <option value="Session 2">Session 2</option>
+                                <option value="Session Rattrapage">Session Rattrapage</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit w-100 py-2"><i class="fa-solid fa-floppy-disk me-1"></i>
+                            Enregistrer Note</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="content-card h-100">
+                <div class="card-header-custom" style="border:none;">
+                    <h5><i class="fa-solid fa-list-ol"></i> Notes Récentes Enregistrées</h5>
+                </div>
+                <!-- Adding a max-height wrap for scrolling since there might be 100 notes -->
+                <div class="card-body-custom p-0" style="max-height: 550px; overflow-y: auto;">
+                    <table class="table-modern" style="margin-bottom:0;">
+                        <thead style="position:sticky; top:0; z-index:10;">
+                            <tr>
+                                <th>Étudiant</th>
+                                <th>Matière</th>
+                                <th class="text-center">Note / 20</th>
+                                <th>Session</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for note in notes %}
+                            <tr>
+                                <td>
+                                    <div style="font-size:0.9rem; font-weight:600;">{{ note.etudiant.prenom }} {{
+                                        note.etudiant.nom }}</div>
+                                    <div style="font-size:0.8rem; font-family:monospace; color:var(--teal);">{{
+                                        note.etudiant.matricule }}</div>
+                                </td>
+                                <td style="font-weight:600; color:var(--navy);">{{ note.matiere }}</td>
+                                <td class="text-center">
+                                    {% if note.note >= 10 %}
+                                    <div style="font-weight:800; font-size:1.05rem; color:var(--success);">
+                                        {{ note.note }}
+                                    </div>
+                                    {% else %}
+                                    <div style="font-weight:800; font-size:1.05rem; color:var(--danger);">
+                                        {{ note.note }}
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td><span style="font-size:0.85rem; color:var(--text-light);">{{ note.session }}<br>{{
+                                        note.annee }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted"><i
+                                        class="fa-solid fa-folder-open mb-2"
+                                        style="font-size:2rem; display:block; opacity:0.5;"></i> Aucune note
+                                    enregistrée.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Importer Notes — Administration{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Styling for Admin Import UI embedded inside base.html frame for consistency */
+    .dashboard-nav {
+        background: var(--navy);
+        padding: 0;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .import-container {
+        max-width: 600px;
+        margin: 3rem auto;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<nav class="dashboard-nav">
+    <div class="nav-container d-flex justify-content-between align-items-center flex-wrap">
+        <a href="{% url 'admin_dashboard' %}" class="nav-brand fw-bold text-decoration-none">
+            <i class="fa-solid fa-shield-halved me-2" style="color:var(--teal);"></i>
+            Administration Panel
+        </a>
+        <div class="nav-menu">
+            <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <a href="{% url 'import_csv' %}" class="active"><i class="fa-solid fa-file-import"></i> Importer</a>
+            <a href="{% url 'logout' %}" class="nav-logout ms-2"><i class="fa-solid fa-right-from-bracket"></i>
+                Déconnexion</a>
+        </div>
+    </div>
+</nav>
+
+<div class="dashboard-content">
+    <div class="import-container">
+        <div class="content-card dropdown" style="padding:2rem;">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-file-excel" style="font-size:3.5rem; color:#1D6FA5; margin-bottom:1rem;"></i>
+                <h3 style="font-weight:800; color:var(--navy);">Importation en masse</h3>
+                <p style="color:var(--text-light); font-size:0.95rem;">Ajoutez facilement des notes via un fichier CSV
+                    ou Excel.</p>
+            </div>
+
+            {% if messages %}
+            {% for msg in messages %}
+            <div
+                class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
+                <i class="fa-solid fa-circle-info"></i> {{ msg }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
+                <div class="form-group mb-4">
+                    <label style="font-weight:700; color:var(--navy);">Sélectionner le fichier (.csv ou .xlsx) <span
+                            style="color:var(--danger);">*</span></label>
+                    <input type="file" name="fichier" accept=".csv,.xlsx" required
+                        style="padding: 1rem; border: 2px dashed #d4e0f0; border-radius: 12px;cursor:pointer; background:#f8fafb;width:100%;">
+                </div>
+
+                <div class="alert-custom alert-warning-custom" style="align-items:flex-start;">
+                    <i class="fa-solid fa-triangle-exclamation" style="margin-top:0.2rem;"></i>
+                    <div style="font-size:0.85rem;">
+                        <strong>Structure requise :</strong> Le fichier doit contenir exactement ces colonnes (noms
+                        minuscules respectés) :<br>
+                        <code
+                            style="background:rgba(255,255,255,0.5); padding:0.2rem 0.5rem; border-radius:4px; margin-top:0.5rem; display:inline-block; font-weight:600;color:var(--navy);">matricule, matiere, note, session, annee</code>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit mt-3" style="font-size:1.1rem; padding:1rem;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Lancer l'importation
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

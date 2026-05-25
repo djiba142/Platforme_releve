@@ -1,0 +1,130 @@
+{% extends 'administration/dashboard.html' %}
+
+{% block title %}Gestion des Demandes — Admin{% endblock %}
+
+{% block body %}
+<div class="admin-sidebar">
+    <div class="admin-sidebar-header">
+        <i class="fa-solid fa-shield-halved sidebar-logo"></i>
+        <div>
+            <h5 style="margin:0; font-weight:800; font-size:1.1rem;">Admin Panel</h5>
+            <small style="color:var(--teal); font-size:0.75rem;">Plateforme Univ</small>
+        </div>
+    </div>
+    <div class="admin-sidebar-nav">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-link">
+            <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
+        </a>
+        <a href="{% url 'liste_etudiants' %}" class="sidebar-link">
+            <i class="fa-solid fa-users"></i> Étudiants
+        </a>
+        <a href="{% url 'gestion_demandes' %}" class="sidebar-link active">
+            <i class="fa-solid fa-file-lines"></i> Demandes
+        </a>
+        <a href="{% url 'gestion_notes' %}" class="sidebar-link">
+            <i class="fa-solid fa-book-open"></i> Notes
+        </a>
+        <a href="{% url 'import_csv' %}" class="sidebar-link">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
+        </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </div>
+</div>
+
+<div class="admin-main">
+    <div class="topbar">
+        <h4 style="margin:0; font-weight:800; color:var(--navy);">
+            <i class="fa-solid fa-file-lines text-muted me-2"></i> Gestion des Demandes
+        </h4>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="text-align:right;">
+                <h6 style="margin:0; font-weight:700;">{{ request.user.username }}</h6>
+                <small class="text-muted">Administrateur</small>
+            </div>
+            <div
+                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    {% for msg in messages %}
+    <div
+        class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
+        <i class="fa-solid fa-circle-info"></i> {{ msg }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="content-card mt-3">
+        <div class="card-header-custom" style="display:flex; justify-content:space-between; align-items:center;">
+            <h5><i class="fa-solid fa-list-check"></i> Historique et Traitement</h5>
+            <span class="badge" style="background:var(--navy); padding:0.4rem 0.8rem; border-radius:20px;">Total : {{
+                demandes.count }}</span>
+        </div>
+        <div class="card-body-custom p-0">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Date de Demande</th>
+                        <th>Matricule & Étudiant</th>
+                        <th>Session Ciblée</th>
+                        <th>Statut Actuel</th>
+                        <th class="text-end">Actions Administratives</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for demande in demandes %}
+                    <tr>
+                        <td style="font-weight:700;">#{{ demande.id }}</td>
+                        <td style="font-size:0.85rem; color:var(--text-light);">{{ demande.date_demande|date:"d M y,
+                            H:i" }}</td>
+                        <td>
+                            <div style="font-family:monospace; font-weight:600; color:var(--teal); font-size:0.95rem;">
+                                {{ demande.etudiant.matricule }}</div>
+                            <div style="font-size:0.85rem; font-weight:600;">{{ demande.etudiant.prenom }} {{
+                                demande.etudiant.nom }}</div>
+                        </td>
+                        <td style="font-weight:600; color:var(--navy);">{{ demande.session }}</td>
+                        <td>
+                            {% if demande.statut == 'en_attente' %}<span class="badge-status badge-attente"><i
+                                    class="fa-solid fa-hourglass-half"></i> En attente</span>
+                            {% elif demande.statut == 'validee' %}<span class="badge-status badge-validee"><i
+                                    class="fa-solid fa-check"></i> Appel Terminé</span>
+                            {% else %}<span class="badge-status badge-rejetee"><i class="fa-solid fa-xmark"></i>
+                                Rejeté</span>{% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if demande.statut == 'en_attente' %}
+                            <a href="{% url 'valider_demande' demande.id %}"
+                                class="btn-action btn-success-action py-1 px-2" title="Valider et générer PDF">
+                                <i class="fa-solid fa-check-double"></i> Prouver & Générer
+                            </a>
+                            <a href="{% url 'rejeter_demande' demande.id %}"
+                                class="btn-action btn-danger-action py-1 px-2 ms-1" title="Rejeter">
+                                <i class="fa-solid fa-ban"></i>
+                            </a>
+                            {% else %}
+                            <span class="text-muted" style="font-size:0.85rem;"><i
+                                    class="fa-solid fa-check-circle text-success" style="opacity:0.7;"></i> Traitement
+                                clôturé</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted"><i class="fa-regular fa-folder-open mb-3"
+                                style="font-size:2.5rem; display:block;"></i> Aucune demande n'a été soumise.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+django>=4.2
+psycopg2-binary
+reportlab
+pandas
+openpyxl
+pillow

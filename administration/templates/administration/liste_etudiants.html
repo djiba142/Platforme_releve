@@ -1,0 +1,113 @@
+{% extends 'administration/dashboard.html' %}
+
+{% block title %}Gestion des Étudiants — Admin{% endblock %}
+
+{% block body %}
+<!-- Replace the main content but keep sidebar -->
+<div class="admin-sidebar">
+    <div class="admin-sidebar-header">
+        <i class="fa-solid fa-shield-halved sidebar-logo"></i>
+        <div>
+            <h5 style="margin:0; font-weight:800; font-size:1.1rem;">Admin Panel</h5>
+            <small style="color:var(--teal); font-size:0.75rem;">Plateforme Univ</small>
+        </div>
+    </div>
+    <div class="admin-sidebar-nav">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-link">
+            <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
+        </a>
+        <a href="{% url 'liste_etudiants' %}" class="sidebar-link active">
+            <i class="fa-solid fa-users"></i> Étudiants
+        </a>
+        <a href="{% url 'gestion_demandes' %}" class="sidebar-link">
+            <i class="fa-solid fa-file-lines"></i> Demandes
+        </a>
+        <a href="{% url 'gestion_notes' %}" class="sidebar-link">
+            <i class="fa-solid fa-book-open"></i> Notes
+        </a>
+        <a href="{% url 'import_csv' %}" class="sidebar-link">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
+        </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </div>
+</div>
+
+<div class="admin-main">
+    <div class="topbar">
+        <h4 style="margin:0; font-weight:800; color:var(--navy);">
+            <i class="fa-solid fa-users text-muted me-2"></i> Étudiants
+        </h4>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <a href="{% url 'ajouter_etudiant' %}" class="btn-action btn-teal" style="font-size:0.9rem;">
+                <i class="fa-solid fa-user-plus"></i> Inscrire un étudiant
+            </a>
+            <div style="text-align:right;">
+                <h6 style="margin:0; font-weight:700;">{{ request.user.username }}</h6>
+                <small class="text-muted">Administrateur</small>
+            </div>
+            <div
+                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    {% for msg in messages %}
+    <div
+        class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
+        <i class="fa-solid fa-circle-info"></i> {{ msg }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="content-card mt-4">
+        <div class="card-header-custom">
+            <h5><i class="fa-solid fa-table-list"></i> Liste des étudiants inscrits</h5>
+        </div>
+        <div class="card-body-custom p-0">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Matricule</th>
+                        <th>Nom Complet</th>
+                        <th>Filière</th>
+                        <th>Niveau</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for etudiant in etudiants %}
+                    <tr>
+                        <td style="font-weight:700;">{{ forloop.counter }}</td>
+                        <td style="font-family:monospace; font-weight:600; color:var(--teal);">{{ etudiant.matricule }}
+                        </td>
+                        <td style="font-weight:600; color:var(--navy);">{{ etudiant.prenom }} {{ etudiant.nom }}</td>
+                        <td>{{ etudiant.filiere }}</td>
+                        <td><span
+                                style="background:rgba(26,39,68,0.06); padding:0.2rem 0.6rem; border-radius:4px; font-size:0.85rem; font-weight:600;">{{
+                                etudiant.niveau }}</span></td>
+                        <td class="text-end">
+                            <a href="{% url 'supprimer_etudiant' etudiant.id %}"
+                                class="btn-action btn-danger-action py-1 px-2"
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')">
+                                <i class="fa-solid fa-trash-can"></i> Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted"><i class="fa-regular fa-folder-open mb-2"
+                                style="font-size:2rem; display:block;"></i> Aucun étudiant trouvé.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
