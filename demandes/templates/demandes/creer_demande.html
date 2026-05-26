@@ -4,18 +4,36 @@
 {% block title %}Nouvelle Demande — Étudiant{% endblock %}
 
 {% block body %}
-<nav class="dashboard-nav">
-    <div class="nav-container d-flex justify-content-between align-items-center flex-wrap">
-        <a href="{% url 'profil' %}" class="nav-brand fw-bold text-decoration-none">
-            <i class="fa-solid fa-graduation-cap me-2" style="color:var(--teal);"></i>
-            Plateforme Relevés
+<!-- ══ DASHBOARD NAVBAR ══ -->
+<nav class="navbar navbar-dark" style="background:#1A2744; border-bottom:3px solid #00C3A3; padding: 12px 0;">
+    <div class="container pb-0">
+        <!-- Logos + Nom -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <img src="{% static 'images/logos_uganc.png' %}" height="40" alt="UGANC">
+            <div style="width:1px;height:35px; background:rgba(255,255,255,0.2);"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="35" alt="CI"
+                style="opacity:0.9;">
+            <div>
+                <div style="color:white;font-weight:700; font-size:0.9rem;line-height:1.2;">
+                    Centre Informatique
+                </div>
+                <div style="color:#00C3A3;font-size:0.7rem;">
+                    UGANC — Gestion des Relevés
+                </div>
+            </div>
         </a>
-        <div class="nav-menu">
-            <a href="{% url 'profil' %}"><i class="fa-solid fa-user"></i> Profil</a>
-            <a href="{% url 'liste_notes' %}"><i class="fa-solid fa-list"></i> Mes Notes</a>
-            <a href="{% url 'historique' %}" class="active"><i class="fa-solid fa-clock-rotate-left"></i> Historique</a>
-            <a href="{% url 'logout' %}" class="nav-logout ms-2"><i class="fa-solid fa-right-from-bracket"></i>
-                Déconnexion</a>
+
+        <!-- Liens droite -->
+        <div class="d-flex gap-2">
+            <a href="{% url 'profil' %}" class="btn btn-outline-light btn-sm">
+                <i class="fa-solid fa-user me-1"></i> Profil
+            </a>
+            <a href="{% url 'historique' %}" class="btn btn-outline-light btn-sm">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i> Demandes
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
+                <i class="fa-solid fa-right-from-bracket me-1"></i> Déconnexion
+            </a>
         </div>
     </div>
 </nav>

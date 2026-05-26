@@ -19,27 +19,57 @@ def landing_page(request):
     return redirect('accueil')
 
 def login_etudiant(request):
-    """Connexion étudiant avec matricule"""
+    """Connexion unifiée — détecte automatiquement étudiant ou admin"""
     if request.user.is_authenticated:
-        return redirect('profil')
+        if hasattr(request.user, 'etudiant'):
+            return redirect('profil')
+        elif request.user.is_staff:
+            return redirect('admin_dashboard')
 
     if request.method == 'POST':
-        matricule = request.POST.get('matricule', '').strip()
+        identifiant = request.POST.get('matricule', '').strip()
         password = request.POST.get('password', '')
 
+        # 1) Essayer en tant qu'étudiant (matricule)
         try:
-            etudiant = Etudiant.objects.get(matricule=matricule)
+            etudiant = Etudiant.objects.get(matricule=identifiant)
             user = authenticate(request,
                                 username=etudiant.user.username,
                                 password=password)
             if user:
                 login(request, user)
+
+                # Vérifier si c'est la première connexion
+                if not etudiant.mot_de_passe_change:
+                    messages.info(request, "Veuillez changer votre mot de passe par défaut pour continuer.")
+                    return redirect('changer_mot_de_passe')
+
                 messages.success(request, f'Bienvenue {etudiant.prenom} !')
                 return redirect('profil')
             else:
                 messages.error(request, 'Mot de passe incorrect.')
+                return render(request, 'etudiants/login.html')
         except Etudiant.DoesNotExist:
-            messages.error(request, 'Matricule introuvable.')
+            pass
+
+        # 2) Essayer en tant qu'admin (username)
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        try:
+            admin_user = User.objects.get(username=identifiant, is_staff=True)
+            user = authenticate(request, username=identifiant, password=password)
+            if user and user.is_staff:
+                login(request, user)
+                messages.success(request, f'Bienvenue Administrateur !')
+                return redirect('admin_dashboard')
+            else:
+                messages.error(request, 'Mot de passe incorrect.')
+                return render(request, 'etudiants/login.html')
+        except User.DoesNotExist:
+            pass
+
+        # 3) Rien trouvé
+        messages.error(request, 'Identifiant introuvable. Vérifiez votre matricule ou nom d\'utilisateur.')
 
     return render(request, 'etudiants/login.html')
 
@@ -103,3 +133,57 @@ def profil_view(request):
         'nb_validees': Demande.objects.filter(etudiant=etudiant, statut='validee').count(),
     }
     return render(request, 'etudiants/profil.html', context)
+
+
+@login_required
+def changer_mot_de_passe(request):
+    """Vue pour forcer le changement de mot de passe"""
+    try:
+        etudiant = Etudiant.objects.get(user=request.user)
+    except Etudiant.DoesNotExist:
+        messages.error(request, "Seuls les étudiants peuvent changer leur mot de passe ici.")
+        return redirect('accueil')
+
+    if request.method == 'POST':
+        ancien = request.POST.get('ancien')
+        nouveau = request.POST.get('nouveau')
+        confirmation = request.POST.get('confirmation')
+
+        # Vérifier ancien mot de passe
+        if not request.user.check_password(ancien):
+            messages.error(request, 'Ancien mot de passe incorrect.')
+            return redirect('changer_mot_de_passe')
+
+        # Vérifier que nouveau != ancien
+        if nouveau == ancien:
+            messages.error(request, 'Le nouveau mot de passe doit être différent de l\'ancien.')
+            return redirect('changer_mot_de_passe')
+
+        # Vérifier confirmation
+        if nouveau != confirmation:
+            messages.error(request, 'Les mots de passe ne correspondent pas.')
+            return redirect('changer_mot_de_passe')
+
+        # Vérifier longueur
+        if len(nouveau) < 6:
+            messages.error(request, 'Le mot de passe doit contenir au moins 6 caractères.')
+            return redirect('changer_mot_de_passe')
+
+        # Sauvegarder le nouveau mot de passe
+        request.user.set_password(nouveau)
+        request.user.save()
+
+        # Mettre à jour la session pour éviter la déconnexion
+        from django.contrib.auth import update_session_auth_hash
+        update_session_auth_hash(request, request.user)
+
+        # Marquer comme changé
+        etudiant.mot_de_passe_change = True
+        etudiant.save()
+
+        messages.success(request, 'Votre mot de passe a été modifié avec succès !')
+        return redirect('profil')
+
+    return render(request, 'etudiants/changer_mot_de_passe.html', {
+        'etudiant': etudiant
+    })

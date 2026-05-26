@@ -6,6 +6,7 @@ from etudiants.models import Etudiant
 from notes.models import Note
 from demandes.models import Demande
 from releves.models import Releve
+from etudiants.models import Etudiant, Departement, Niveau, Session
 from releves.utils.generate_pdf import generer_releve
 
 
@@ -51,7 +52,7 @@ def ajouter_etudiant(request):
         matricule = request.POST.get('matricule', '').strip()
         nom = request.POST.get('nom', '').strip()
         prenom = request.POST.get('prenom', '').strip()
-        filiere = request.POST.get('filiere', '').strip()
+        departement = request.POST.get('departement', '').strip()
         niveau = request.POST.get('niveau', '').strip()
         password = request.POST.get('password', '').strip()
 
@@ -69,15 +70,20 @@ def ajouter_etudiant(request):
                 matricule=matricule,
                 nom=nom,
                 prenom=prenom,
-                filiere=filiere,
-                niveau=niveau
+                departement_id=departement,
+                niveau_id=niveau
             )
             messages.success(request, f'Étudiant {prenom} {nom} ajouté avec succès.')
             return redirect('liste_etudiants')
         except Exception as e:
             messages.error(request, f'Erreur : {str(e)}')
 
-    return render(request, 'administration/ajouter_etudiant.html')
+    departements = Departement.objects.all()
+    niveaux = Niveau.objects.all()
+    return render(request, 'administration/ajouter_etudiant.html', {
+        'departements': departements,
+        'niveaux': niveaux
+    })
 
 
 @admin_required
@@ -95,11 +101,13 @@ def supprimer_etudiant(request, etudiant_id):
 @admin_required
 def gestion_notes(request):
     """Gestion des notes"""
-    notes = Note.objects.all().select_related('etudiant').order_by('-id')[:100]
+    notes = Note.objects.all().select_related('etudiant', 'session').order_by('-id')[:100]
     etudiants = Etudiant.objects.all()
+    sessions = Session.objects.all()
     return render(request, 'administration/gestion_notes.html', {
         'notes': notes,
-        'etudiants': etudiants
+        'etudiants': etudiants,
+        'sessions': sessions
     })
 
 
@@ -115,11 +123,12 @@ def ajouter_note(request):
 
         try:
             etudiant = Etudiant.objects.get(id=etudiant_id)
+            session_obj = Session.objects.get(id=session)
             Note.objects.create(
                 etudiant=etudiant,
                 matiere=matiere,
                 note=float(note_val),
-                session=session,
+                session=session_obj,
                 annee=annee
             )
             messages.success(request, 'Note ajoutée avec succès.')

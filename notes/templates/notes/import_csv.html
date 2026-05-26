@@ -60,19 +60,43 @@
             <form method="POST" enctype="multipart/form-data" class="mt-4">
                 {% csrf_token %}
                 <div class="form-group mb-4">
-                    <label style="font-weight:700; color:var(--navy);">Sélectionner le fichier (.csv ou .xlsx) <span
+                    <label style="font-weight:700; color:var(--navy);">1. Sélectionner le fichier (.csv ou .xlsx) <span
                             style="color:var(--danger);">*</span></label>
                     <input type="file" name="fichier" accept=".csv,.xlsx" required
                         style="padding: 1rem; border: 2px dashed #d4e0f0; border-radius: 12px;cursor:pointer; background:#f8fafb;width:100%;">
                 </div>
 
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6 form-group">
+                        <label style="font-weight:700; color:var(--navy);">2. Session <span
+                                style="color:var(--danger);">*</span></label>
+                        <select name="session" required class="form-control"
+                            style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;">
+                            <option value="Session 1">Session 1</option>
+                            <option value="Session 2">Session 2</option>
+                            <option value="Session Rattrapage">Session Rattrapage</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label style="font-weight:700; color:var(--navy);">3. Année Universitaire <span
+                                style="color:var(--danger);">*</span></label>
+                        <input type="text" name="annee" required class="form-control" value="2023-2024"
+                            style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;">
+                    </div>
+                </div>
+
                 <div class="alert-custom alert-warning-custom" style="align-items:flex-start;">
                     <i class="fa-solid fa-triangle-exclamation" style="margin-top:0.2rem;"></i>
                     <div style="font-size:0.85rem;">
-                        <strong>Structure requise :</strong> Le fichier doit contenir exactement ces colonnes (noms
-                        minuscules respectés) :<br>
+                        <strong>Structure requise :</strong> Une seule ligne par étudiant. Le fichier doit contenir ces
+                        colonnes de base :<br>
                         <code
-                            style="background:rgba(255,255,255,0.5); padding:0.2rem 0.5rem; border-radius:4px; margin-top:0.5rem; display:inline-block; font-weight:600;color:var(--navy);">matricule, matiere, note, session, annee</code>
+                            style="background:rgba(255,255,255,0.5); padding:0.2rem 0.5rem; border-radius:4px; margin-top:0.5rem; display:inline-block; font-weight:600;color:var(--navy);">matricule, nom, prenom, departement, niveau</code><br>
+                        <div style="margin-top:0.5rem;">
+                            Toutes les colonnes supplémentaires seront considérées comme des matières, et la valeur sera
+                            la note de l'étudiant !<br>Exemple de colonnes : <code
+                                style="font-weight:600;color:var(--navy);">Algo, Maths, Developpement Web ...</code>
+                        </div>
                     </div>
                 </div>
 

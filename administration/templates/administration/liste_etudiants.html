@@ -75,7 +75,7 @@
                         <th>N°</th>
                         <th>Matricule</th>
                         <th>Nom Complet</th>
-                        <th>Filière</th>
+                        <th>Département</th>
                         <th>Niveau</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -87,10 +87,10 @@
                         <td style="font-family:monospace; font-weight:600; color:var(--teal);">{{ etudiant.matricule }}
                         </td>
                         <td style="font-weight:600; color:var(--navy);">{{ etudiant.prenom }} {{ etudiant.nom }}</td>
-                        <td>{{ etudiant.filiere }}</td>
+                        <td>{{ etudiant.departement.nom }}</td>
                         <td><span
                                 style="background:rgba(26,39,68,0.06); padding:0.2rem 0.6rem; border-radius:4px; font-size:0.85rem; font-weight:600;">{{
-                                etudiant.niveau }}</span></td>
+                                etudiant.niveau.nom }}</span></td>
                         <td class="text-end">
                             <a href="{% url 'supprimer_etudiant' etudiant.id %}"
                                 class="btn-action btn-danger-action py-1 px-2"

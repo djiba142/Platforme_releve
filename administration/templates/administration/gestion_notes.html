@@ -81,20 +81,33 @@
                                 <option value="">Choisir un étudiant...</option>
                                 {% for etudiant in etudiants %}
                                 <option value="{{ etudiant.id }}">{{ etudiant.matricule }} - {{ etudiant.prenom }} {{
-                                    etudiant.nom }}</option>
+                                    etudiant.nom }} ({{ etudiant.departement.nom }} - {{ etudiant.niveau.nom }})
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="form-group mb-3">
                             <label style="font-size:0.85rem; font-weight:700;">Matière</label>
-                            <input type="text" name="matiere" class="form-control"
+                            <select name="matiere" class="form-control"
                                 style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
-                                placeholder="Ex: Mathématiques" required>
+                                required>
+                                <option value="">Choisir une matière...</option>
+                                <option value="Algorithmique">Algorithmique</option>
+                                <option value="Mathématiques">Mathématiques</option>
+                                <option value="Développement Web">Développement Web</option>
+                                <option value="Base de données">Base de données</option>
+                                <option value="Réseaux Informatiques">Réseaux Informatiques</option>
+                                <option value="Génie Logiciel">Génie Logiciel</option>
+                                <option value="Architecture des Ordinateurs">Architecture des Ordinateurs</option>
+                                <option value="Système d'exploitation">Système d'exploitation</option>
+                                <option value="Sécurité Informatique">Sécurité Informatique</option>
+                                <option value="Programmation Orientée Objet">Programmation Orientée Objet</option>
+                            </select>
                         </div>
                         <div class="row">
                             <div class="col-6 mb-3">
-                                <label style="font-size:0.85rem; font-weight:700;">Note / 20</label>
-                                <input type="number" step="0.25" min="0" max="20" name="note" class="form-control"
+                                <label style="font-size:0.85rem; font-weight:700;">Note / 10</label>
+                                <input type="number" step="0.25" min="0" max="10" name="note" class="form-control"
                                     style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
                                     required>
                             </div>
@@ -110,9 +123,10 @@
                             <select name="session" class="form-control"
                                 style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.6rem;"
                                 required>
-                                <option value="Session 1">Session 1</option>
-                                <option value="Session 2">Session 2</option>
-                                <option value="Session Rattrapage">Session Rattrapage</option>
+                                <option value="">Choisir une session...</option>
+                                {% for s in sessions %}
+                                <option value="{{ s.id }}">{{ s.nom }} ({{ s.niveau.nom }})</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <button type="submit" class="btn-submit w-100 py-2"><i class="fa-solid fa-floppy-disk me-1"></i>
@@ -133,8 +147,9 @@
                         <thead style="position:sticky; top:0; z-index:10;">
                             <tr>
                                 <th>Étudiant</th>
+                                <th>Grades (Dép/Niveau)</th>
                                 <th>Matière</th>
-                                <th class="text-center">Note / 20</th>
+                                <th class="text-center">Note / 10</th>
                                 <th>Session</th>
                             </tr>
                         </thead>
@@ -147,9 +162,16 @@
                                     <div style="font-size:0.8rem; font-family:monospace; color:var(--teal);">{{
                                         note.etudiant.matricule }}</div>
                                 </td>
+                                <td>
+                                    <span style="font-weight:600; font-size:0.85rem; color:var(--navy);">{{
+                                        note.etudiant.departement.nom }}</span><br>
+                                    <span
+                                        style="font-size:0.75rem; color:var(--gray); background:var(--light); padding:0.1rem 0.4rem; border-radius:4px;">{{
+                                        note.etudiant.niveau.nom }}</span>
+                                </td>
                                 <td style="font-weight:600; color:var(--navy);">{{ note.matiere }}</td>
                                 <td class="text-center">
-                                    {% if note.note >= 10 %}
+                                    {% if note.note >= 5 %}
                                     <div style="font-weight:800; font-size:1.05rem; color:var(--success);">
                                         {{ note.note }}
                                     </div>
@@ -159,7 +181,8 @@
                                     </div>
                                     {% endif %}
                                 </td>
-                                <td><span style="font-size:0.85rem; color:var(--text-light);">{{ note.session }}<br>{{
+                                <td><span style="font-size:0.85rem; color:var(--text-light);">{{ note.session.nom
+                                        }}<br>{{
                                         note.annee }}</span></td>
                             </tr>
                             {% empty %}

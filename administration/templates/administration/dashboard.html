@@ -94,11 +94,17 @@
 {% block body %}
 <!-- ── SIDEBAR ── -->
 <div class="admin-sidebar">
-    <div class="admin-sidebar-header">
-        <i class="fa-solid fa-shield-halved sidebar-logo"></i>
-        <div>
-            <h5 style="margin:0; font-weight:800; font-size:1.1rem;">Admin Panel</h5>
-            <small style="color:var(--teal); font-size:0.75rem;">Plateforme Univ</small>
+    <div class="sidebar-logo p-3 pb-1">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <img src="{% static 'images/logos_uganc.png' %}" height="38" alt="UGANC">
+            <img src="{% static 'images/logosCI.png' %}" height="32" alt="CI"
+                style="opacity:0.85;">
+        </div>
+        <div style="color:white;font-weight:700;font-size:0.9rem;">
+            Centre Informatique
+        </div>
+        <div style="color:#00C3A3;font-size:0.72rem;">
+            UGANC — Admin Panel
         </div>
     </div>
     <div class="admin-sidebar-nav">

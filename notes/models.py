@@ -6,7 +6,7 @@ class Note(models.Model):
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE, related_name='notes')
     matiere = models.CharField(max_length=100)
     note = models.FloatField()
-    session = models.CharField(max_length=50)
+    session = models.ForeignKey('etudiants.Session', on_delete=models.CASCADE, related_name='notes')
     annee = models.CharField(max_length=10)
 
     class Meta:

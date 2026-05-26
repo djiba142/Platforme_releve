@@ -99,24 +99,23 @@
 
             <div class="row g-3 mb-4">
                 <div class="col-md-6 form-group">
-                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Filière</label>
-                    <select name="filiere" required class="form-control"
+                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Département</label>
+                    <select name="departement" required class="form-control"
                         style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;">
-                        <option value="Sciences Informatiques">Sciences Informatiques</option>
-                        <option value="Réseaux et Télécoms">Réseaux et Télécoms</option>
-                        <option value="Génie Logiciel">Génie Logiciel</option>
-                        <option value="Intelligence Artificielle">Intelligence Artificielle</option>
+                        <option value="">Sélectionnez un département</option>
+                        {% for dep in departements %}
+                        <option value="{{ dep.id }}">{{ dep.nom }} ({{ dep.slug|upper }})</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-6 form-group">
-                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Niveau (Licence/Master)</label>
+                    <label style="font-weight:700; color:var(--navy); font-size:0.9rem;">Niveau</label>
                     <select name="niveau" required class="form-control"
                         style="background:#f8fafb; border: 1.5px solid #d4e0f0; border-radius:8px; padding:0.7rem;">
-                        <option value="L1">L1 (Licence 1)</option>
-                        <option value="L2">L2 (Licence 2)</option>
-                        <option value="L3">L3 (Licence 3)</option>
-                        <option value="M1">M1 (Master 1)</option>
-                        <option value="M2">M2 (Master 2)</option>
+                        <option value="">Sélectionnez un niveau</option>
+                        {% for niv in niveaux %}
+                        <option value="{{ niv.id }}">{{ niv.nom }} ({{ niv.departement.slug|upper }})</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>

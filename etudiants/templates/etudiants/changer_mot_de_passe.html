@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Changer mot de passe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0D1B2A, #1A2744);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: #1A2744;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .icon-lock {
+            width: 65px;
+            height: 65px;
+            background: rgba(0, 195, 163, 0.15);
+            border: 2px solid rgba(0, 195, 163, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 26px;
+            color: #00C3A3;
+        }
+
+        .form-control {
+            border: 1.5px solid #E0E8F5;
+            border-radius: 10px;
+            padding: 11px 15px;
+        }
+
+        .form-control:focus {
+            border-color: #00C3A3;
+            box-shadow: 0 0 0 3px rgba(0, 195, 163, 0.1);
+        }
+
+        .input-group-text {
+            border: 1.5px solid #E0E8F5;
+            background: #F8FAFF;
+            cursor: pointer;
+            border-radius: 0 10px 10px 0 !important;
+        }
+
+        .btn-submit {
+            background: #00C3A3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #009d83;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .strength-bar {
+            height: 5px;
+            border-radius: 5px;
+            background: #E0E8F5;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: all 0.3s;
+            width: 0%;
+        }
+
+        .alert-info-custom {
+            background: rgba(0, 195, 163, 0.08);
+            border: 1px solid rgba(0, 195, 163, 0.2);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #1A2744;
+            font-size: 0.88rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card">
+
+                    <!-- Header -->
+                    <div class="card-header">
+                        <div class="icon-lock">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <h5 style="color:white;font-weight:700;margin:0;">
+                            Changement de mot de passe
+                        </h5>
+                        <p style="color:rgba(255,255,255,0.5);
+                               font-size:0.85rem;margin:6px 0 0;">
+                            {{ etudiant.prenom }} {{ etudiant.nom }}
+                            — {{ etudiant.matricule }}
+                        </p>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="card-body p-4">
+
+                        <!-- Message info -->
+                        {% if not etudiant.mot_de_passe_change %}
+                        <div class="alert-info-custom mb-4">
+                            <i class="fa-solid fa-circle-info me-2" style="color:#00C3A3;"></i>
+                            Bienvenue ! Pour votre sécurité, vous devez
+                            changer votre mot de passe par défaut
+                            avant de continuer.
+                        </div>
+                        {% endif %}
+
+                        <!-- Alertes erreurs -->
+                        {% if messages %}
+                        {% for msg in messages %}
+                        <div class="alert 
+                            {% if 'succès' in msg.message %}
+                                alert-success
+                            {% else %}
+                                alert-danger
+                            {% endif %} 
+                            d-flex align-items-center gap-2">
+                            <i class="fa-solid 
+                                {% if 'succès' in msg.message %}
+                                    fa-circle-check
+                                {% else %}
+                                    fa-triangle-exclamation
+                                {% endif %}"></i>
+                            {{ msg }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            <!-- Ancien mot de passe -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-key me-1" style="color:#00C3A3;"></i>
+                                    Mot de passe actuel
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" name="ancien" id="ancienInput" class="form-control"
+                                        placeholder="Mot de passe actuel" required>
+                                    <span class="input-group-text" onclick="toggleVision('ancienInput', this)">
+                                        <i class="fa-solid fa-eye text-muted"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Nouveau mot de passe -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-lock me-1" style="color:#00C3A3;"></i>
+                                    Nouveau mot de passe
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" name="nouveau" id="nouveauInput" class="form-control"
+                                        placeholder="Minimum 6 caractères" oninput="checkStrength(this.value)" required>
+                                    <span class="input-group-text" onclick="toggleVision('nouveauInput', this)">
+                                        <i class="fa-solid fa-eye text-muted"></i>
+                                    </span>
+                                </div>
+                                <!-- Barre de force -->
+                                <div class="strength-bar">
+                                    <div class="strength-fill" id="strengthFill"></div>
+                                </div>
+                                <small id="strengthText" class="text-muted"></small>
+                            </div>
+
+                            <!-- Confirmation -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-check-double me-1" style="color:#00C3A3;"></i>
+                                    Confirmer le nouveau mot de passe
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" name="confirmation" id="confirmInput" class="form-control"
+                                        placeholder="Répétez le mot de passe" oninput="checkMatch()" required>
+                                    <span class="input-group-text" onclick="toggleVision('confirmInput', this)">
+                                        <i class="fa-solid fa-eye text-muted"></i>
+                                    </span>
+                                </div>
+                                <small id="matchText"></small>
+                            </div>
+
+                            <button type="submit" class="btn btn-submit w-100">
+                                <i class="fa-solid fa-floppy-disk me-2"></i>
+                                Enregistrer le nouveau mot de passe
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Afficher/masquer mot de passe
+        function toggleVision(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash text-muted';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye text-muted';
+            }
+        }
+
+        // Barre de force du mot de passe
+        function checkStrength(val) {
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            let strength = 0;
+
+            if (val.length >= 6) strength++;
+            if (val.length >= 10) strength++;
+            if (/[A-Z]/.test(val)) strength++;
+            if (/[0-9]/.test(val)) strength++;
+            if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+            const levels = [
+                { w: '20%', color: '#DC3545', label: 'Très faible' },
+                { w: '40%', color: '#FD7E14', label: 'Faible' },
+                { w: '60%', color: '#FFC107', label: 'Moyen' },
+                { w: '80%', color: '#1D6FA5', label: 'Fort' },
+                { w: '100%', color: '#00C3A3', label: 'Très fort' },
+            ];
+
+            if (val.length === 0) {
+                fill.style.width = '0%';
+                text.textContent = '';
+                return;
+            }
+
+            const level = levels[Math.min(strength - 1, 4)];
+            fill.style.width = level.w;
+            fill.style.background = level.color;
+            text.textContent = level.label;
+            text.style.color = level.color;
+        }
+
+        // Vérifier correspondance
+        function checkMatch() {
+            const nouveau = document.getElementById('nouveauInput').value;
+            const confirm = document.getElementById('confirmInput').value;
+            const text = document.getElementById('matchText');
+
+            if (confirm.length === 0) {
+                text.textContent = '';
+                return;
+            }
+            if (nouveau === confirm) {
+                text.innerHTML = '<i class="fa-solid fa-check me-1"></i>Les mots de passe correspondent';
+                text.style.color = '#00C3A3';
+            } else {
+                text.innerHTML = '<i class="fa-solid fa-xmark me-1"></i>Les mots de passe ne correspondent pas';
+                text.style.color = '#DC3545';
+            }
+        }
+    </script>
+</body>
+
+</html>

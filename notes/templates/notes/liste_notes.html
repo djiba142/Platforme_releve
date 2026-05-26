@@ -4,18 +4,35 @@
 {% block title %}Mes Notes — Étudiant{% endblock %}
 
 {% block body %}
-<nav class="dashboard-nav">
-    <div class="nav-container d-flex justify-content-between align-items-center flex-wrap">
-        <a href="{% url 'profil' %}" class="nav-brand fw-bold text-decoration-none">
-            <i class="fa-solid fa-graduation-cap me-2" style="color:var(--teal);"></i>
-            Plateforme Relevés
+<!-- ══ DASHBOARD NAVBAR ══ -->
+<nav class="navbar navbar-dark" style="background:#1A2744; border-bottom:3px solid #00C3A3; padding: 12px 0;">
+    <div class="container pb-0">
+        <!-- Logos + Nom -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <img src="{% static 'images/logos_uganc.png' %}" height="40" alt="UGANC">
+            <div style="width:1px;height:35px; background:rgba(255,255,255,0.2);"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="35" alt="CI" style="opacity:0.9;">
+            <div>
+                <div style="color:white;font-weight:700; font-size:0.9rem;line-height:1.2;">
+                    Centre Informatique
+                </div>
+                <div style="color:#00C3A3;font-size:0.7rem;">
+                    UGANC — Gestion des Relevés
+                </div>
+            </div>
         </a>
-        <div class="nav-menu">
-            <a href="{% url 'profil' %}"><i class="fa-solid fa-user"></i> Profil</a>
-            <a href="{% url 'liste_notes' %}" class="active"><i class="fa-solid fa-list"></i> Mes Notes</a>
-            <a href="{% url 'historique' %}"><i class="fa-solid fa-clock-rotate-left"></i> Historique</a>
-            <a href="{% url 'logout' %}" class="nav-logout ms-2"><i class="fa-solid fa-right-from-bracket"></i>
-                Déconnexion</a>
+
+        <!-- Liens droite -->
+        <div class="d-flex gap-2">
+            <a href="{% url 'profil' %}" class="btn btn-outline-light btn-sm">
+                <i class="fa-solid fa-user me-1"></i> Profil
+            </a>
+            <a href="{% url 'historique' %}" class="btn btn-outline-light btn-sm">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i> Demandes
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
+                <i class="fa-solid fa-right-from-bracket me-1"></i> Déconnexion
+            </a>
         </div>
     </div>
 </nav>
@@ -40,14 +57,14 @@
             <h4 style="margin:0; font-size:1.1rem; opacity:0.9;">Moyenne Générale Indicative</h4>
             <span style="font-size:0.9rem; opacity:0.7;">
                 Statut global :
-                {% if moyenne >= 10 %}
+                {% if moyenne >= 5 %}
                 <strong style="color:var(--teal-light);">ADMIS(E) ✅</strong>
                 {% else %}
                 <strong style="color:#ff8a8a;">AJOURNÉ(E) ❌</strong>
                 {% endif %}
             </span>
         </div>
-        <div class="moyenne-value" style="font-size:2.2rem;">{{ moyenne|floatformat:2 }} / 20</div>
+        <div class="moyenne-value" style="font-size:2.2rem;">{{ moyenne|floatformat:2 }} / 10</div>
     </div>
 
     <!-- Tableau -->
@@ -58,7 +75,7 @@
                 <thead>
                     <tr>
                         <th>Matière</th>
-                        <th style="text-align:center;">Note / 20</th>
+                        <th style="text-align:center;">Note / 10</th>
                         <th>Session</th>
                         <th>Année</th>
                         <th style="text-align:center;">Résultat</th>
@@ -68,14 +85,14 @@
                     {% for note in notes %}
                     <tr>
                         <td style="font-weight:600; color:var(--navy);">{{ note.matiere }}</td>
-                        <td
-                            style="text-align:center; font-weight:800; font-size:1.1rem; color:{% if note.note >= 10 %}var(--success){% else %}var(--danger){% endif %}">
+                        <td class="{% if note.note >= 5 %}text-success{% else %}text-danger{% endif %}"
+                            style="text-align:center; font-weight:800; font-size:1.1rem;">
                             {{ note.note }}
                         </td>
                         <td>{{ note.session }}</td>
                         <td>{{ note.annee }}</td>
                         <td style="text-align:center;">
-                            {% if note.note >= 10 %}
+                            {% if note.note >= 5 %}
                             <span class="badge-status badge-valide"><i class="fa-solid fa-check"></i> Validé</span>
                             {% else %}
                             <span class="badge-status badge-echec"><i class="fa-solid fa-xmark"></i> Échec</span>

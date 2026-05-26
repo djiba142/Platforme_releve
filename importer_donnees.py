@@ -7,8 +7,9 @@ import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
-from etudiants.models import Etudiant
+from etudiants.models import Etudiant, Departement, Niveau
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 raw_data = """
 1 664228662347BAH ALPHA OUMAR M 6,25 9 9,25 8 
@@ -42,7 +43,7 @@ raw_data = """
 """
 
 def importer_donnees():
-    filiere = "NTIC"
+    departement = "NTIC"
     niveau = "LICENCE 3"
     
     compteur_ajouts = 0
@@ -107,6 +108,12 @@ def importer_donnees():
             user.set_password(matricule) # Mot de passe par défaut = matricule
             user.save()
             
+        departement_slug = slugify(departement)
+        dep_obj, _ = Departement.objects.get_or_create(slug=departement_slug, defaults={'nom': departement})
+        
+        niveau_slug = slugify(f"{departement_slug}-{niveau}")
+        niv_obj, _ = Niveau.objects.get_or_create(slug=niveau_slug, defaults={'departement': dep_obj, 'nom': niveau})
+
         # 2. On crée l'Étudiant associé
         etudiant, etu_created = Etudiant.objects.get_or_create(
             matricule=matricule,
@@ -114,8 +121,8 @@ def importer_donnees():
                 'user': user,
                 'nom': nom,
                 'prenom': prenom,
-                'filiere': filiere,
-                'niveau': niveau
+                'departement': dep_obj,
+                'niveau': niv_obj
             }
         )
         

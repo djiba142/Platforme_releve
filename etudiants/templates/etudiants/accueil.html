@@ -1,10 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plateforme Académique — Accueil</title>
+    <title>UGANC — Plateforme de Gestion des Relevés</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -18,54 +19,74 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
+        /* ── COULEURS UGANC ── */
+        :root {
+            --teal: #00C3A3;
+            --navy: #1A2744;
+            --bleu-ci: #1565C0;
+            --bleu-ci-light: #1976D2;
+            --white: #FFFFFF;
+            --light: #F0F4FA;
+            --gray: #64748B;
+            --dark: #1A2744;
+        }
+
         /* ── NAVBAR ── */
         .navbar {
-            background: rgba(26, 39, 68, 0.97);
-            backdrop-filter: blur(10px);
-            padding: 14px 0;
+            background: var(--navy);
+            padding: 10px 0;
             position: sticky;
             top: 0;
             z-index: 999;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 3px solid var(--teal);
         }
 
-        .navbar-brand {
-            color: white !important;
+        .navbar-brand-text h6 {
+            color: white;
             font-weight: 800;
-            font-size: 1.15rem;
+            margin: 0;
+            font-size: 0.95rem;
         }
 
-        .navbar-brand span {
-            color: #00C3A3;
+        .navbar-brand-text small {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.72rem;
         }
 
         .nav-link {
-            color: rgba(255, 255, 255, 0.75) !important;
-            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 0.88rem;
             transition: color 0.2s;
         }
 
         .nav-link:hover {
-            color: #00C3A3 !important;
+            color: var(--teal) !important;
         }
 
-        .btn-nav {
-            background: #00C3A3;
+        .btn-nav-login {
+            background: var(--bleu-ci);
             color: white !important;
-            border-radius: 25px;
-            padding: 7px 20px;
+            border-radius: 6px;
+            padding: 7px 18px;
             font-weight: 600;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
+            border: none;
+            transition: all 0.2s;
         }
 
-        .btn-nav:hover {
-            background: #009d83;
+        .btn-nav-login:hover {
+            background: var(--bleu-ci-light);
+            color: white !important;
         }
 
         /* ── HERO ── */
         .hero {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0D1B2A 0%, #1A2744 50%, #1D3A5F 100%);
+            background: linear-gradient(135deg,
+                    var(--navy) 0%,
+                    #1E3055 50%,
+                    #233D6A 100%);
             display: flex;
             align-items: center;
             position: relative;
@@ -75,46 +96,45 @@
         .hero::before {
             content: '';
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 195, 163, 0.12) 0%, transparent 70%);
-            top: -100px;
-            right: -100px;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle,
+                    rgba(0, 195, 163, 0.15) 0%,
+                    transparent 70%);
+            top: -150px;
+            right: -150px;
             border-radius: 50%;
         }
 
         .hero::after {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(29, 111, 165, 0.15) 0%, transparent 70%);
-            bottom: -80px;
-            left: -80px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle,
+                    rgba(21, 101, 192, 0.12) 0%,
+                    transparent 70%);
+            bottom: -100px;
+            left: -100px;
             border-radius: 50%;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(0, 195, 163, 0.15);
-            border: 1px solid rgba(0, 195, 163, 0.3);
+            background: rgba(0, 195, 163, 0.2);
+            border: 1px solid rgba(0, 195, 163, 0.4);
             color: #00C3A3;
             padding: 6px 16px;
             border-radius: 25px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 600;
             margin-bottom: 20px;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 2.8rem;
             font-weight: 800;
             color: white;
             line-height: 1.2;
@@ -126,44 +146,43 @@
         }
 
         .hero p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.05rem;
-            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 1rem;
+            line-height: 1.75;
             margin-bottom: 35px;
-            max-width: 500px;
+            max-width: 520px;
         }
 
         .btn-hero-primary {
-            background: #00C3A3;
+            background: var(--bleu-ci);
             color: white;
             border: none;
-            padding: 14px 32px;
-            border-radius: 50px;
+            padding: 13px 30px;
+            border-radius: 8px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 10px;
             transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(0, 195, 163, 0.35);
+            box-shadow: 0 8px 25px rgba(21, 101, 192, 0.4);
         }
 
         .btn-hero-primary:hover {
-            background: #009d83;
+            background: var(--bleu-ci-light);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(0, 195, 163, 0.45);
         }
 
         .btn-hero-secondary {
             background: transparent;
             color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 13px 30px;
-            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            padding: 12px 28px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -176,13 +195,13 @@
             color: #00C3A3;
         }
 
-        /* Stats hero */
+        /* Stats */
         .hero-stats {
             display: flex;
             gap: 35px;
-            margin-top: 45px;
+            margin-top: 40px;
             padding-top: 35px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .hero-stat h3 {
@@ -194,20 +213,15 @@
 
         .hero-stat p {
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.8rem;
-            margin: 2px 0 0;
+            font-size: 0.78rem;
+            margin: 3px 0 0;
         }
 
-        /* Hero visual */
-        .hero-visual {
-            position: relative;
-            z-index: 2;
-        }
-
+        /* Mockup */
         .dashboard-mockup {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
             padding: 20px;
             backdrop-filter: blur(10px);
         }
@@ -216,6 +230,7 @@
             display: flex;
             gap: 6px;
             margin-bottom: 16px;
+            align-items: center;
         }
 
         .mockup-dot {
@@ -224,216 +239,258 @@
             border-radius: 50%;
         }
 
+        .mockup-url {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 5px;
+            height: 14px;
+            margin-left: 8px;
+        }
+
         .mockup-card {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 13px;
+            margin-bottom: 9px;
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
         .mockup-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 17px;
             flex-shrink: 0;
         }
 
         .mockup-text h6 {
             color: white;
             margin: 0;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
 
         .mockup-text p {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.45);
             margin: 2px 0 0;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
         }
 
         .mockup-badge {
             margin-left: auto;
-            padding: 3px 10px;
+            padding: 3px 9px;
             border-radius: 20px;
-            font-size: 0.72rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 700;
         }
 
-        /* ── FEATURES ── */
+        .mockup-stats {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .mockup-stat {
+            flex: 1;
+            border-radius: 9px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .mockup-stat .val {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .mockup-stat .lbl {
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* ── SECTION FEATURES ── */
         .features {
             padding: 90px 0;
-            background: #F8FAFF;
+            background: var(--light);
         }
 
-        .section-label {
-            color: #00C3A3;
-            font-size: 0.82rem;
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(0, 195, 163, 0.08);
+            border: 1px solid rgba(0, 195, 163, 0.15);
+            color: var(--teal);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
             font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
         }
 
         .section-title {
-            color: #1A2744;
-            font-size: 2.2rem;
+            color: var(--navy);
+            font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .section-desc {
-            color: #64748B;
-            font-size: 1rem;
-            max-width: 550px;
-            margin: 0 auto 55px;
+            color: var(--gray);
+            font-size: 0.95rem;
+            max-width: 520px;
+            margin: 0 auto 50px;
         }
 
         .feature-card {
             background: white;
-            border-radius: 18px;
-            padding: 30px;
+            border-radius: 16px;
+            padding: 28px;
             height: 100%;
-            border: 1px solid #E8F0FB;
+            border: 1px solid #EDE0DC;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        .feature-card::before {
+        .feature-card::after {
             content: '';
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #1A2744, #00C3A3);
+            background: linear-gradient(90deg, var(--teal), var(--navy));
             transform: scaleX(0);
             transition: transform 0.3s;
         }
 
         .feature-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(26, 39, 68, 0.12);
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px rgba(26, 39, 68, 0.15);
         }
 
-        .feature-card:hover::before {
+        .feature-card:hover::after {
             transform: scaleX(1);
         }
 
         .feature-icon {
-            width: 58px;
-            height: 58px;
-            border-radius: 14px;
+            width: 55px;
+            height: 55px;
+            border-radius: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 23px;
+            margin-bottom: 18px;
         }
 
         .feature-card h5 {
-            color: #1A2744;
+            color: var(--navy);
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 9px;
+            font-size: 1rem;
         }
 
         .feature-card p {
-            color: #64748B;
-            font-size: 0.9rem;
+            color: var(--gray);
+            font-size: 0.87rem;
             line-height: 1.65;
             margin: 0;
         }
 
-        /* ── HOW IT WORKS ── */
-        .how-it-works {
+        /* ── STEPS ── */
+        .steps-section {
             padding: 90px 0;
             background: white;
         }
 
-        .step-card {
+        .step-item {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
         }
 
-        .step-number {
-            width: 60px;
-            height: 60px;
-            background: #1A2744;
-            color: #00C3A3;
+        .step-num {
+            width: 58px;
+            height: 58px;
+            background: var(--teal);
+            color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
-            margin: 0 auto 20px;
+            margin: 0 auto 18px;
+            box-shadow: 0 8px 20px rgba(0, 195, 163, 0.3);
         }
 
-        .step-card h5 {
-            color: #1A2744;
+        .step-item h5 {
+            color: var(--navy);
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 7px;
         }
 
-        .step-card p {
-            color: #64748B;
-            font-size: 0.88rem;
+        .step-item p {
+            color: var(--gray);
+            font-size: 0.85rem;
         }
 
         .step-arrow {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #00C3A3;
-            font-size: 1.5rem;
-            padding-top: 10px;
+            color: var(--teal);
+            font-size: 1.4rem;
         }
 
         /* ── CTA ── */
         .cta-section {
-            background: linear-gradient(135deg, #1A2744, #1D6FA5);
+            background: linear-gradient(135deg,
+                    var(--navy),
+                    var(--teal));
             padding: 80px 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 195, 163, 0.1);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
         }
 
         .cta-section h2 {
             color: white;
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 15px;
+            margin-bottom: 14px;
         }
 
         .cta-section p {
             color: rgba(255, 255, 255, 0.7);
-            font-size: 1rem;
-            margin-bottom: 35px;
+            margin-bottom: 32px;
         }
 
         /* ── FOOTER ── */
         footer {
-            background: #0D1B2A;
-            padding: 50px 0 25px;
-        }
-
-        .footer-brand h5 {
-            color: white;
-            font-weight: 800;
-        }
-
-        .footer-brand p {
-            color: rgba(255, 255, 255, 0.45);
-            font-size: 0.85rem;
+            background: var(--dark);
+            padding: 50px 0 22px;
         }
 
         .footer-title {
             color: #00C3A3;
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -442,9 +499,9 @@
 
         .footer-link {
             display: block;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.45);
             text-decoration: none;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             padding: 4px 0;
             transition: color 0.2s;
         }
@@ -454,15 +511,14 @@
         }
 
         .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 22px;
-            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding-top: 20px;
+            margin-top: 38px;
             text-align: center;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.8rem;
         }
 
-        /* Smooth scroll */
         html {
             scroll-behavior: smooth;
         }
@@ -471,79 +527,89 @@
 
 <body>
 
-    <!-- ── NAVBAR ── -->
+    <!-- ══════════════ NAVBAR ══════════════ -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fa-solid fa-graduation-cap me-2" style="color:#00C3A3;"></i>
-                Plateforme<span>Académique</span>
+
+            <!-- Logos -->
+            <a class="navbar-brand d-flex align-items-center gap-3" href="#">
+                <img src="{% static 'images/logos_uganc.png' %}" height="45" alt="UGANC">
+                <img src="{% static 'images/logosCI.png' %}" height="40" alt="Centre Informatique" style="opacity:0.9;">
+                <div class="navbar-brand-text">
+                    <h6>Centre Informatique</h6>
+                    <small>UGANC — Gestion des Relevés</small>
+                </div>
             </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
                 style="border-color:rgba(255,255,255,0.3);">
                 <i class="fa-solid fa-bars" style="color:white;"></i>
             </button>
+
             <div class="collapse navbar-collapse" id="navMenu">
-                <ul class="navbar-nav mx-auto gap-2">
+                <ul class="navbar-nav mx-auto gap-1">
                     <li class="nav-item">
                         <a class="nav-link" href="#accueil">
-                            <i class="fa-solid fa-house me-1"></i> Accueil
+                            <i class="fa-solid fa-house me-1"></i>Accueil
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#fonctionnalites">
-                            <i class="fa-solid fa-star me-1"></i> Fonctionnalités
+                        <a class="nav-link" href="#services">
+                            <i class="fa-solid fa-star me-1"></i>Services
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#comment">
-                            <i class="fa-solid fa-circle-question me-1"></i> Comment ça marche
+                            <i class="fa-solid fa-circle-question me-1"></i>
+                            Comment ça marche
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact">
-                            <i class="fa-solid fa-envelope me-1"></i> Contact
+                            <i class="fa-solid fa-envelope me-1"></i>Contact
                         </a>
                     </li>
                 </ul>
-                <div class="d-flex gap-2">
-                    <a href="{% url 'login' %}" class="btn-nav btn">
-                        <i class="fa-solid fa-right-to-bracket me-1"></i>
-                        Connexion
-                    </a>
-                </div>
+                <a href="{% url 'login' %}" class="btn btn-nav-login">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>
+                    Connexion
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- ── HERO ── -->
+    <!-- ══════════════ HERO ══════════════ -->
     <section class="hero" id="accueil">
         <div class="container">
             <div class="row align-items-center g-5">
-                <div class="col-lg-6 hero-content">
-                    <div class="hero-badge">
-                        <i class="fa-solid fa-robot"></i>
-                        Plateforme intelligente & automatisée
-                    </div>
+
+                <!-- Texte -->
+                <div class="col-lg-6" style="position:relative;z-index:2;">
+
+
                     <h1>
                         Gérez vos <span>relevés de notes</span>
-                        en quelques clics
+                        sans vous déplacer
                     </h1>
+
                     <p>
-                        Une plateforme académique moderne intégrant un chatbot
-                        intelligent pour automatiser les demandes de relevés,
-                        réduire les files d'attente et digitaliser les services
-                        administratifs universitaires.
+                        La plateforme intelligente du Centre Informatique
+                        de l'UGANC vous permet de demander, consulter et
+                        télécharger vos relevés de notes officiels en ligne,
+                        24h/24 et 7j/7.
                     </p>
+
                     <div class="d-flex flex-wrap gap-3">
                         <a href="{% url 'login' %}" class="btn-hero-primary">
                             <i class="fa-solid fa-right-to-bracket"></i>
-                            Se connecter
+                            Accéder à la plateforme
                         </a>
-                        <a href="#fonctionnalites" class="btn-hero-secondary">
-                            <i class="fa-solid fa-play-circle"></i>
-                            Découvrir
+                        <a href="#services" class="btn-hero-secondary">
+                            <i class="fa-solid fa-circle-info"></i>
+                            En savoir plus
                         </a>
                     </div>
+
                     <div class="hero-stats">
                         <div class="hero-stat">
                             <h3>24h/24</h3>
@@ -551,287 +617,233 @@
                         </div>
                         <div class="hero-stat">
                             <h3>100%</h3>
-                            <p>Automatisé</p>
+                            <p>En ligne</p>
                         </div>
                         <div class="hero-stat">
-                            <h3>0</h3>
-                            <p>Déplacement requis</p>
+                            <h3>PDF</h3>
+                            <p>Instantané</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Dashboard Mockup -->
-                <div class="col-lg-6 hero-visual">
-                    <div class="dashboard-mockup">
-                        <div class="mockup-bar">
-                            <div class="mockup-dot" style="background:#FF5F57;"></div>
-                            <div class="mockup-dot" style="background:#FEBC2E;"></div>
-                            <div class="mockup-dot" style="background:#28C840;"></div>
-                            <div style="flex:1;background:rgba(255,255,255,0.05);
-                                    border-radius:5px;margin-left:8px;
-                                    height:14px;"></div>
-                        </div>
-
-                        <div class="mockup-card">
-                            <div class="mockup-icon" style="background:rgba(0,195,163,0.2);">
-                                <i class="fa-solid fa-robot" style="color:#00C3A3;"></i>
-                            </div>
-                            <div class="mockup-text">
-                                <h6>Assistant Académique</h6>
-                                <p>Chatbot intelligent intégré</p>
-                            </div>
-                            <div class="mockup-badge" style="background:rgba(0,195,163,0.2);color:#00C3A3;">
-                                En ligne
-                            </div>
-                        </div>
-
-                        <div class="mockup-card">
-                            <div class="mockup-icon" style="background:rgba(29,111,165,0.2);">
-                                <i class="fa-solid fa-file-pdf" style="color:#1D6FA5;"></i>
-                            </div>
-                            <div class="mockup-text">
-                                <h6>Relevé de notes — Session 1</h6>
-                                <p>Généré automatiquement</p>
-                            </div>
-                            <div class="mockup-badge" style="background:rgba(0,195,163,0.15);color:#00C3A3;">
-                                ✓ Prêt
-                            </div>
-                        </div>
-
-                        <div class="mockup-card">
-                            <div class="mockup-icon" style="background:rgba(255,193,7,0.2);">
-                                <i class="fa-solid fa-hourglass-half" style="color:#FFC107;"></i>
-                            </div>
-                            <div class="mockup-text">
-                                <h6>Demande #024 — Session 2</h6>
-                                <p>En cours de traitement</p>
-                            </div>
-                            <div class="mockup-badge" style="background:rgba(255,193,7,0.2);color:#FFC107;">
-                                Attente
-                            </div>
-                        </div>
-
-                        <div style="display:flex;gap:10px;margin-top:5px;">
-                            <div style="flex:1;background:rgba(0,195,163,0.15);
-                                    border-radius:10px;padding:12px;text-align:center;">
-                                <div style="color:#00C3A3;font-size:1.3rem;font-weight:800;">47</div>
-                                <div style="color:rgba(255,255,255,0.4);font-size:0.72rem;">Étudiants</div>
-                            </div>
-                            <div style="flex:1;background:rgba(29,111,165,0.15);
-                                    border-radius:10px;padding:12px;text-align:center;">
-                                <div style="color:#1D6FA5;font-size:1.3rem;font-weight:800;">128</div>
-                                <div style="color:rgba(255,255,255,0.4);font-size:0.72rem;">Notes</div>
-                            </div>
-                            <div style="flex:1;background:rgba(220,53,69,0.15);
-                                    border-radius:10px;padding:12px;text-align:center;">
-                                <div style="color:#DC3545;font-size:1.3rem;font-weight:800;">12</div>
-                                <div style="color:rgba(255,255,255,0.4);font-size:0.72rem;">Relevés</div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Image Accueil -->
+                <div class="col-lg-6 text-center" style="position:relative;z-index:2;">
+                    <img src="{% static 'images/etudiant_demande.png' %}" alt="Étudiants" class="img-fluid"
+                        style="border-radius:15px; box-shadow:0 15px 35px rgba(0,0,0,0.15);">
                 </div>
+
             </div>
         </div>
     </section>
 
-    <!-- ── FONCTIONNALITÉS ── -->
-    <section class="features" id="fonctionnalites">
+    <!-- ══════════════ SERVICES ══════════════ -->
+    <section class="features" id="services">
         <div class="container">
             <div class="text-center">
-                <p class="section-label">
-                    <i class="fa-solid fa-star me-1"></i> Fonctionnalités
-                </p>
-                <h2 class="section-title">Tout ce dont vous avez besoin</h2>
+                <div class="section-tag">
+                    <i class="fa-solid fa-star"></i>
+                    Services
+                </div>
+                <h2 class="section-title">
+                    Nos services académiques
+                </h2>
                 <p class="section-desc">
-                    Une plateforme complète qui centralise toutes les
-                    opérations académiques en un seul endroit.
+                    Une plateforme complète pour moderniser et automatiser
+                    la gestion des relevés de notes à l'UGANC.
                 </p>
             </div>
 
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="feature-card">
-                        <div class="feature-icon" style="background:rgba(0,195,163,0.1);">
-                            <i class="fa-solid fa-robot" style="color:#00C3A3;"></i>
+                        <div class="feature-icon" style="background:rgba(21,101,192,0.1);">
+                            <i class="fa-solid fa-robot" style="color:#1565C0;"></i>
                         </div>
-                        <h5>Chatbot Intelligent</h5>
-                        <p>Assistant virtuel disponible 24h/24 qui guide
-                            les étudiants dans leurs démarches académiques
-                            de façon naturelle et interactive.</p>
+                        <h5>CI Assistant — Chatbot</h5>
+                        <p>Assistant virtuel intelligent disponible 24h/24
+                            pour guider les étudiants dans leurs demandes
+                            de relevés de notes.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
-                        <div class="feature-icon" style="background:rgba(29,111,165,0.1);">
-                            <i class="fa-solid fa-file-pdf" style="color:#1D6FA5;"></i>
+                        <div class="feature-icon" style="background:rgba(212,82,10,0.1);">
+                            <i class="fa-solid fa-file-pdf" style="color:#D4520A;"></i>
                         </div>
-                        <h5>Génération PDF automatique</h5>
-                        <p>Relevés de notes officiels générés
-                            instantanément avec notes, moyennes,
-                            décision académique et signature.</p>
+                        <h5>Relevés PDF officiels</h5>
+                        <p>Génération automatique de relevés de notes
+                            officiels avec signature administrative,
+                            moyennes et décision académique.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
-                        <div class="feature-icon" style="background:rgba(26,39,68,0.1);">
+                        <div class="feature-icon" style="background:rgba(26,39,68,0.08);">
                             <i class="fa-solid fa-shield-halved" style="color:#1A2744;"></i>
                         </div>
-                        <h5>Sécurité renforcée</h5>
-                        <p>Authentification sécurisée par matricule,
-                            gestion des rôles étudiant et admin,
-                            protection des données personnelles.</p>
+                        <h5>Accès sécurisé</h5>
+                        <p>Authentification par matricule UGANC avec
+                            gestion des rôles étudiant, administration
+                            et super administrateur.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
-                        <div class="feature-icon" style="background:rgba(255,193,7,0.1);">
-                            <i class="fa-solid fa-file-import" style="color:#FFC107;"></i>
+                        <div class="feature-icon" style="background:rgba(21,101,192,0.1);">
+                            <i class="fa-solid fa-file-import" style="color:#1565C0;"></i>
                         </div>
                         <h5>Import CSV & Excel</h5>
                         <p>Importation en masse des notes étudiantes
-                            via fichiers CSV ou Excel avec détection
-                            automatique des erreurs.</p>
+                            via fichiers CSV ou Excel avec création
+                            automatique des comptes.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
-                        <div class="feature-icon" style="background:rgba(0,195,163,0.1);">
-                            <i class="fa-solid fa-chart-pie" style="color:#00C3A3;"></i>
+                        <div class="feature-icon" style="background:rgba(212,82,10,0.1);">
+                            <i class="fa-solid fa-chart-pie" style="color:#D4520A;"></i>
                         </div>
-                        <h5>Dashboard analytique</h5>
-                        <p>Tableau de bord administrateur avec
-                            statistiques en temps réel, suivi des
-                            demandes et gestion centralisée.</p>
+                        <h5>Dashboard Admin</h5>
+                        <p>Tableau de bord administratif complet avec
+                            statistiques en temps réel et gestion
+                            centralisée des demandes.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-card">
-                        <div class="feature-icon" style="background:rgba(220,53,69,0.1);">
-                            <i class="fa-solid fa-clock-rotate-left" style="color:#DC3545;"></i>
+                        <div class="feature-icon" style="background:rgba(26,39,68,0.08);">
+                            <i class="fa-solid fa-id-card" style="color:#1A2744;"></i>
                         </div>
-                        <h5>Historique complet</h5>
-                        <p>Suivi en temps réel de l'état de chaque
-                            demande avec historique détaillé
-                            accessible à tout moment.</p>
+                        <h5>Matricules intelligents</h5>
+                        <p>Système de matricules structurés par filière
+                            (NT, DL) pour une identification rapide
+                            et une gestion organisée.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ── COMMENT ÇA MARCHE ── -->
-    <section class="how-it-works" id="comment">
+    <!-- ══════════════ COMMENT ══════════════ -->
+    <section class="steps-section" id="comment">
         <div class="container">
             <div class="text-center">
-                <p class="section-label">
-                    <i class="fa-solid fa-circle-question me-1"></i>
+                <div class="section-tag">
+                    <i class="fa-solid fa-circle-question"></i>
                     Processus
-                </p>
-                <h2 class="section-title">Comment ça marche ?</h2>
+                </div>
+                <h2 class="section-title">Comment obtenir votre relevé ?</h2>
                 <p class="section-desc">
-                    Obtenez votre relevé de notes en 4 étapes simples,
-                    sans vous déplacer.
+                    4 étapes simples pour recevoir votre relevé officiel
+                    sans quitter votre domicile.
                 </p>
             </div>
 
-            <div class="row align-items-center">
-                <div class="col-md-3">
-                    <div class="step-card">
-                        <div class="step-number">1</div>
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
                         <h5>Connexion</h5>
-                        <p>Connectez-vous avec votre matricule et mot de passe</p>
+                        <p>Matricule UGANC + mot de passe</p>
                     </div>
                 </div>
                 <div class="col-md-1 step-arrow d-none d-md-flex">
                     <i class="fa-solid fa-arrow-right"></i>
                 </div>
-                <div class="col-md-3">
-                    <div class="step-card">
-                        <div class="step-number">2</div>
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num">2</div>
                         <h5>Chatbot</h5>
-                        <p>Discutez avec l'assistant et faites votre demande</p>
+                        <p>Discutez avec CI Assistant</p>
                     </div>
                 </div>
                 <div class="col-md-1 step-arrow d-none d-md-flex">
                     <i class="fa-solid fa-arrow-right"></i>
                 </div>
-                <div class="col-md-3">
-                    <div class="step-card">
-                        <div class="step-number">3</div>
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num">3</div>
                         <h5>Validation</h5>
-                        <p>L'administration valide votre demande rapidement</p>
+                        <p>L'admin valide la demande</p>
                     </div>
                 </div>
-            </div>
-            <div class="row justify-content-center mt-3">
-                <div class="col-md-3">
-                    <div class="step-card">
-                        <div class="step-number" style="background:#00C3A3;color:#1A2744;">4</div>
+                <div class="col-md-1 step-arrow d-none d-md-flex">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num" style="background:var(--bleu-ci);">4</div>
                         <h5>Téléchargement</h5>
-                        <p>Téléchargez votre relevé PDF officiel instantanément</p>
+                        <p>PDF officiel instantané</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ── CTA ── -->
+    <!-- ══════════════ CTA ══════════════ -->
     <section class="cta-section">
-        <div class="container">
-            <i class="fa-solid fa-graduation-cap fa-3x mb-3" style="color:#00C3A3;"></i>
-            <h2>Prêt à commencer ?</h2>
-            <p>Accédez à votre espace étudiant ou administration dès maintenant.</p>
+        <div class="container" style="position:relative;z-index:2;">
+            <img src="{% static 'images/logos_uganc.png' %}" height="70" alt="UGANC" class="mb-3">
+            <h2>Accédez à votre espace académique</h2>
+            <p>
+                Étudiants NTIC et DL — Connectez-vous avec
+                votre matricule UGANC
+            </p>
             <div class="d-flex justify-content-center gap-3 flex-wrap">
                 <a href="{% url 'login' %}" class="btn-hero-primary">
                     <i class="fa-solid fa-user-graduate"></i>
                     Espace Étudiant
                 </a>
-                <a href="{% url 'login_admin' %}" class="btn-hero-secondary"
+                <a href="{% url 'admin_dashboard' %}" class="btn-hero-secondary"
                     style="border-color:rgba(255,255,255,0.4);color:white;">
                     <i class="fa-solid fa-user-tie"></i>
-                    Espace Admin
+                    Espace Administration
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- ── FOOTER ── -->
+    <!-- ══════════════ FOOTER ══════════════ -->
     <footer id="contact">
         <div class="container">
             <div class="row g-4">
-                <div class="col-md-4 footer-brand">
-                    <h5>
-                        <i class="fa-solid fa-graduation-cap me-2" style="color:#00C3A3;"></i>
-                        Plateforme Académique
-                    </h5>
-                    <p class="mt-2">
-                        Système intelligent de gestion des relevés
-                        de notes universitaires.
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="{% static 'images/logos_uganc.png' %}" height="50" alt="UGANC">
+                        <img src="{% static 'images/logosCI.png' %}" height="45" alt="CI" style="
+                                opacity:0.8;">
+                    </div>
+                    <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;">
+                        Centre Informatique<br>
+                        Université Gamal Abdel Nasser de Conakry<br>
+                        Plateforme de gestion des relevés de notes
                     </p>
                 </div>
                 <div class="col-md-2">
                     <p class="footer-title">Navigation</p>
                     <a href="#accueil" class="footer-link">Accueil</a>
-                    <a href="#fonctionnalites" class="footer-link">Fonctionnalités</a>
-                    <a href="#comment" class="footer-link">Comment ça marche</a>
-                    <a href="#contact" class="footer-link">Contact</a>
+                    <a href="#services" class="footer-link">Services</a>
+                    <a href="#comment" class="footer-link">
+                        Comment ça marche
+                    </a>
                 </div>
                 <div class="col-md-3">
-                    <p class="footer-title">Accès</p>
+                    <p class="footer-title">Accès rapide</p>
                     <a href="{% url 'login' %}" class="footer-link">
-                        <i class="fa-solid fa-user-graduate me-1"></i>
+                        <i class="fa-solid fa-user-graduate me-2" style="color:#00C3A3;"></i>
                         Espace Étudiant
                     </a>
-                    <a href="{% url 'login_admin' %}" class="footer-link">
-                        <i class="fa-solid fa-user-tie me-1"></i>
-                        Espace Admin
+                    <a href="{% url 'admin_dashboard' %}" class="footer-link">
+                        <i class="fa-solid fa-user-tie me-2" style="color:#00C3A3;"></i>
+                        Espace Administration
                     </a>
                 </div>
                 <div class="col-md-3">
                     <p class="footer-title">Contact</p>
                     <p class="footer-link">
                         <i class="fa-solid fa-envelope me-2" style="color:#00C3A3;"></i>
-                        scolarite@universite.edu.gn
+                        ci@uganc.edu.gn
                     </p>
                     <p class="footer-link">
                         <i class="fa-solid fa-phone me-2" style="color:#00C3A3;"></i>
@@ -839,14 +851,13 @@
                     </p>
                     <p class="footer-link">
                         <i class="fa-solid fa-location-dot me-2" style="color:#00C3A3;"></i>
-                        Conakry, Guinée
+                        Conakry, République de Guinée
                     </p>
                 </div>
             </div>
             <div class="footer-bottom">
                 <i class="fa-regular fa-copyright me-1"></i>
-                2024 Plateforme Académique — Tous droits réservés.
-                Développé avec <i class="fa-solid fa-heart" style="color:#00C3A3;"></i> sous Django
+                2026 Centre Informatique — UGANC — Tous droits réservés
             </div>
         </div>
     </footer>

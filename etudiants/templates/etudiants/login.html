@@ -1,60 +1,621 @@
-{% extends 'base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="fr">
 
-{% block title %}Connexion Étudiant{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UGANC — Connexion</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #00C3A3;
+            --navy: #1A2744;
+            --bleu-ci: #1565C0;
+            --bleu-ci-light: #1976D2;
+            --light: #F0F4FA;
+            --gray: #64748B;
+            --dark: #0F1A2E;
+        }
 
-{% block body %}
-<!-- ══ NAVBAR ══ -->
-<nav class="nav-landing">
-    <div class="nav-container">
-        <a href="/" class="nav-brand">
-            <i class="fa-solid fa-graduation-cap"></i>
-            Plateforme Relevés
-        </a>
-        <div class="nav-links">
-            <a href="{% url 'login_admin' %}" class="nav-link-text">
-                Connexion Admin
-            </a>
-            <a href="/" class="nav-link-outline">
-                <i class="fa-solid fa-arrow-left"></i> Retour
-            </a>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--light);
+        }
+
+        /* ── PANNEAU GAUCHE ── */
+        .left-panel {
+            width: 48%;
+            background: linear-gradient(160deg, #1A2744 0%, #1E3055 50%, #233D6A 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 45px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 195, 163, 0.15) 0%, transparent 70%);
+            top: -120px;
+            right: -120px;
+            border-radius: 50%;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(21, 101, 192, 0.1) 0%, transparent 70%);
+            bottom: -80px;
+            left: -80px;
+            border-radius: 50%;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 380px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            margin-bottom: 32px;
+        }
+
+        .logo-divider {
+            width: 1px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .left-content h2 {
+            color: white;
+            font-weight: 800;
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .left-content .subtitle {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.9rem;
+            margin-bottom: 38px;
+        }
+
+        /* Carte info matricule */
+        .info-card {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 22px;
+            width: 100%;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .info-card h6 {
+            color: #00C3A3;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .info-badge {
+            background: rgba(255, 255, 255, 0.12);
+            color: #00C3A3;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.88rem;
+            font-weight: 700;
+            min-width: 82px;
+            text-align: center;
+        }
+
+        .info-desc {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+        }
+
+        .info-card-admin {
+            background: rgba(21, 101, 192, 0.12);
+            border: 1px solid rgba(21, 101, 192, 0.2);
+        }
+
+        .info-card-admin h6 {
+            color: #64B5F6;
+        }
+
+        .info-card-admin .info-badge {
+            background: rgba(21, 101, 192, 0.2);
+            color: #64B5F6;
+        }
+
+        .left-note {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.76rem;
+            margin-top: 8px;
+        }
+
+        /* ── PANNEAU DROIT ── */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 430px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header .logo-mobile {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .login-header h3 {
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .login-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Indicateur détection auto */
+        .auto-detect-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(21, 101, 192, 0.08);
+            border: 1px solid rgba(21, 101, 192, 0.15);
+            color: var(--bleu-ci);
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+        }
+
+        .auto-detect-badge i {
+            font-size: 0.85rem;
+        }
+
+        /* Formulaire */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #1A2744;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            border: 1.5px solid #D0D8E8;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(0, 195, 163, 0.15);
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .input-icon-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--teal);
+            font-size: 0.92rem;
+        }
+
+        .input-icon-wrapper .form-control {
+            padding-left: 42px;
+        }
+
+        .input-group-text {
+            border: 1.5px solid #D0D8E8;
+            background: #F0F4FA;
+            cursor: pointer;
+            border-left: none;
+            border-radius: 0 10px 10px 0 !important;
+            transition: background 0.2s;
+        }
+
+        .input-group-text:hover {
+            background: #DAE2F0;
+        }
+
+        .input-group .form-control {
+            border-right: none;
+            border-radius: 10px 0 0 10px !important;
+        }
+
+        .form-text {
+            font-size: 0.78rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Détection en temps réel */
+        .detect-indicator {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .detect-indicator.student {
+            display: flex;
+            background: rgba(0, 195, 163, 0.08);
+            color: var(--teal);
+            border: 1px solid rgba(0, 195, 163, 0.15);
+        }
+
+        .detect-indicator.admin {
+            display: flex;
+            background: rgba(21, 101, 192, 0.08);
+            color: var(--bleu-ci);
+            border: 1px solid rgba(21, 101, 192, 0.15);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Bouton */
+        .btn-login {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--navy) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 13px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 195, 163, 0.35);
+            color: white;
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: var(--teal);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-link a:hover {
+            color: var(--navy);
+        }
+
+        /* Aide */
+        .help-box {
+            margin-top: 24px;
+            padding: 14px 16px;
+            background: #F0F6FF;
+            border-radius: 12px;
+            border: 1px solid #D0D8E8;
+        }
+
+        .help-box p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: var(--navy);
+        }
+
+        /* Alertes */
+        .alert {
+            border-radius: 10px;
+            font-size: 0.88rem;
+            border: none;
+            padding: 12px 16px;
+        }
+
+        .alert-danger {
+            background: #FEF2F2;
+            color: #B91C1C;
+            border: 1px solid #FECACA;
+        }
+
+        .alert-success {
+            background: #F0FDF4;
+            color: #166534;
+            border: 1px solid #BBF7D0;
+        }
+
+        .alert-info {
+            background: #EFF6FF;
+            color: #1E40AF;
+            border: 1px solid #BFDBFE;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 992px) {
+            .left-panel {
+                display: none;
+            }
+
+            .right-panel {
+                padding: 24px;
+            }
+
+            .login-header .logo-mobile {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════ PANNEAU GAUCHE ══════════ -->
+    <div class="left-panel">
+        <div class="left-content">
+            <div class="logos-row">
+                <img src="{% static 'images/logos_uganc.png' %}" height="85" alt="UGANC">
+                <div class="logo-divider"></div>
+                <img src="{% static 'images/logosCI.png' %}" height="70" alt="Centre Informatique"
+                    style="opacity:0.95;">
+            </div>
+
+            <h2>Centre Informatique</h2>
+            <p class="subtitle">Université Gamal Abdel Nasser de Conakry</p>
+
+            <!-- Illustration plateforme -->
+            <div class="info-card" style="text-align:center; padding:30px 20px;">
+                <i class="fa-solid fa-graduation-cap" style="font-size:2.5rem; color:#00C3A3; margin-bottom:14px;"></i>
+                <h6 style="margin-bottom:10px;">Plateforme de Gestion des Relevés</h6>
+                <p style="color:rgba(255,255,255,0.5); font-size:0.84rem; margin:0; line-height:1.6;">
+                    Demandez, consultez et téléchargez vos relevés de notes officiels en ligne, 24h/24 et 7j/7.
+                </p>
+            </div>
+
+            <div class="info-card" style="text-align:center; padding:18px 20px;">
+                <div style="display:flex; justify-content:center; gap:30px;">
+                    <div>
+                        <i class="fa-solid fa-shield-halved"
+                            style="font-size:1.3rem; color:#00C3A3; margin-bottom:6px;"></i>
+                        <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; margin:0;">Sécurisé</p>
+                    </div>
+                    <div>
+                        <i class="fa-solid fa-bolt" style="font-size:1.3rem; color:#64B5F6; margin-bottom:6px;"></i>
+                        <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; margin:0;">Rapide</p>
+                    </div>
+                    <div>
+                        <i class="fa-solid fa-file-pdf" style="font-size:1.3rem; color:#00C3A3; margin-bottom:6px;"></i>
+                        <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; margin:0;">PDF Officiel</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="left-note">
+                <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+                Connexion unique — Le système détecte automatiquement votre profil
+            </p>
         </div>
     </div>
-</nav>
 
-<div class="auth-page">
-    <div class="auth-card">
-        <h3><i class="fa-solid fa-user-graduate"></i> Connexion</h3>
-        <p class="auth-subtitle">Espace réservé aux étudiants</p>
+    <!-- ══════════ PANNEAU DROIT ══════════ -->
+    <div class="right-panel">
+        <div class="login-box">
 
-        {% if messages %}
-        {% for msg in messages %}
-        <div
-            class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
-            <i class="fa-solid fa-circle-info"></i> {{ msg }}
-        </div>
-        {% endfor %}
-        {% endif %}
+            <!-- Logos pour mobile -->
+            <div class="login-header">
+                <div class="logo-mobile">
+                    <div class="d-flex justify-content-center align-items-center gap-3">
+                        <img src="{% static 'images/logos_uganc.png' %}" height="55" alt="UGANC">
+                        <img src="{% static 'images/logosCI.png' %}" height="48" alt="CI" style="opacity:0.85;">
+                    </div>
+                </div>
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label><i class="fa-solid fa-id-card"></i> Matricule</label>
-                <input type="text" name="matricule" placeholder="Ex: 22NT001" required>
-            </div>
-            <div class="form-group">
-                <label><i class="fa-solid fa-lock"></i> Mot de passe</label>
-                <input type="password" name="password" placeholder="••••••••" required>
+                <h3>
+                    <i class="fa-solid fa-right-to-bracket me-2" style="color:var(--teal);"></i>
+                    Connexion
+                </h3>
+                <p>Accédez à votre espace académique UGANC</p>
             </div>
 
-            <button type="submit" class="btn-submit">
-                Se connecter <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            </button>
-        </form>
+            <!-- Alertes -->
+            {% if messages %}
+            {% for msg in messages %}
+            <div
+                class="alert {% if msg.tags == 'error' %}alert-danger{% elif msg.tags == 'success' %}alert-success{% elif msg.tags == 'info' %}alert-info{% else %}alert-danger{% endif %} d-flex align-items-center gap-2 mb-3">
+                <i
+                    class="fa-solid {% if msg.tags == 'error' %}fa-triangle-exclamation{% elif msg.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %}"></i>
+                {{ msg }}
+            </div>
+            {% endfor %}
+            {% endif %}
 
-        <div class="auth-links">
-            <a href="#">Mot de passe oublié ? Contactez la scolarité</a>
+            <!-- Formulaire unique -->
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fa-solid fa-id-card me-1" style="color:var(--teal);"></i>
+                        Identifiant
+                    </label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input type="text" name="matricule" class="form-control" id="inputIdentifiant"
+                            placeholder="Matricule ou identifiant admin" autocomplete="username" required
+                            oninput="detectRole(this.value)">
+                    </div>
+                    <div class="form-text" id="helpText">
+                        Entrez votre matricule étudiant (ex: 22NT001) ou votre identifiant admin
+                    </div>
+
+                    <!-- Indicateur de détection -->
+                    <div class="detect-indicator" id="detectIndicator">
+                        <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i>
+                        <span id="detectText"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fa-solid fa-lock me-1" style="color:var(--teal);"></i>
+                        Mot de passe
+                    </label>
+                    <div class="input-group">
+                        <div class="input-icon-wrapper" style="flex:1;">
+                            <i class="fa-solid fa-key input-icon"></i>
+                            <input type="password" name="password" id="passwordInput" class="form-control"
+                                placeholder="Votre mot de passe" autocomplete="current-password" required>
+                        </div>
+                        <span class="input-group-text" onclick="togglePassword()">
+                            <i class="fa-solid fa-eye text-muted" id="eyeIcon"></i>
+                        </span>
+                    </div>
+                    <div class="form-text">
+                        Première connexion ? Mot de passe = <strong>Univ2024</strong>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-login">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>
+                    Se connecter
+                </button>
+            </form>
+
+            <div class="back-link">
+                <a href="{% url 'accueil' %}">
+                    <i class="fa-solid fa-arrow-left me-1"></i>
+                    Retour à l'accueil
+                </a>
+            </div>
+
+            <div class="help-box">
+                <p>
+                    <i class="fa-solid fa-circle-info me-1"></i>
+                    Problème de connexion ? Contactez le service de scolarité du Centre Informatique UGANC.
+                </p>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <script>
+        // Détection automatique du rôle en temps réel
+        function detectRole(value) {
+            const indicator = document.getElementById('detectIndicator');
+            const text = document.getElementById('detectText');
+            const inputIcon = document.querySelector('.input-icon');
+            const v = value.trim().toUpperCase();
+
+            indicator.className = 'detect-indicator';
+
+            if (v.length === 0) {
+                indicator.style.display = 'none';
+                inputIcon.className = 'fa-solid fa-user input-icon';
+                return;
+            }
+
+            // Pattern matricule étudiant : 2 chiffres + NT ou DL + chiffres
+            const isStudent = /^\d{2}(NT|DL)\d{0,3}$/i.test(v);
+
+            if (isStudent) {
+                indicator.className = 'detect-indicator student';
+                text.textContent = 'Détecté : Étudiant — Connexion via matricule';
+                inputIcon.className = 'fa-solid fa-user-graduate input-icon';
+                inputIcon.style.color = 'var(--teal)';
+            } else {
+                indicator.className = 'detect-indicator admin';
+                text.textContent = 'Détecté : Administrateur — Connexion via identifiant';
+                inputIcon.className = 'fa-solid fa-user-tie input-icon';
+                inputIcon.style.color = 'var(--bleu-ci)';
+            }
+        }
+
+        // Toggle mot de passe
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash text-muted';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye text-muted';
+            }
+        }
+    </script>
+</body>
+
+</html>
