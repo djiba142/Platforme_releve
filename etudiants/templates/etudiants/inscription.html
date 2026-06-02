@@ -5,263 +5,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UGANC — Inscription</title>
+    <title>S'inscrire — UGANC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
         :root {
-            --teal: #00C3A3;
-            --navy: #1A2744;
-            --light: #F0F4FA;
-            --gray: #64748B;
+            --primary: #00C3A3;
+            --primary-light: #e6f9f6;
+            --primary-dark: #009d83;
+            --navy: #0A192F;
+            --navy-light: #112240;
+            --gray-light: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
         }
 
         body {
             min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--light) 0%, rgba(0, 195, 163, 0.1) 100%);
-            padding: 20px;
+            padding: 2rem 1rem;
+            margin: 0;
+            color: var(--text-main);
         }
 
-        .auth-container {
+        .auth-wrapper {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(26, 39, 68, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(10, 25, 47, 0.08), 0 0 0 1px rgba(10, 25, 47, 0.02);
             overflow: hidden;
             width: 100%;
-            max-width: 900px;
+            max-width: 1050px;
             display: flex;
+            flex-direction: row;
         }
 
-        .auth-left {
+        /* Panneau Gauche : Gradient et Logos */
+        .auth-cover {
             width: 45%;
-            background: linear-gradient(145deg, var(--navy), #131d33);
-            padding: 40px;
-            color: white;
+            background: linear-gradient(145deg, var(--navy), #061020);
+            padding: 3rem;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
+            justify-content: space-between;
             position: relative;
+            color: white;
+            overflow: hidden;
         }
 
-        .auth-left::after {
+        /* Micro-interactions & décoration */
+        .auth-cover::before {
             content: '';
             position: absolute;
-            bottom: -50px;
-            left: -50px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(0, 195, 163, 0.15) 0%, transparent 70%);
+            top: -10%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 195, 163, 0.15) 0%, transparent 60%);
             border-radius: 50%;
         }
 
-        .auth-right {
-            width: 55%;
-            padding: 40px;
+        .auth-cover::after {
+            content: '';
+            position: absolute;
+            bottom: -15%;
+            left: -15%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 195, 163, 0.12) 0%, transparent 65%);
+            border-radius: 50%;
         }
 
-        .logo-row {
+        .logos-container {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 1.2rem;
+            z-index: 1;
         }
 
-        .logo-row img {
-            height: 60px;
+        .logos-container img {
+            height: 55px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+            transition: transform 0.3s ease;
         }
 
-        .logo-row .divider {
-            width: 1px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
+        .logos-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .logos-divider {
+            width: 2px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+        }
+
+        .cover-content {
+            z-index: 1;
+        }
+
+        .cover-content h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .cover-content h2 span {
+            color: var(--primary);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .features-list .icon-box {
+            background: rgba(0, 195, 163, 0.15);
+            color: var(--primary);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+            border: 1px solid rgba(0, 195, 163, 0.2);
+        }
+
+        /* Panneau Droit : Formulaire */
+        .auth-form-wrapper {
+            width: 55%;
+            padding: 3.5rem 4rem;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-header {
+            margin-bottom: 2rem;
         }
 
         .auth-header h3 {
-            color: var(--navy);
+            font-size: 1.8rem;
             font-weight: 800;
-            font-size: 1.5rem;
-            margin-bottom: 5px;
+            color: var(--navy);
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
         }
 
         .auth-header p {
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-bottom: 25px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 400;
         }
 
-        .form-label {
+        /* Inputs */
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group-custom label {
+            display: block;
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--navy);
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+            transition: color 0.2s;
         }
 
-        .form-control,
-        .form-select {
-            border: 1.5px solid #E0E7F1;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(0, 195, 163, 0.15);
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            color: #94A3B8;
+            font-size: 1.1rem;
+            transition: color 0.2s;
         }
 
-        .btn-auth {
-            background: linear-gradient(135deg, var(--teal), var(--navy));
+        .form-control-custom {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.8rem;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-main);
+            background: #F8FAFC;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 195, 163, 0.1);
+        }
+
+        .form-control-custom:focus+i,
+        .input-wrapper:focus-within i {
+            color: var(--primary);
+        }
+
+        select.form-control-custom {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        .row-inputs {
+            display: flex;
+            gap: 1.25rem;
+        }
+
+        .row-inputs .input-group-custom {
+            flex: 1;
+        }
+
+        /* Bouton */
+        .btn-submit {
+            width: 100%;
+            background: var(--navy);
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 12px;
+            padding: 1rem;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            width: 100%;
-            transition: all 0.3s;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 12px rgba(10, 25, 47, 0.15);
         }
 
-        .btn-auth:hover {
+        .btn-submit:hover {
+            background: var(--primary);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 195, 163, 0.3);
-            color: white;
+            box-shadow: 0 8px 20px rgba(0, 195, 163, 0.25);
         }
 
-        .auth-links {
-            margin-top: 20px;
+        /* Footer */
+        .auth-footer {
+            margin-top: 2rem;
             text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-muted);
         }
 
-        .auth-links a {
-            color: var(--teal);
+        .auth-footer a {
+            color: var(--primary);
+            font-weight: 700;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
+            transition: color 0.2s;
         }
 
-        .auth-links a:hover {
+        .auth-footer a:hover {
             color: var(--navy);
+            text-decoration: underline;
         }
 
-        @media (max-width: 768px) {
-            .auth-container {
+        /* Alertes */
+        .custom-alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .custom-alert.error {
+            background: #FEF2F2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .custom-alert.error i {
+            color: #DC2626;
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsivité */
+        @media (max-width: 992px) {
+            .auth-wrapper {
                 flex-direction: column;
+                max-width: 550px;
             }
 
-            .auth-left,
-            .auth-right {
+            .auth-cover {
                 width: 100%;
+                padding: 2.5rem;
+                display: none;
+                /* Optionnel : cacher la cover sur mobile pour aller droit au but */
             }
 
-            .auth-left {
-                padding: 30px 20px;
+            .auth-form-wrapper {
+                width: 100%;
+                padding: 2.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .row-inputs {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .auth-form-wrapper {
+                padding: 2rem 1.5rem;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="auth-container">
-        <!-- Gauche : Informations -->
-        <div class="auth-left">
-            <div class="logo-row">
-                <img src="{% static 'images/logos_uganc.png' %}" alt="UGANC">
-                <div class="divider"></div>
-                <img src="{% static 'images/logosCI.png' %}" alt="CI" style="opacity:0.9;">
+
+    <div class="auth-wrapper">
+        <!-- Section Couverture -->
+        <div class="auth-cover">
+            <div class="logos-container">
+                <img src="{% static 'images/logos_uganc.png' %}" alt="Logo UGANC">
+                <div class="logos-divider"></div>
+                <img src="{% static 'images/logosCI.png' %}" alt="Logo CI UGANC">
             </div>
-            <h4 style="font-weight: 800; margin-bottom: 20px;">Portail Étudiant</h4>
-            <div
-                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; text-align: left; font-size: 0.85rem;">
-                <p><i class="fa-solid fa-check circle-check me-2" style="color:var(--teal);"></i><strong>Processus
-                        d'inscription :</strong></p>
-                <ol style="color: rgba(255,255,255,0.7); margin-bottom: 0; padding-left: 20px;">
-                    <li style="margin-bottom: 8px;">Remplissez vos informations.</li>
-                    <li style="margin-bottom: 8px;">Soumettez votre demande de compte.</li>
-                    <li>Un administrateur validera votre compte pour vous permettre de vous connecter.</li>
-                </ol>
+
+            <div class="cover-content">
+                <h2>Rejoignez<br><span>l'Excellence</span> Académique</h2>
+                <ul class="features-list">
+                    <li>
+                        <div class="icon-box"><i class="fa-solid fa-bolt"></i></div>
+                        <div>
+                            <strong>Accès instantané</strong><br>
+                            Consultez vos relevés de notes en temps réel et générez vos attestations en un clic.
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div>
+                            <strong>Sécurité garantie</strong><br>
+                            Vos données sont protégées. L'inscription nécessite une validation par la direction.
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon-box"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <div>
+                            <strong>Interface moderne</strong><br>
+                            Profitez d'une plateforme conçue pour une expérience étudiante fluide et intuitive.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.4);">
+                © 2026 Université Gamal Abdel Nasser de Conakry.<br>Centre Informatique.
             </div>
         </div>
 
-        <!-- Droite : Formulaire -->
-        <div class="auth-right">
+        <!-- Section Formulaire -->
+        <div class="auth-form-wrapper">
             <div class="auth-header">
                 <h3>Créer un compte</h3>
-                <p>Demandez votre accès à la plateforme des relevés UGANC</p>
+                <p>Ouvrez votre accès au portail étudiant UGANC.</p>
             </div>
 
             {% if messages %}
             {% for msg in messages %}
-            <div class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} p-2"
-                style="font-size:0.85rem; border-radius: 8px;">
-                {{ msg }}
+            <div class="custom-alert {% if msg.tags == 'error' %}error{% else %}success{% endif %}">
+                <i
+                    class="fa-solid {% if msg.tags == 'error' %}fa-triangle-exclamation{% else %}fa-check-circle{% endif %}"></i>
+                <div>{{ msg }}</div>
             </div>
             {% endfor %}
             {% endif %}
 
             <form method="POST">
                 {% csrf_token %}
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Prénom</label>
-                        <input type="text" name="prenom" class="form-control" required placeholder="Ex: Amadou">
+
+                <div class="row-inputs">
+                    <div class="input-group-custom">
+                        <label>Prénom</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" name="prenom" class="form-control-custom" required
+                                placeholder="Ex: Amadou" value="{{ request.POST.prenom|default:'' }}">
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Nom</label>
-                        <input type="text" name="nom" class="form-control" required placeholder="Ex: Diallo">
+                    <div class="input-group-custom">
+                        <label>Nom</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-id-badge"></i>
+                            <input type="text" name="nom" class="form-control-custom" required placeholder="Ex: Diallo"
+                                value="{{ request.POST.nom|default:'' }}">
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Matricule Universitaire</label>
-                    <input type="text" name="matricule" class="form-control" required placeholder="Ex: 23NT001">
-                </div>
-
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Département</label>
-                        <select name="departement" class="form-select" required>
-                            <option value="">Sélectionnez...</option>
-                            {% for dept in departements %}
-                            <option value="{{ dept.id }}">{{ dept.nom }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Niveau</label>
-                        <select name="niveau" class="form-select" required>
-                            <option value="">Sélectionnez...</option>
-                            {% for nv in niveaux %}
-                            <option value="{{ nv.id }}">{{ nv.departement.slug|upper }} - {{ nv.nom }}</option>
-                            {% endfor %}
-                        </select>
+                <div class="input-group-custom">
+                    <label>Matricule Universitaire</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <input type="text" name="matricule" class="form-control-custom" required
+                            placeholder="Ex: 6642XXXXX" value="{{ request.POST.matricule|default:'' }}">
                     </div>
                 </div>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" class="form-control" required placeholder="••••••••">
+                <div class="row-inputs">
+                    <div class="input-group-custom">
+                        <label>Département</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-building-columns"></i>
+                            <select name="departement" class="form-control-custom" required>
+                                <option value="" disabled selected>Sélectionnez...</option>
+                                {% for dept in departements %}
+                                <option value="{{ dept.id }}" {% if request.POST.departement==dept.id|stringformat:"s"
+                                    %}selected{% endif %}>{{ dept.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Confirmer mot de passe</label>
-                        <input type="password" name="password_confirm" class="form-control" required
-                            placeholder="••••••••">
+                    <div class="input-group-custom">
+                        <label>Niveau</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <select name="niveau" class="form-control-custom" required>
+                                <option value="" disabled selected>Sélectionnez...</option>
+                                {% for nv in niveaux %}
+                                <option value="{{ nv.id }}" {% if request.POST.niveau==nv.id|stringformat:"s"
+                                    %}selected{% endif %}>{{ nv.departement.slug|upper }} - {{ nv.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-auth">Soumettre l'inscription</button>
+                <div class="row-inputs">
+                    <div class="input-group-custom">
+                        <label>Mot de passe</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" name="password" class="form-control-custom" required
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div class="input-group-custom">
+                        <label>Confirmer le mot de passe</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-shield-check"></i>
+                            <input type="password" name="password_confirm" class="form-control-custom" required
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    S'inscrire <i class="fa-solid fa-arrow-right-long ms-1"></i>
+                </button>
             </form>
 
-            <div class="auth-links">
-                <a href="{% url 'login' %}"><i class="fa-solid fa-arrow-left me-1"></i> Retour à la connexion</a>
+            <div class="auth-footer">
+                Vous avez déjà un compte validé ? <a href="{% url 'login' %}">Connectez-vous</a>
             </div>
         </div>
     </div>
+
 </body>
 
 </html>
