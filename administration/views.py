@@ -19,6 +19,15 @@ def verifier_admin(user):
     except:
         return False
 
+def check_super_admin(user):
+    """Vérifie si l'admin est DG ou DGA pour certaines actions sensibles"""
+    if not verifier_admin(user):
+        return False
+    try:
+        return user.profiladmin.role in ['dg', 'dga']
+    except:
+        return False
+
 def get_profil(user):
     try:
         return user.profiladmin
@@ -92,7 +101,7 @@ def liste_etudiants(request):
 
 @login_required
 def ajouter_etudiant(request):
-    """Ajouter un étudiant"""
+    """Ajouter un étudiant (réservé aux admins)"""
     if not verifier_admin(request.user):
         return redirect('login_admin')
 
@@ -119,7 +128,8 @@ def ajouter_etudiant(request):
                 nom=nom,
                 prenom=prenom,
                 departement_id=departement,
-                niveau_id=niveau
+                niveau_id=niveau,
+                est_valide=True # Valide par défaut si créé par un admin
             )
             messages.success(request, f'Étudiant {prenom} {nom} ajouté avec succès.')
             return redirect('liste_etudiants')
@@ -135,6 +145,54 @@ def ajouter_etudiant(request):
         'est_directeur': est_directeur(request.user),
         'est_chef': est_chef_dept(request.user),
     })
+
+@login_required
+def gestion_inscriptions(request):
+    """Afficher la liste des inscriptions en attente"""
+    if not check_super_admin(request.user):
+        messages.error(request, 'Accès refusé. Réservé à la Direction Générale.')
+        return redirect('admin_dashboard')
+
+    inscriptions = Etudiant.objects.filter(est_valide=False).order_by('-id')
+    return render(request, 'administration/inscriptions.html', {
+        'inscriptions': inscriptions,
+        'profil': get_profil(request.user),
+        'est_directeur': True,
+        'est_chef': False,
+    })
+
+@login_required
+def valider_inscription(request, etudiant_id):
+    """Valider l'inscription d'un étudiant"""
+    if not check_super_admin(request.user):
+        return redirect('admin_dashboard')
+        
+    try:
+        etudiant = Etudiant.objects.get(id=etudiant_id, est_valide=False)
+        etudiant.est_valide = True
+        etudiant.save()
+        messages.success(request, f"L'inscription de l'étudiant {etudiant.prenom} {etudiant.nom} ({etudiant.matricule}) a été validée.")
+    except Etudiant.DoesNotExist:
+        messages.error(request, 'Étudiant introuvable ou déjà validé.')
+        
+    return redirect('gestion_inscriptions')
+
+@login_required
+def rejeter_inscription(request, etudiant_id):
+    """Rejeter (supprimer) l'inscription d'un étudiant"""
+    if not check_super_admin(request.user):
+        return redirect('admin_dashboard')
+        
+    try:
+        etudiant = Etudiant.objects.get(id=etudiant_id, est_valide=False)
+        user = etudiant.user
+        etudiant.delete() # Ceci supprimera l'étudiant
+        user.delete()     # Et son utilisateur associé
+        messages.success(request, "La demande d'inscription a été rejetée et supprimée.")
+    except Etudiant.DoesNotExist:
+        messages.error(request, 'Demande introuvable.')
+        
+    return redirect('gestion_inscriptions')
 
 @login_required
 def supprimer_etudiant(request, etudiant_id):

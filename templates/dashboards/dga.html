@@ -125,8 +125,8 @@
     <div class="sidebar">
         <div class="sidebar-logo">
             <div class="d-flex align-items-center gap-2 mb-2">
-                <img src="/static/image/logos_uganc.png" height="35" alt="UGANC">
-                <img src="/static/image/logosCI.png" height="30" alt="CI" style="filter:brightness(0) invert(1);
+                <img src="/static/images/logos_uganc.png" height="35" alt="UGANC">
+                <img src="/static/images/logosCI.png" height="30" alt="CI" style="filter:brightness(0) invert(1);
                         opacity:0.85;">
             </div>
             <div style="color:white;font-weight:700;
@@ -144,6 +144,10 @@
         </a>
         <a href="{% url 'liste_etudiants' %}" class="menu-item">
             <i class="fa-solid fa-users"></i> Étudiants
+        </a>
+        <a href="{% url 'gestion_inscriptions' %}"
+            class="menu-item {% if request.resolver_match.url_name == 'gestion_inscriptions' %}active{% endif %}">
+            <i class="fa-solid fa-user-clock"></i> Inscriptions
         </a>
 
         <div style="

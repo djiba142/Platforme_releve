@@ -46,6 +46,7 @@ class Etudiant(models.Model):
     departement = models.ForeignKey(Departement, on_delete=models.SET_NULL, null=True, related_name='etudiants')
     niveau = models.ForeignKey(Niveau, on_delete=models.SET_NULL, null=True, related_name='etudiants')
     mot_de_passe_change = models.BooleanField(default=False)
+    est_valide = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Étudiant'

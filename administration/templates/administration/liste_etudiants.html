@@ -29,6 +29,11 @@
         <a href="{% url 'liste_etudiants' %}" class="sidebar-link active">
             <i class="fa-solid fa-users"></i> Étudiants
         </a>
+        {% if request.user.profiladmin.role in 'dg,dga' %}
+        <a href="{% url 'gestion_inscriptions' %}" class="sidebar-link">
+            <i class="fa-solid fa-user-clock"></i> Inscriptions
+        </a>
+        {% endif %}
         <a href="{% url 'gestion_demandes' %}" class="sidebar-link">
             <i class="fa-solid fa-file-lines"></i> Demandes
         </a>

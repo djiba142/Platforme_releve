@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UGANC — Inscription</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #00C3A3;
+            --navy: #1A2744;
+            --light: #F0F4FA;
+            --gray: #64748B;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--light) 0%, rgba(0, 195, 163, 0.1) 100%);
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(26, 39, 68, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+        }
+
+        .auth-left {
+            width: 45%;
+            background: linear-gradient(145deg, var(--navy), #131d33);
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-left::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 195, 163, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .auth-right {
+            width: 55%;
+            padding: 40px;
+        }
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .logo-row img {
+            height: 60px;
+        }
+
+        .logo-row .divider {
+            width: 1px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .auth-header h3 {
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .auth-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .form-control,
+        .form-select {
+            border: 1.5px solid #E0E7F1;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(0, 195, 163, 0.15);
+        }
+
+        .btn-auth {
+            background: linear-gradient(135deg, var(--teal), var(--navy));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 195, 163, 0.3);
+            color: white;
+        }
+
+        .auth-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .auth-links a {
+            color: var(--teal);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .auth-links a:hover {
+            color: var(--navy);
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                flex-direction: column;
+            }
+
+            .auth-left,
+            .auth-right {
+                width: 100%;
+            }
+
+            .auth-left {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <!-- Gauche : Informations -->
+        <div class="auth-left">
+            <div class="logo-row">
+                <img src="{% static 'images/logos_uganc.png' %}" alt="UGANC">
+                <div class="divider"></div>
+                <img src="{% static 'images/logosCI.png' %}" alt="CI" style="opacity:0.9;">
+            </div>
+            <h4 style="font-weight: 800; margin-bottom: 20px;">Portail Étudiant</h4>
+            <div
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; text-align: left; font-size: 0.85rem;">
+                <p><i class="fa-solid fa-check circle-check me-2" style="color:var(--teal);"></i><strong>Processus
+                        d'inscription :</strong></p>
+                <ol style="color: rgba(255,255,255,0.7); margin-bottom: 0; padding-left: 20px;">
+                    <li style="margin-bottom: 8px;">Remplissez vos informations.</li>
+                    <li style="margin-bottom: 8px;">Soumettez votre demande de compte.</li>
+                    <li>Un administrateur validera votre compte pour vous permettre de vous connecter.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Droite : Formulaire -->
+        <div class="auth-right">
+            <div class="auth-header">
+                <h3>Créer un compte</h3>
+                <p>Demandez votre accès à la plateforme des relevés UGANC</p>
+            </div>
+
+            {% if messages %}
+            {% for msg in messages %}
+            <div class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} p-2"
+                style="font-size:0.85rem; border-radius: 8px;">
+                {{ msg }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Prénom</label>
+                        <input type="text" name="prenom" class="form-control" required placeholder="Ex: Amadou">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nom</label>
+                        <input type="text" name="nom" class="form-control" required placeholder="Ex: Diallo">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Matricule Universitaire</label>
+                    <input type="text" name="matricule" class="form-control" required placeholder="Ex: 23NT001">
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Département</label>
+                        <select name="departement" class="form-select" required>
+                            <option value="">Sélectionnez...</option>
+                            {% for dept in departements %}
+                            <option value="{{ dept.id }}">{{ dept.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Niveau</label>
+                        <select name="niveau" class="form-select" required>
+                            <option value="">Sélectionnez...</option>
+                            {% for nv in niveaux %}
+                            <option value="{{ nv.id }}">{{ nv.departement.slug|upper }} - {{ nv.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" name="password" class="form-control" required placeholder="••••••••">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Confirmer mot de passe</label>
+                        <input type="password" name="password_confirm" class="form-control" required
+                            placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">Soumettre l'inscription</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="{% url 'login' %}"><i class="fa-solid fa-arrow-left me-1"></i> Retour à la connexion</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

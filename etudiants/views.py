@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Etudiant
+from .models import Etudiant, Departement, Niveau
 
 
 def accueil_view(request):
@@ -13,6 +14,61 @@ def accueil_view(request):
         elif request.user.is_staff:
             return redirect('admin_dashboard')
     return render(request, 'etudiants/accueil.html')
+
+def inscription_etudiant(request):
+    """Plateforme d'inscription pour les étudiants"""
+    if request.user.is_authenticated:
+        return redirect('accueil')
+
+    if request.method == 'POST':
+        matricule = request.POST.get('matricule', '').strip()
+        nom = request.POST.get('nom', '').strip()
+        prenom = request.POST.get('prenom', '').strip()
+        departement_id = request.POST.get('departement', '').strip()
+        niveau_id = request.POST.get('niveau', '').strip()
+        password = request.POST.get('password', '')
+        password_confirm = request.POST.get('password_confirm', '')
+
+        # Validations basiques
+        if password != password_confirm:
+            messages.error(request, 'Les mots de passe ne correspondent pas.')
+            return redirect('inscription')
+        if len(password) < 6:
+            messages.error(request, 'Le mot de passe doit contenir au moins 6 caractères.')
+            return redirect('inscription')
+
+        if Etudiant.objects.filter(matricule=matricule).exists() or User.objects.filter(username=matricule).exists():
+            messages.error(request, 'Ce matricule est déjà utilisé ou en attente de validation.')
+            return redirect('inscription')
+
+        try:
+            user = User.objects.create_user(
+                username=matricule,
+                password=password
+            )
+            # Créer l'étudiant avec est_valide=False par défaut
+            Etudiant.objects.create(
+                user=user,
+                matricule=matricule,
+                nom=nom,
+                prenom=prenom,
+                departement_id=departement_id if departement_id else None,
+                niveau_id=niveau_id if niveau_id else None,
+                mot_de_passe_change=True, # Pas besoin de les forcer à changer, ils viennent de le définir
+                est_valide=False
+            )
+            messages.success(request, "Inscription réussie ! Votre compte est en attente de validation par l'administration.")
+            return redirect('login')
+        except Exception as e:
+            messages.error(request, f"Erreur lors de l'inscription : {str(e)}")
+            return redirect('inscription')
+
+    departements = Departement.objects.all()
+    niveaux = Niveau.objects.all()
+    return render(request, 'etudiants/inscription.html', {
+        'departements': departements,
+        'niveaux': niveaux
+    })
 
 def landing_page(request):
     """Ancienne page d'accueil (conservée par sécurité)"""
@@ -37,6 +93,12 @@ def login_etudiant(request):
                                 username=etudiant.user.username,
                                 password=password)
             if user:
+                # Vérifier si le compte est validé
+                if not etudiant.est_valide:
+                    messages.error(request, "Votre compte est en attente de validation par l'administration.")
+                    logout(request)
+                    return redirect('login')
+
                 login(request, user)
 
                 # Vérifier si c'est la première connexion

@@ -1,0 +1,176 @@
+{% extends 'administration/dashboard.html' %}
+{% load static %}
+
+{% block title %}Gestion des Inscriptions — Admin{% endblock %}
+
+{% block body %}
+<!-- Replace the main content but keep sidebar -->
+<div class="admin-sidebar">
+    <div class="admin-sidebar-header"
+        style="flex-direction: column; text-align: center; padding: 1.8rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); gap: 0.5rem;">
+        <div class="d-flex flex-column align-items-center justify-content-center gap-2 mb-2"
+            style="background: white; padding: 1.2rem 1rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="{% static 'images/logos_uganc.png' %}" height="55" alt="UGANC" style="object-fit: contain;">
+            <div style="width: 70%; height: 2px; background: #E0E8F5; border-radius: 2px; margin: 0.3rem 0;"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="45" alt="CI" style="object-fit: contain;">
+        </div>
+        <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
+            Centre Informatique
+        </div>
+        <div
+            style="color:var(--teal); font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            UGANC • Admin Panel
+        </div>
+    </div>
+    <div class="admin-sidebar-nav">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-link">
+            <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
+        </a>
+        <a href="{% url 'liste_etudiants' %}" class="sidebar-link">
+            <i class="fa-solid fa-users"></i> Étudiants
+        </a>
+        <a href="{% url 'gestion_inscriptions' %}" class="sidebar-link active">
+            <i class="fa-solid fa-user-clock"></i> Inscriptions
+        </a>
+        <a href="{% url 'gestion_demandes' %}" class="sidebar-link">
+            <i class="fa-solid fa-file-lines"></i> Demandes
+        </a>
+        <a href="{% url 'gestion_notes' %}" class="sidebar-link">
+            <i class="fa-solid fa-book-open"></i> Notes
+        </a>
+        <a href="{% url 'import_csv' %}" class="sidebar-link">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
+        </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </div>
+</div>
+
+<div class="admin-main">
+    <div class="topbar">
+        <h4 style="margin:0; font-weight:800; color:var(--navy);">
+            <i class="fa-solid fa-user-clock text-muted me-2"></i> Inscriptions en attente
+        </h4>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="text-align:right;">
+                <h6 style="margin:0; font-weight:700;">{{ request.user.username }}</h6>
+                <small class="text-muted">Administrateur</small>
+            </div>
+            <div
+                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages d'alerte -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for msg in messages %}
+        <div class="alert {% if msg.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} d-flex align-items-center mb-2"
+            role="alert" style="border-radius: 10px;">
+            <i
+                class="fa-solid {% if msg.tags == 'error' %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} me-2"></i>
+            <div>{{ msg }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div class="card-header bg-white" style="border-bottom: 2px solid #F0F4FA; padding: 20px 25px;">
+            <h5 class="mb-0" style="color: #1A2744; font-weight: 700;">
+                <i class="fa-solid fa-users-gear me-2" style="color: #00C3A3;"></i>
+                Inscriptions Étudiantes en Attente
+            </h5>
+            <p class="text-muted mb-0 mt-1" style="font-size: 0.85rem;">Validez ou rejetez les demandes de création de
+                compte étudiant.</p>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead style="background: #F8FAFC;">
+                        <tr>
+                            <th
+                                style="padding: 15px 25px; color: #64748B; font-weight: 600; font-size: 0.85rem; border-bottom: none;">
+                                ÉTUDIANT</th>
+                            <th
+                                style="padding: 15px 25px; color: #64748B; font-weight: 600; font-size: 0.85rem; border-bottom: none;">
+                                MATRICULE</th>
+                            <th
+                                style="padding: 15px 25px; color: #64748B; font-weight: 600; font-size: 0.85rem; border-bottom: none;">
+                                DÉPARTEMENT / NIVEAU</th>
+                            <th style="padding: 15px 25px; color: #64748B; font-weight: 600; font-size: 0.85rem; border-bottom: none;"
+                                class="text-end">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for etudiant in inscriptions %}
+                        <tr>
+                            <td style="padding: 15px 25px; border-color: #F0F4FA;">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light d-flex align-items-center justify-content-center rounded-circle me-3"
+                                        style="width: 40px; height: 40px; color: #1A2744;">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0" style="color: #1A2744; font-weight: 600;">{{ etudiant.prenom }}
+                                            {{
+                                            etudiant.nom }}</h6>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 15px 25px; border-color: #F0F4FA;">
+                                <span class="badge"
+                                    style="background: rgba(0, 195, 163, 0.1); color: #00C3A3; font-family: monospace; font-size: 0.9rem;">
+                                    {{ etudiant.matricule }}
+                                </span>
+                            </td>
+                            <td style="padding: 15px 25px; border-color: #F0F4FA;">
+                                <div style="font-size: 0.9rem; color: #1A2744; font-weight: 500;">
+                                    {{ etudiant.departement.nom|default:'-' }}
+                                </div>
+                                <div style="font-size: 0.8rem; color: #64748B;">
+                                    {{ etudiant.niveau.nom|default:'-' }}
+                                </div>
+                            </td>
+                            <td style="padding: 15px 25px; border-color: #F0F4FA;" class="text-end">
+                                <form method="POST" action="{% url 'valider_inscription' etudiant.id %}"
+                                    style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm"
+                                        style="background: rgba(0,195,163,0.1); color: #00C3A3; border-radius: 8px; border: 1px solid rgba(0,195,163,0.2);"
+                                        onclick="return confirm('Êtes-vous sûr de vouloir valider ce compte ?');"
+                                        title="Valider">
+                                        <i class="fa-solid fa-check"></i> Valider
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{% url 'rejeter_inscription' etudiant.id %}"
+                                    style="display: inline-block; margin-left: 5px;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm"
+                                        style="background: rgba(220,53,69,0.1); color: #dc3545; border-radius: 8px; border: 1px solid rgba(220,53,69,0.2);"
+                                        onclick="return confirm('Êtes-vous sûr de vouloir rejeter et supprimer cette demande ?');"
+                                        title="Rejeter">
+                                        <i class="fa-solid fa-xmark"></i> Rejeter
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">
+                                <i class="fa-solid fa-user-check mb-2" style="font-size:2rem; display:block;"></i>
+                                Aucune demande d'inscription en attente.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
