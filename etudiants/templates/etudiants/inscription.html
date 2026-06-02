@@ -466,8 +466,7 @@
                             <select name="departement" class="form-control-custom" required>
                                 <option value="" disabled selected>Sélectionnez...</option>
                                 {% for dept in departements %}
-                                <option value="{{ dept.id }}" {% if request.POST.departement==dept.id|stringformat:"s"
-                                    %}selected{% endif %}>{{ dept.nom }}</option>
+                                <option value="{{ dept.id }}">{{ dept.nom }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -479,8 +478,7 @@
                             <select name="niveau" class="form-control-custom" required>
                                 <option value="" disabled selected>Sélectionnez...</option>
                                 {% for nv in niveaux %}
-                                <option value="{{ nv.id }}" {% if request.POST.niveau==nv.id|stringformat:"s"
-                                    %}selected{% endif %}>{{ nv.departement.slug|upper }} - {{ nv.nom }}</option>
+                                <option value="{{ nv.id }}">{{ nv.departement.slug|upper }} - {{ nv.nom }}</option>
                                 {% endfor %}
                             </select>
                         </div>
