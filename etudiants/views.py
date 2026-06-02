@@ -60,8 +60,19 @@ def login_etudiant(request):
             user = authenticate(request, username=identifiant, password=password)
             if user and user.is_staff:
                 login(request, user)
-                messages.success(request, f'Bienvenue Administrateur !')
-                return redirect('admin_dashboard')
+                messages.success(request, f'Bienvenue !')
+                try:
+                    profil = user.profiladmin
+                    redirections = {
+                        'chef_ntic': 'dashboard_chef',
+                        'chef_dl':   'dashboard_chef',
+                        'dga':       'dashboard_dga',
+                        'dg':        'dashboard_dg',
+                    }
+                    url = redirections.get(profil.role, 'admin_dashboard')
+                    return redirect(url)
+                except:
+                    return redirect('admin_dashboard')
             else:
                 messages.error(request, 'Mot de passe incorrect.')
                 return render(request, 'etudiants/login.html')
@@ -77,7 +88,11 @@ def login_etudiant(request):
 def login_admin(request):
     """Connexion administration"""
     if request.user.is_authenticated and request.user.is_staff:
-        return redirect('admin_dashboard')
+        try:
+            role = request.user.profiladmin.role
+            return redirect('dashboard_chef' if role in ['chef_ntic', 'chef_dl'] else f'dashboard_{role}')
+        except:
+            return redirect('admin_dashboard')
 
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -87,7 +102,18 @@ def login_admin(request):
         if user and user.is_staff:
             login(request, user)
             messages.success(request, f'Bienvenue Administrateur !')
-            return redirect('admin_dashboard')
+            try:
+                profil = user.profiladmin
+                redirections = {
+                    'chef_ntic': 'dashboard_chef',
+                    'chef_dl':   'dashboard_chef',
+                    'dga':       'dashboard_dga',
+                    'dg':        'dashboard_dg',
+                }
+                url = redirections.get(profil.role, 'admin_dashboard')
+                return redirect(url)
+            except:
+                return redirect('admin_dashboard')
         elif user:
             messages.error(request, 'Vous n\'êtes pas administrateur.')
         else:

@@ -1,144 +1,100 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Note
-from etudiants.models import Etudiant, Departement, Niveau, Session
-from django.utils.text import slugify
+from django.utils import timezone
+from .models import Note, ImportNotes
+from etudiants.models import Etudiant, Session, ProfilAdmin
+from etudiants.permissions import (
+    est_directeur, est_chef_dept, get_filiere_admin
+)
 import pandas as pd
+from django.utils.text import slugify
 
 
 @login_required
 def liste_notes(request):
-    """Afficher les notes de l'étudiant connecté"""
     etudiant = Etudiant.objects.get(user=request.user)
-    notes = Note.objects.filter(etudiant=etudiant)
+    notes    = Note.objects.filter(etudiant=etudiant)
 
-    moyenne = 0
-    if notes.exists():
-        moyenne = round(sum(n.note for n in notes) / notes.count(), 2)
+    if notes:
+        moyenne = sum([n.note for n in notes]) / len(notes)
+    else:
+        moyenne = 0
 
     return render(request, 'notes/liste_notes.html', {
-        'notes': notes,
-        'moyenne': moyenne,
-        'etudiant': etudiant
+        'notes':    notes,
+        'moyenne':  round(moyenne, 2),
+        'etudiant': etudiant,
     })
 
 
+# ── CHEF DE DÉPARTEMENT — Téléverse le fichier ──
 @login_required
-def import_csv(request):
-    """Import de notes via CSV ou Excel (admin uniquement)"""
-    if not request.user.is_staff:
-        messages.error(request, 'Accès réservé à l\'administration.')
-        return redirect('profil')
+def deposer_notes(request):
+    """
+    Réservé aux Chefs de Département.
+    Ils déposent le fichier Excel regroupé.
+    """
+    try:
+        profil = request.user.profiladmin
+    except:
+        messages.error(request, 'Accès refusé.')
+        return redirect('dashboard')
+
+    if profil.role not in ['chef_ntic', 'chef_dl']:
+        messages.error(
+            request,
+            'Seuls les Chefs de Département peuvent déposer des notes.'
+        )
+        return redirect('dashboard')
+
+    # Filière du chef
+    filiere = get_filiere_admin(request.user)
 
     if request.method == 'POST':
-        fichier = request.FILES.get('fichier')
-        session_val = request.POST.get('session', 'Session 1').strip()
-        annee_val = request.POST.get('annee', '2023-2024').strip()
+        fichier  = request.FILES.get('fichier')
+        session_val  = request.POST.get('session')
+        annee    = request.POST.get('annee')
 
         if not fichier:
             messages.error(request, 'Aucun fichier sélectionné.')
-            return redirect('import_csv')
+            return redirect('deposer_notes')
 
         try:
+            # Lecture fichier
             if fichier.name.endswith('.csv'):
                 df = pd.read_csv(fichier)
-            elif fichier.name.endswith('.xlsx'):
-                df = pd.read_excel(fichier)
             else:
-                messages.error(request, 'Format non supporté. Utilisez CSV ou Excel.')
-                return redirect('import_csv')
+                df = pd.read_excel(fichier)
 
-            # Colonnes de base attendues : 
-            # matricule, nom, prenom, departement, niveau
-            # Toutes les autres colonnes seront traitées comme des matières !
-            
-            from django.contrib.auth.models import User
-
-            compteur = 0
-            erreurs = 0
-            
-            # Normaliser les noms de colonnes pour trouver facilement les colonnes de base
             colonnes_base = ['matricule', 'nom', 'prenom', 'departement', 'niveau']
-            
+
+            # Sauvegarder l'import
+            import_obj = ImportNotes.objects.create(
+                fichier=fichier,
+                filiere=filiere,
+                session=session_val,
+                annee=annee,
+                depose_par=request.user,
+                statut='depose'
+            )
+
+            # Importer les notes en base
+            compteur = 0
+            erreurs  = 0
             for _, row in df.iterrows():
                 try:
-                    # Trouver la colonne matricule (insensible à la casse)
                     col_mat = next((c for c in df.columns if str(c).lower().strip() == 'matricule'), None)
                     if not col_mat or pd.isna(row[col_mat]):
                         continue
                         
                     matricule = str(row[col_mat]).strip()
+                    etudiant = Etudiant.objects.get(matricule=matricule)
                     
-                    # Extraire les champs de base (insensible à la casse)
-                    nom_val = ''
-                    col_nom = next((c for c in df.columns if str(c).lower().strip() == 'nom'), None)
-                    if col_nom and pd.notna(row[col_nom]): nom_val = str(row[col_nom]).strip()
-                        
-                    prenom_val = ''
-                    col_prenom = next((c for c in df.columns if str(c).lower().strip() == 'prenom'), None)
-                    if col_prenom and pd.notna(row[col_prenom]): prenom_val = str(row[col_prenom]).strip()
-
-                    # 1. Créer/Récupérer le User
-                    user, created_user = User.objects.get_or_create(
-                        username=matricule,
-                        defaults={
-                            'first_name': prenom_val,
-                            'last_name': nom_val,
-                        }
-                    )
-                    
-                    if created_user:
-                        user.set_password("Ntic2026")
-                        user.save()
-
-                    # 2. Créer/Récupérer l'Etudiant
-                    departement_raw = ''
-                    col_dep = next((c for c in df.columns if str(c).lower().strip() == 'departement'), None)
-                    if col_dep and pd.notna(row[col_dep]): departement_raw = str(row[col_dep]).strip().upper()
-                        
-                    if 'DEVELOPPEMENT' in departement_raw or 'LOGICIEL' in departement_raw or 'DL' in departement_raw:
-                        departement_finale = 'Développement Logiciel'
-                    else:
-                        departement_finale = 'Nouvelle Technologie de l\'Information et de la Communication'
-
-                    departement_slug = slugify(departement_finale[:40]) if departement_finale else 'inconnu'
-                    departement_obj, _ = Departement.objects.get_or_create(
-                        slug=departement_slug,
-                        defaults={'nom': departement_finale or 'Inconnu'}
-                    )
-
-                    niveau_val = ''
-                    col_niv = next((c for c in df.columns if str(c).lower().strip() == 'niveau'), None)
-                    if col_niv and pd.notna(row[col_niv]): niveau_val = str(row[col_niv]).strip()
-
-                    niveau_slug = slugify(f"{departement_slug}-{niveau_val}") if niveau_val else f"{departement_slug}-inconnu"
-                    niveau_obj, _ = Niveau.objects.get_or_create(
-                        slug=niveau_slug,
-                        defaults={'departement': departement_obj, 'nom': niveau_val or 'Inconnu'}
-                    )
-
-                    etudiant, created_etu = Etudiant.objects.get_or_create(
-                        matricule=matricule,
-                        defaults={
-                            'user': user,
-                            'nom': nom_val,
-                            'prenom': prenom_val,
-                            'departement': departement_obj,
-                            'niveau': niveau_obj,
-                        }
-                    )
-                    
-                    # Si l'étudiant existe déjà mais n'est pas lié à ce user (sécurité)
-                    if not created_etu and etudiant.user != user:
-                        etudiant.user = user
-                        etudiant.save()
-
-                    # 3. Créer les Notes pour chaque colonne Matière
-                    session_slug = slugify(f"{niveau_slug}-{session_val}")
+                    session_slug = slugify(f"{etudiant.niveau.slug}-{session_val}")
                     session_obj, _ = Session.objects.get_or_create(
                         slug=session_slug,
-                        defaults={'niveau': niveau_obj, 'nom': session_val}
+                        defaults={'niveau': etudiant.niveau, 'nom': session_val}
                     )
 
                     notes_ajoutees = False
@@ -147,34 +103,157 @@ def import_csv(request):
                             val = row[col]
                             if pd.notna(val) and str(val).strip() != '':
                                 try:
-                                    # Gestion des virgules et espaces
                                     note_val = float(str(val).replace(',', '.').replace(' ', ''))
-                                    Note.objects.create(
+                                    Note.objects.update_or_create(
                                         etudiant=etudiant,
                                         matiere=str(col).strip(),
-                                        note=note_val,
                                         session=session_obj,
-                                        annee=annee_val
+                                        annee=annee,
+                                        defaults={'note': note_val}
                                     )
                                     compteur += 1
                                     notes_ajoutees = True
                                 except ValueError:
-                                    # La valeur n'est pas un nombre, on ignore cette cellule
                                     pass
-
-                    if created_etu and not notes_ajoutees:
-                        compteur += 1
-
-                except Exception as e:
+                except Etudiant.DoesNotExist:
                     erreurs += 1
-                    print(f"Erreur ligne {row.name}: {str(e)}")
 
-            messages.success(request,
-                             f'{compteur} entrées traitées avec succès. {erreurs} erreurs.')
+            import_obj.nb_notes_importees = compteur
+            import_obj.save()
+
+            messages.success(
+                request,
+                f'{compteur} notes déposées avec succès. En attente de validation DGA.'
+            )
 
         except Exception as e:
-            messages.error(request, f'Erreur lors de l\'import : {str(e)}')
+            messages.error(request, f'Erreur : {str(e)}')
 
-        return redirect('import_csv')
+        return redirect('deposer_notes')
 
-    return render(request, 'notes/import_csv.html')
+    # Historique des imports du chef
+    mes_imports = ImportNotes.objects.filter(
+        depose_par=request.user
+    ).order_by('-date_depot')
+
+    return render(request, 'notes/deposer_notes.html', {
+        'profil':      request.user.profiladmin,
+        'filiere':     filiere,
+        'mes_imports': mes_imports,
+    })
+
+
+# ── DGA — Valide les notes ──
+@login_required
+def valider_notes_dga(request, import_id):
+    """Réservé au DGA."""
+    try:
+        profil = request.user.profiladmin
+    except:
+        return redirect('dashboard')
+
+    if profil.role != 'dga':
+        messages.error(request, 'Réservé au DGA.')
+        return redirect('dashboard')
+
+    import_obj = get_object_or_404(ImportNotes, id=import_id)
+    import_obj.statut         = 'valide_dga'
+    import_obj.valide_par_dga = request.user
+    import_obj.date_validation_dga = timezone.now()
+    import_obj.save()
+
+    messages.success(
+        request,
+        f'Notes {import_obj.filiere} — {import_obj.session} validées. En attente du DG.'
+    )
+    return redirect('gestion_imports')
+
+
+# ── DG — Validation finale ──
+@login_required
+def valider_notes_dg(request, import_id):
+    """Réservé au DG."""
+    try:
+        profil = request.user.profiladmin
+    except:
+        return redirect('dashboard')
+
+    if profil.role != 'dg':
+        messages.error(request, 'Réservé au DG.')
+        return redirect('dashboard')
+
+    import_obj = get_object_or_404(ImportNotes, id=import_id)
+
+    if import_obj.statut != 'valide_dga':
+        messages.error(
+            request,
+            'Cet import doit d\'abord être validé par le DGA.'
+        )
+        return redirect('gestion_imports')
+
+    import_obj.statut        = 'valide_dg'
+    import_obj.valide_par_dg = request.user
+    import_obj.date_validation_dg = timezone.now()
+    import_obj.save()
+
+    messages.success(
+        request,
+        f'Notes {import_obj.filiere} — {import_obj.session} validées définitivement. Les étudiants peuvent demander leurs relevés.'
+    )
+    return redirect('gestion_imports')
+
+
+# ── Rejeter un import ──
+@login_required
+def rejeter_notes(request, import_id):
+    try:
+        profil = request.user.profiladmin
+    except:
+        return redirect('dashboard')
+
+    if profil.role not in ['dga', 'dg']:
+        return redirect('dashboard')
+
+    import_obj = get_object_or_404(ImportNotes, id=import_id)
+    commentaire = request.POST.get('commentaire', '')
+    import_obj.statut      = 'rejete'
+    import_obj.commentaire = commentaire
+    import_obj.save()
+
+    messages.warning(
+        request,
+        f'Import rejeté. Le Chef de Département sera notifié.'
+    )
+    return redirect('gestion_imports')
+
+
+# ── Vue gestion imports (DGA + DG) ──
+@login_required
+def gestion_imports(request):
+    try:
+        profil = request.user.profiladmin
+    except:
+        return redirect('dashboard')
+
+    if profil.role == 'dga':
+        # DGA voit les imports déposés par les chefs
+        imports = ImportNotes.objects.filter(
+            statut='depose'
+        ).order_by('-date_depot')
+        titre = "Imports à valider — DGA"
+
+    elif profil.role == 'dg':
+        # DG voit les imports validés par DGA
+        imports = ImportNotes.objects.filter(
+            statut='valide_dga'
+        ).order_by('-date_depot')
+        titre = "Imports à valider définitivement — DG"
+
+    else:
+        return redirect('dashboard')
+
+    return render(request, 'notes/gestion_imports.html', {
+        'imports': imports,
+        'profil':  profil,
+        'titre':   titre,
+    })

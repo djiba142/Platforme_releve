@@ -64,5 +64,56 @@ class Etudiant(models.Model):
                     self.departement = dept
                 except Departement.DoesNotExist:
                     pass
-            # Vous pourrez ajouter d'autres conditions ici (ex: DL) avec elif self.matricule.startswith('XXXX'):
+            elif self.matricule.startswith('6644'):
+                try:
+                    from .models import Departement
+                    dept = Departement.objects.get(slug='dl')
+                    self.departement = dept
+                except Departement.DoesNotExist:
+                    pass
         super().save(*args, **kwargs)
+
+
+class ProfilAdmin(models.Model):
+
+    ROLE_CHOICES = [
+        ('dg',         'Directeur Général'),
+        ('dga',        'Directeur Général Adjoint'),
+        ('chef_ntic',  'Chef de Département NTIC'),
+        ('chef_dl',    'Chef de Département DL'),
+    ]
+
+    user       = models.OneToOneField(
+        User, on_delete=models.CASCADE
+    )
+    role       = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES
+    )
+    nom        = models.CharField(max_length=100)
+    prenom     = models.CharField(max_length=100)
+    email      = models.EmailField()
+    telephone  = models.CharField(
+        max_length=20, blank=True, null=True
+    )
+
+    # Signature image (optionnel)
+    signature  = models.ImageField(
+        upload_to='signatures/',
+        blank=True, null=True
+    )
+
+    def __str__(self):
+        return f"{self.get_role_display()} — {self.prenom} {self.nom}"
+
+    def get_role_label(self):
+        labels = {
+            'dg':        'Directeur Général',
+            'dga':       'Directeur Général Adjoint',
+            'chef_ntic': 'Chef de Département NTIC',
+            'chef_dl':   'Chef de Département DL',
+        }
+        return labels.get(self.role, self.role)
+
+    class Meta:
+        verbose_name = "Profil Administrateur"

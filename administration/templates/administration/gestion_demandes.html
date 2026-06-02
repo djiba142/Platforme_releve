@@ -1,14 +1,24 @@
 {% extends 'administration/dashboard.html' %}
+{% load static %}
 
 {% block title %}Gestion des Demandes — Admin{% endblock %}
 
 {% block body %}
 <div class="admin-sidebar">
-    <div class="admin-sidebar-header">
-        <i class="fa-solid fa-shield-halved sidebar-logo"></i>
-        <div>
-            <h5 style="margin:0; font-weight:800; font-size:1.1rem;">Admin Panel</h5>
-            <small style="color:var(--teal); font-size:0.75rem;">Plateforme Univ</small>
+    <div class="admin-sidebar-header"
+        style="flex-direction: column; text-align: center; padding: 1.8rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); gap: 0.5rem;">
+        <div class="d-flex flex-column align-items-center justify-content-center gap-2 mb-2"
+            style="background: white; padding: 1.2rem 1rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="{% static 'images/logos_uganc.png' %}" height="55" alt="UGANC" style="object-fit: contain;">
+            <div style="width: 70%; height: 2px; background: #E0E8F5; border-radius: 2px; margin: 0.3rem 0;"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="45" alt="CI" style="object-fit: contain;">
+        </div>
+        <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
+            Centre Informatique
+        </div>
+        <div
+            style="color:var(--teal); font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            UGANC • Admin Panel
         </div>
     </div>
     <div class="admin-sidebar-nav">

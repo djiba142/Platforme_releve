@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chef Département — UGANC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #EFF4FB;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .sidebar {
+            width: 240px;
+            min-height: 100vh;
+            background: #1A2744;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            border-right: 3px solid #00C3A3;
+        }
+
+        .sidebar-logo {
+            padding: 20px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-label {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 12px 18px 5px;
+            text-transform: uppercase;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            color: white;
+            background: rgba(0, 195, 163, 0.1);
+            border-left-color: #00C3A3;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(26, 39, 68, 0.08);
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 4px 15px rgba(26, 39, 68, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .content-card h6 {
+            color: #1A2744;
+            font-weight: 700;
+            border-bottom: 2px solid #EFF4FB;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+
+        thead th {
+            background: #1A2744 !important;
+            color: white;
+        }
+
+        .badge-depose {
+            background: #1565C0;
+            color: white;
+        }
+
+        .badge-dga {
+            background: #FF9800;
+            color: white;
+        }
+
+        .badge-dg {
+            background: #00C3A3;
+            color: white;
+        }
+
+        .badge-rejete {
+            background: #DC3545;
+            color: white;
+        }
+
+        .role-badge {
+            background: rgba(0, 195, 163, 0.15);
+            border: 1px solid rgba(0, 195, 163, 0.3);
+            color: #00C3A3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .upload-zone {
+            border: 2px dashed #D4E0F0;
+            border-radius: 14px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            border-color: #00C3A3;
+            background: rgba(0, 195, 163, 0.03);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <img src="/static/image/logos_uganc.png" height="35" alt="UGANC">
+                <img src="/static/image/logosCI.png" height="30" alt="CI" style="filter:brightness(0) invert(1);
+                        opacity:0.85;">
+            </div>
+            <div style="color:white;font-weight:700;
+                    font-size:0.85rem;">
+                Centre Informatique
+            </div>
+            <div style="color:#00C3A3;font-size:0.7rem;">
+                Chef de Département
+            </div>
+        </div>
+
+        <div class="menu-label">Navigation</div>
+        <a href="{% url 'dashboard_chef' %}" class="menu-item active">
+            <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="{% url 'deposer_notes' %}" class="menu-item">
+            <i class="fa-solid fa-file-import"></i>
+            Déposer notes
+        </a>
+        <a href="{% url 'gestion_imports' %}" class="menu-item">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Mes imports
+        </a>
+        <a href="{% url 'liste_etudiants' %}" class="menu-item">
+            <i class="fa-solid fa-users"></i>
+            Mes étudiants
+        </a>
+
+        <div style="
+        position:absolute; bottom:0; left:0;
+        right:0; padding:16px 18px;
+        border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="
+            background:rgba(0,195,163,0.1);
+            border-radius:10px; padding:12px;
+            margin-bottom:12px;">
+                <div style="color:white;font-weight:700;
+                        font-size:0.82rem;">
+                    {{ profil.prenom }} {{ profil.nom }}
+                </div>
+                <div class="role-badge mt-1">
+                    {{ profil.get_role_display }}
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="menu-item" style="padding:0;color:rgba(255,255,255,0.4);">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Déconnexion
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- Topbar -->
+        <div style="
+        background:white; border-radius:12px;
+        padding:14px 20px; margin-bottom:24px;
+        display:flex; align-items:center;
+        justify-content:space-between;
+        box-shadow:0 2px 10px rgba(26,39,68,0.07);">
+            <div>
+                <h5 style="margin:0;color:#1A2744;font-weight:700;">
+                    Dashboard — Chef Département
+                </h5>
+                <small style="color:#64748B;">
+                    Filière :
+                    <strong style="color:#00C3A3;">
+                        {{ nom_filiere }}
+                    </strong>
+                </small>
+            </div>
+            <span class="role-badge">
+                <i class="fa-solid fa-chalkboard-teacher me-1"></i>
+                {{ profil.get_role_display }}
+            </span>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div style="color:#64748B;font-size:0.8rem;">
+                        <i class="fa-solid fa-users me-1" style="color:#1A2744;"></i>
+                        Étudiants {{ filiere }}
+                    </div>
+                    <h2 style="color:#1A2744;font-weight:800;margin:5px 0 0;">
+                        {{ nb_etudiants }}
+                    </h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div style="color:#64748B;font-size:0.8rem;">
+                        <i class="fa-solid fa-list-ol me-1" style="color:#00C3A3;"></i>
+                        Notes importées
+                    </div>
+                    <h2 style="color:#1A2744;font-weight:800;margin:5px 0 0;">
+                        {{ nb_notes }}
+                    </h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div style="color:#64748B;font-size:0.8rem;">
+                        <i class="fa-solid fa-hourglass-half me-1" style="color:#FFC107;"></i>
+                        En attente DGA
+                    </div>
+                    <h2 style="color:#FFC107;font-weight:800;margin:5px 0 0;">
+                        {{ nb_deposes }}
+                    </h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div style="color:#64748B;font-size:0.8rem;">
+                        <i class="fa-solid fa-circle-check me-1" style="color:#00C3A3;"></i>
+                        Validés DG
+                    </div>
+                    <h2 style="color:#00C3A3;font-weight:800;margin:5px 0 0;">
+                        {{ nb_valides }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Déposer notes -->
+            <div class="col-md-5">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-file-import me-2" style="color:#00C3A3;"></i>
+                        Déposer les notes — {{ filiere }}
+                    </h6>
+
+                    {% if messages %}
+                    {% for msg in messages %}
+                    <div class="alert
+                        {% if 'succès' in msg.message %}
+                            alert-success
+                        {% else %}
+                            alert-danger
+                        {% endif %}
+                        d-flex align-items-center gap-2">
+                        <i class="fa-solid
+                            {% if 'succès' in msg.message %}
+                                fa-circle-check
+                            {% else %}
+                                fa-triangle-exclamation
+                            {% endif %}"></i>
+                        {{ msg }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'deposer_notes' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="font-size:0.88rem;">
+                                <i class="fa-solid fa-layer-group me-1" style="color:#00C3A3;"></i>
+                                Session
+                            </label>
+                            <select name="session" class="form-select" required>
+                                <option value="">Choisir...</option>
+                                <option>Session 1</option>
+                                <option>Session 2</option>
+                                <option>Session Rattrapage</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="font-size:0.88rem;">
+                                <i class="fa-solid fa-calendar me-1" style="color:#00C3A3;"></i>
+                                Année académique
+                            </label>
+                            <input type="text" name="annee" class="form-control" placeholder="ex: 2024" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="font-size:0.88rem;">
+                                <i class="fa-solid fa-file-excel me-1" style="color:#00C3A3;"></i>
+                                Fichier Excel / CSV
+                            </label>
+                            <div class="upload-zone" onclick="document.getElementById('fichierInput').click()">
+                                <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2 d-block" style="color:#D4E0F0;"></i>
+                                <div style="color:#64748B;font-size:0.88rem;">
+                                    Cliquer pour choisir le fichier
+                                </div>
+                                <small style="color:#94A3B8;">
+                                    .xlsx ou .csv acceptés
+                                </small>
+                            </div>
+                            <input type="file" id="fichierInput" name="fichier" accept=".xlsx,.csv"
+                                style="display:none;" onchange="showFileName(this)" required>
+                            <div id="fileName" style="margin-top:8px;font-size:0.82rem;
+                                    color:#00C3A3;display:none;">
+                                <i class="fa-solid fa-file-excel me-1"></i>
+                                <span id="fileNameText"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn w-100 fw-bold py-2" style="background:#1A2744;color:white;
+                                   border-radius:10px;">
+                            <i class="fa-solid fa-paper-plane me-2" style="color:#00C3A3;"></i>
+                            Déposer pour validation DGA
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Historique imports -->
+            <div class="col-md-7">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-clock-rotate-left me-2" style="color:#00C3A3;"></i>
+                        Historique de mes dépôts
+                    </h6>
+                    {% if derniers_imports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Session</th>
+                                    <th>Année</th>
+                                    <th>Notes</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for imp in derniers_imports %}
+                                <tr>
+                                    <td>{{ imp.session }}</td>
+                                    <td>{{ imp.annee }}</td>
+                                    <td>
+                                        <strong>
+                                            {{ imp.nb_notes_importees }}
+                                        </strong>
+                                    </td>
+                                    <td style="font-size:0.82rem;">
+                                        {{ imp.date_depot|date:"d/m/Y" }}
+                                    </td>
+                                    <td>
+                                        {% if imp.statut == 'depose' %}
+                                        <span class="badge badge-depose">
+                                            <i class="fa-solid fa-hourglass-half me-1"></i>
+                                            Att. DGA
+                                        </span>
+                                        {% elif imp.statut == 'valide_dga' %}
+                                        <span class="badge badge-dga">
+                                            <i class="fa-solid fa-check me-1"></i>
+                                            Validé DGA
+                                        </span>
+                                        {% elif imp.statut == 'valide_dg' %}
+                                        <span class="badge badge-dg">
+                                            <i class="fa-solid fa-check-double me-1"></i>
+                                            Actif ✓
+                                        </span>
+                                        {% else %}
+                                        <span class="badge badge-rejete">
+                                            <i class="fa-solid fa-xmark me-1"></i>
+                                            Rejeté
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-folder-open fa-2x mb-2 d-block" style="color:#D4E0F0;"></i>
+                        Aucun dépôt effectué
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showFileName(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('fileName').style.display = 'block';
+                document.getElementById('fileNameText').textContent =
+                    input.files[0].name;
+            }
+        }
+    </script>
+</body>
+
+</html>
