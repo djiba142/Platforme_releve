@@ -35,7 +35,8 @@
         /* ── PANNEAU GAUCHE ── */
         .left-panel {
             width: 48%;
-            background: linear-gradient(160deg, #1A2744 0%, #1E3055 50%, #233D6A 100%);
+            background: #1976D2;
+            /* Bleu classique UGANC */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -45,26 +46,18 @@
             overflow: hidden;
         }
 
+        /* Motif subtil géométrique au lieu de glowing orbs */
         .left-panel::before {
             content: '';
             position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(0, 195, 163, 0.15) 0%, transparent 70%);
-            top: -120px;
-            right: -120px;
-            border-radius: 50%;
-        }
-
-        .left-panel::after {
-            content: '';
-            position: absolute;
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, rgba(21, 101, 192, 0.1) 0%, transparent 70%);
-            bottom: -80px;
-            left: -80px;
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.8;
+            z-index: 1;
         }
 
         .left-content {
@@ -229,8 +222,8 @@
         }
 
         .form-control {
-            border: 1.5px solid #D0D8E8;
-            border-radius: 10px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
             padding: 12px 16px;
             font-size: 0.95rem;
             background: white;
@@ -260,21 +253,21 @@
         }
 
         .input-group-text {
-            border: 1.5px solid #D0D8E8;
-            background: #F0F4FA;
+            border: 1px solid #CBD5E1;
+            background: #F8FAFC;
             cursor: pointer;
             border-left: none;
-            border-radius: 0 10px 10px 0 !important;
+            border-radius: 0 6px 6px 0 !important;
             transition: background 0.2s;
         }
 
         .input-group-text:hover {
-            background: #DAE2F0;
+            background: #E2E8F0;
         }
 
         .input-group .form-control {
             border-right: none;
-            border-radius: 10px 0 0 10px !important;
+            border-radius: 6px 0 0 6px !important;
         }
 
         .form-text {
@@ -324,27 +317,24 @@
 
         /* Bouton */
         .btn-login {
-            background: linear-gradient(135deg, var(--teal) 0%, var(--navy) 100%);
+            background: var(--bleu-ci-light);
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 13px;
-            font-weight: 700;
+            border-radius: 6px;
+            padding: 12px;
+            font-weight: 600;
             font-size: 0.95rem;
-            transition: all 0.3s;
+            transition: all 0.2s;
             width: 100%;
-            position: relative;
-            overflow: hidden;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 195, 163, 0.35);
+            background: var(--bleu-ci);
             color: white;
         }
 
         .btn-login:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         .back-link {
@@ -437,29 +427,31 @@
             <h2>Centre Informatique</h2>
             <p class="subtitle">Université Gamal Abdel Nasser de Conakry</p>
 
-            <!-- Illustration plateforme -->
-            <div class="info-card" style="text-align:center; padding:30px 20px;">
-                <i class="fa-solid fa-graduation-cap" style="font-size:2.5rem; color:#00C3A3; margin-bottom:14px;"></i>
-                <h6 style="margin-bottom:10px;">Plateforme de Gestion des Relevés</h6>
-                <p style="color:rgba(255,255,255,0.5); font-size:0.84rem; margin:0; line-height:1.6;">
+            <!-- Illustration plateforme (épurée) -->
+            <div class="info-card"
+                style="text-align:center; padding:30px 20px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                <h6 style="color:white; margin-bottom:10px; letter-spacing: 1px;">Plateforme de Gestion des Relevés</h6>
+                <p style="color:rgba(255,255,255,0.85); font-size:0.84rem; margin:0; line-height:1.6;">
                     Demandez, consultez et téléchargez vos relevés de notes officiels en ligne, 24h/24 et 7j/7.
                 </p>
             </div>
 
-            <div class="info-card" style="text-align:center; padding:18px 20px;">
+            <div class="info-card" style="text-align:center; padding:18px 20px; background: transparent; border:none;">
                 <div style="display:flex; justify-content:center; gap:30px;">
                     <div>
                         <i class="fa-solid fa-shield-halved"
-                            style="font-size:1.3rem; color:#00C3A3; margin-bottom:6px;"></i>
-                        <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; margin:0;">Sécurisé</p>
+                            style="font-size:1.3rem; color:rgba(255,255,255,0.8); margin-bottom:6px;"></i>
+                        <p style="color:rgba(255,255,255,0.7); font-size:0.75rem; margin:0;">Sécurisé</p>
                     </div>
                     <div>
-                        <i class="fa-solid fa-bolt" style="font-size:1.3rem; color:#64B5F6; margin-bottom:6px;"></i>
-                        <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; margin:0;">Rapide</p>
+                        <i class="fa-solid fa-bolt"
+                            style="font-size:1.3rem; color:rgba(255,255,255,0.8); margin-bottom:6px;"></i>
+                        <p style="color:rgba(255,255,255,0.7); font-size:0.75rem; margin:0;">Efficace</p>
                     </div>
                     <div>
-                        <i class="fa-solid fa-file-pdf" style="font-size:1.3rem; color:#00C3A3; margin-bottom:6px;"></i>
-                        <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; margin:0;">PDF Officiel</p>
+                        <i class="fa-solid fa-file-pdf"
+                            style="font-size:1.3rem; color:rgba(255,255,255,0.8); margin-bottom:6px;"></i>
+                        <p style="color:rgba(255,255,255,0.7); font-size:0.75rem; margin:0;">PDF Officiels</p>
                     </div>
                 </div>
             </div>

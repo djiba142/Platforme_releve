@@ -12,9 +12,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
         :root {
-            --primary: #00C3A3;
-            --primary-light: #e6f9f6;
-            --primary-dark: #009d83;
+            --primary: #1976D2;
+            --primary-light: #EFF6FF;
+            --primary-dark: #1565C0;
             --navy: #0A192F;
             --navy-light: #112240;
             --gray-light: #F8FAFC;
@@ -48,7 +48,7 @@
         /* Panneau Gauche : Gradient et Logos */
         .auth-cover {
             width: 45%;
-            background: linear-gradient(145deg, var(--navy), #061020);
+            background: #1976D2;
             padding: 3rem;
             display: flex;
             flex-direction: column;
@@ -58,27 +58,18 @@
             overflow: hidden;
         }
 
-        /* Micro-interactions & décoration */
+        /* Motif géométrique discret */
         .auth-cover::before {
             content: '';
             position: absolute;
-            top: -10%;
-            right: -10%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(0, 195, 163, 0.15) 0%, transparent 60%);
-            border-radius: 50%;
-        }
-
-        .auth-cover::after {
-            content: '';
-            position: absolute;
-            bottom: -15%;
-            left: -15%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(0, 195, 163, 0.12) 0%, transparent 65%);
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.8;
+            z-index: 1;
         }
 
         .logos-container {
@@ -118,7 +109,7 @@
         }
 
         .cover-content h2 span {
-            color: var(--primary);
+            color: #90CAF9;
         }
 
         .features-list {
@@ -138,17 +129,16 @@
         }
 
         .features-list .icon-box {
-            background: rgba(0, 195, 163, 0.15);
-            color: var(--primary);
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
             width: 38px;
             height: 38px;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             font-size: 1.1rem;
-            border: 1px solid rgba(0, 195, 163, 0.2);
         }
 
         /* Panneau Droit : Formulaire */
@@ -225,7 +215,7 @@
             outline: none;
             border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 4px rgba(0, 195, 163, 0.1);
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
         }
 
         .form-control-custom:focus+i,
@@ -273,8 +263,7 @@
 
         .btn-submit:hover {
             background: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 195, 163, 0.25);
+            transform: translateY(-1px);
         }
 
         /* Footer */
