@@ -1,584 +1,344 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from etudiants.models import Etudiant, Session
+from etudiants.models import Etudiant, Session, Departement
 from notes.models import Note
 from demandes.models import Demande
 import json
+import re
+
+# ── Fonctions Utilitaires ──
+def get_etudiant(matricule):
+    try:
+        return Etudiant.objects.get(matricule__iexact=matricule)
+    except Etudiant.DoesNotExist:
+        return None
+
+def detect_intent(msg):
+    msg_lower = msg.lower()
+    
+    # 7. Salutation
+    if any(m in msg_lower for m in ['bonjour', 'salut', 'hello', 'cc', 'coucou']):
+        return 'salutation'
+    
+    # 8. Remerciement
+    if any(m in msg_lower for m in ['merci', 'thanks', 'cool']):
+        return 'remerciement'
+        
+    # 1. Demande relevé
+    if any(m in msg_lower for m in ['relevé', 'releve', 'pdf']):
+        return 'demande_releve'
+        
+    # 2. Consulter notes
+    if any(m in msg_lower for m in ['note', 'notes', 'résultat', 'moyenne', 'afficher']):
+        if 'relev' not in msg_lower:
+            return 'consulter_notes'
+            
+    # 3. Oubli mot de passe
+    if any(m in msg_lower for m in ['oubli', 'mot de passe', 'mdp', 'réinitialiser']):
+        return 'oubli_mot_de_passe'
+        
+    # 4. Informations filière
+    if any(m in msg_lower for m in ['ntic', 'dl', 'filière', 'filiere', 'parlez-moi', 'information', 'département']):
+        # Cas spécial pour router correctement si le msg contient "NTIC" ou "DL"
+        if 'ntic' in msg_lower:
+            return 'info_ntic'
+        if 'dl' in msg_lower or 'logiciel' in msg_lower:
+            return 'info_dl'
+        return 'informations_filiere'
+        
+    # 5. Contact Scolarité
+    if any(m in msg_lower for m in ['contact', 'scolarité', 'scolarite', 'appeler', 'téléphone', 'mail', 'joindre']):
+        return 'contact_scolarite'
+        
+    # 6. Aide connexion
+    if any(m in msg_lower for m in ['connecter', 'connexion', 'bloqué', 'marche pas']):
+        return 'aide_connexion'
+        
+    # 9. Hors-périmètre (ex: coupe du monde)
+    if 'coupe du monde' in msg_lower or 'qui a gagné' in msg_lower or 'météo' in msg_lower:
+        return 'hors_perimetre'
+
+    return 'inconnu'
 
 
-# ── Détection filière depuis matricule ──
-def detecter_filiere(matricule):
-    m = matricule.upper()
-    if m.startswith('6642') or 'NT' in m:
-        return 'NTIC'
-    if m.startswith('6644') or 'DL' in m:
-        return 'Développement Logiciel'
-    if 'RS' in m:
-        return 'Réseaux & Systèmes'
-    return 'Centre Informatique'
-
-
-# ── Machine à états du chatbot ──
-def traiter_message(message, etudiant, etat, session_choisie=None):
-    message = message.strip()
+# ── Moteur de Dialogue ──
+def traiter_message(message, etat, context):
+    msg_lower = message.lower().strip()
     reponse = ""
     nouvel_etat = etat
-    nouvelle_session = session_choisie
+    nouveau_context = context
 
-    # ════════════════════════════
-    # ÉTAT 0 — ACCUEIL
-    # ════════════════════════════
+    # --- ÉVALUATION DES COMMANDES GLOBALES ---
+    # Même si on attend un matricule, si le user dit "Bonjour", on peut réagir.
+    intent = detect_intent(message)
+    
+    # Si le user balance une intention claire et ne tape PAS juste un matricule (ex: 22NT001),
+    # on peut éventuellement forcer la réinitialisation de l'état.
+    is_matricule_format = re.match(r'^\d{2}[a-zA-Z]{2}\d{3}$', message.strip())
+    
+    if intent in ['salutation', 'remerciement', 'hors_perimetre']:
+        if intent == 'salutation':
+            reponse = """
+Bonjour 👋<br><br>
+Je suis UGANC Assistant, votre assistant académique.<br><br>
+Je peux vous aider pour :<br>
+• Consulter vos notes<br>
+• Obtenir votre relevé de notes<br>
+• Réinitialiser votre mot de passe<br>
+• Obtenir des informations sur les filières<br>
+• Contacter l'administration
+"""
+            return reponse, 'accueil', {}
+        elif intent == 'remerciement':
+            reponse = """
+Je vous en prie 😊.<br><br>
+N'hésitez pas à me solliciter si vous avez besoin d'une assistance académique.
+"""
+            return reponse, 'accueil', {}
+        elif intent == 'hors_perimetre':
+            reponse = """
+Je suis l'assistant académique du Centre Informatique de l'UGANC.<br><br>
+Je peux uniquement répondre aux questions concernant :<br>
+• les relevés de notes,<br>
+• les notes,<br>
+• les inscriptions,<br>
+• les filières,<br>
+• les services académiques,<br>
+• l'assistance à la connexion.
+"""
+            return reponse, 'accueil', {}
+
+    # --- MACHINE À ÉTATS ---
+
     if etat == 'accueil':
-        filiere = detecter_filiere(etudiant.matricule)
-        notes = Note.objects.filter(etudiant=etudiant)
-        nb_notes = notes.count()
-
-        reponse = f"""
-<div class="bot-step">
-    <div class="step-check">
-        <i class="fa-solid fa-circle-check"></i>
-        Matricule reconnu avec succès
-    </div>
-    <table class="info-table">
-        <tr>
-            <td><i class="fa-solid fa-user me-2"></i>Nom</td>
-            <td><strong>{etudiant.prenom} {etudiant.nom}</strong></td>
-        </tr>
-        <tr>
-            <td><i class="fa-solid fa-id-card me-2"></i>Matricule</td>
-            <td><strong>{etudiant.matricule}</strong></td>
-        </tr>
-        <tr>
-            <td><i class="fa-solid fa-graduation-cap me-2"></i>Département</td>
-            <td><strong>{filiere}</strong></td>
-        </tr>
-        <tr>
-            <td><i class="fa-solid fa-list-ol me-2"></i>Notes</td>
-            <td><strong>{nb_notes} module(s)</strong></td>
-        </tr>
-    </table>
-</div>
-<br>
-<strong>Que souhaitez-vous faire ?</strong><br><br>
-<div class="quick-btns">
-    <button class="qbtn" onclick="sendQuick('releve')">
-        <i class="fa-solid fa-file-pdf"></i> Demander un relevé
-    </button>
-    <button class="qbtn" onclick="sendQuick('notes')">
-        <i class="fa-solid fa-chart-bar"></i> Voir mes notes
-    </button>
-    <button class="qbtn" onclick="sendQuick('historique')">
-        <i class="fa-solid fa-clock-rotate-left"></i> Historique
-    </button>
-    <button class="qbtn" onclick="sendQuick('aide')">
-        <i class="fa-solid fa-circle-info"></i> Aide
-    </button>
-</div>
+        if intent == 'demande_releve':
+            reponse = "Bonjour 👋. Je vais vous aider à obtenir votre relevé de notes.<br><br>Veuillez saisir votre matricule."
+            nouvel_etat = 'attente_matricule_releve'
+            
+        elif intent == 'consulter_notes':
+            reponse = "Veuillez saisir votre matricule."
+            nouvel_etat = 'attente_matricule_notes'
+            
+        elif intent == 'oubli_mot_de_passe':
+            reponse = "Aucun problème.<br><br>Veuillez saisir votre matricule afin de vérifier votre identité."
+            nouvel_etat = 'attente_matricule_mdp'
+            
+        elif intent == 'info_ntic' or (intent == 'informations_filiere' and 'ntic' in msg_lower):
+            reponse = """
+📚 <strong>Filière : NTIC</strong> (Nouvelles Technologies de l'Information et de la Communication)<br><br>
+Cette filière forme les étudiants dans les domaines :<br>
+• Développement Web<br>
+• Réseaux Informatiques<br>
+• Bases de données<br>
+• Cybersécurité<br>
+• Intelligence Artificielle<br><br>
+Durée : Licence (3 ans)<br><br>
+Pour plus d'informations, veuillez contacter le département.
 """
-        nouvel_etat = 'menu'
+        elif intent == 'info_dl' or (intent == 'informations_filiere' and 'dl' in msg_lower):
+            reponse = """
+📚 <strong>Filière : Développement Logiciel (DL)</strong><br><br>
+Cette filière est spécialisée dans :<br>
+• Programmation<br>
+• Génie Logiciel<br>
+• Développement Web<br>
+• Développement Mobile<br>
+• Gestion de projets logiciels<br><br>
+Durée : Licence (3 ans)
+"""
+        elif intent == 'informations_filiere':
+            reponse = "De quelle filière parlez-vous ? NTIC ou DL ?"
+            nouvel_etat = 'attente_choix_filiere'
+            
+        elif intent == 'contact_scolarite':
+            reponse = """
+📍 <strong>Service de Scolarité du Centre Informatique</strong><br><br>
+Horaires :<br>
+• Lundi à Vendredi<br>
+• 08h00 à 16h00<br><br>
+📧 Email : scolarite@centreinfo.uganc.edu.gn<br>
+📞 Téléphone : +224 622 00 00 00<br>
+🏢 Localisation : Centre Informatique UGANC
+"""
+        elif intent == 'aide_connexion':
+            reponse = """
+Je vais vous aider.<br><br>
+Quel est le problème rencontré ?<br><br>
+1️⃣ Mot de passe oublié<br>
+2️⃣ Matricule non reconnu<br>
+3️⃣ Compte bloqué<br>
+4️⃣ Autre problème
+"""
+            nouvel_etat = 'attente_probleme_connexion'
+            
+        else:
+            reponse = """
+Je ne suis pas sûr de comprendre.<br><br>
+Je peux vous aider pour :<br>
+• Consulter vos notes<br>
+• Obtenir votre relevé de notes<br>
+• Réinitialiser votre mot de passe<br>
+• Obtenir des informations sur les filières<br>
+• Contacter l'administration
+"""
 
-    # ════════════════════════════
-    # ÉTAT MENU — CHOIX ACTION
-    # ════════════════════════════
-    elif etat == 'menu':
-        msg = message.lower()
+    elif etat == 'attente_choix_filiere':
+        if 'ntic' in msg_lower:
+            reponse = """
+📚 <strong>Filière : NTIC</strong> (Nouvelles Technologies de l'Information et de la Communication)<br><br>
+Cette filière forme les étudiants dans les domaines :<br>
+• Développement Web<br>
+• Réseaux Informatiques<br>
+• Bases de données<br>
+• Cybersécurité<br>
+• Intelligence Artificielle<br><br>
+Durée : Licence (3 ans)<br><br>
+Pour plus d'informations, veuillez contacter le département.
+"""
+            nouvel_etat = 'accueil'
+        elif 'dl' in msg_lower or 'logiciel' in msg_lower:
+            reponse = """
+📚 <strong>Filière : Développement Logiciel (DL)</strong><br><br>
+Cette filière est spécialisée dans :<br>
+• Programmation<br>
+• Génie Logiciel<br>
+• Développement Web<br>
+• Développement Mobile<br>
+• Gestion de projets logiciels<br><br>
+Durée : Licence (3 ans)
+"""
+            nouvel_etat = 'accueil'
+        else:
+            reponse = "Veuillez préciser NTIC ou DL."
 
-        if any(m in msg for m in ['relevé', 'releve', 'pdf', 'document']):
-            # Build session buttons dynamically from DB
-            sessions = Session.objects.all()
-            btns = ""
-            for s in sessions:
-                btns += (
-                    f"<button class='qbtn qbtn-primary'"
-                    f" onclick=\"sendQuick('{s.nom}')\">"
-                    f"<i class='fa-solid fa-layer-group'></i> {s.nom}"
-                    f"</button>\n"
-                )
-            if not btns:
-                btns = (
-                    "<button class='qbtn qbtn-primary'"
-                    " onclick=\"sendQuick('Session 1')\">"
-                    "<i class='fa-solid fa-1'></i> Session 1</button>\n"
-                    "<button class='qbtn qbtn-primary'"
-                    " onclick=\"sendQuick('Session 2')\">"
-                    "<i class='fa-solid fa-2'></i> Session 2</button>\n"
-                    "<button class='qbtn qbtn-primary'"
-                    " onclick=\"sendQuick('Session Rattrapage')\">"
-                    "<i class='fa-solid fa-r'></i> Rattrapage</button>\n"
-                )
+    elif etat == 'attente_probleme_connexion':
+        if '1' in msg_lower or 'oubli' in msg_lower:
+            reponse = "Aucun problème.<br><br>Veuillez saisir votre matricule afin de vérifier votre identité."
+            nouvel_etat = 'attente_matricule_mdp'
+        elif '2' in msg_lower or 'non reconnu' in msg_lower:
+            reponse = """
+Veuillez vérifier votre matricule.<br><br>
+Exemple :<br>
+• 22NT001<br>
+• 22DL001<br><br>
+Si le problème persiste, contactez l'administration.
+"""
+            nouvel_etat = 'accueil'
+        elif '3' in msg_lower or 'bloqué' in msg_lower:
+            reponse = "Votre compte est bloqué car il est en attente de validation par la scolarité. Veuillez patienter ou contacter l'administration."
+            nouvel_etat = 'accueil'
+        else:
+            reponse = "Veuillez envoyer un email à l'assistance technique : support@centreinfo.uganc.edu.gn"
+            nouvel_etat = 'accueil'
 
+    elif etat == 'attente_matricule_releve':
+        etudiant = get_etudiant(msg_lower)
+        if etudiant:
+            dept_nom = etudiant.departement.nom if etudiant.departement else "Inconnu"
             reponse = f"""
-<strong>
-    <i class="fa-solid fa-file-pdf me-1" style="color:#00C3A3;"></i>
-    Demande de relevé de notes
-</strong><br><br>
-Choisissez la session souhaitée :<br><br>
-<div class="quick-btns">
-    {btns}
-</div>
+✅ Matricule reconnu.<br><br>
+Nom : {etudiant.nom} {etudiant.prenom}<br>
+Filière : {dept_nom}<br><br>
+Veuillez choisir la session :<br><br>
+1️⃣ Session 1<br>
+2️⃣ Session 2<br>
+3️⃣ Année complète
 """
-            nouvel_etat = 'attente_session'
+            nouvel_etat = 'attente_session_releve'
+            nouveau_context['matricule'] = etudiant.matricule
+            nouveau_context['etudiant_id'] = etudiant.id
+        else:
+            reponse = "❌ Matricule non reconnu. Veuillez vérifier votre matricule et réessayer."
+            nouvel_etat = 'accueil'
 
-        elif any(m in msg for m in ['note', 'notes', 'résultat', 'moyenne']):
-            notes = Note.objects.filter(etudiant=etudiant).select_related('session')
+    elif etat == 'attente_session_releve':
+        etudiant_id = nouveau_context.get('etudiant_id')
+        etudiant = Etudiant.objects.filter(id=etudiant_id).first()
+        
+        session_choisie = None
+        if '1' in msg_lower: session_choisie = "Session 1"
+        elif '2' in msg_lower: session_choisie = "Session 2"
+        elif '3' in msg_lower or 'année' in msg_lower or 'complete' in msg_lower: session_choisie = "Année complète"
+        
+        if session_choisie and etudiant:
+            # Générer une demande
+            demande = Demande.objects.create(
+                etudiant=etudiant,
+                session=session_choisie,
+                statut='validee'
+            )
+            reponse = f"""
+⏳ Génération de votre relevé en cours...<br><br>
+✅ Votre relevé est prêt.<br><br>
+<a href='/releves/telecharger/{demande.id}/' target='_blank' style='display:inline-flex; align-items:center; gap:6px; background:#1A2744; color:white; padding:10px 15px; border-radius:8px; text-decoration:none; font-weight:600;'>
+    📄 Télécharger le relevé PDF
+</a>
+"""
+            nouvel_etat = 'accueil'
+            nouveau_context.clear()
+        else:
+            reponse = "Veuillez répondre par le numéro de la session (1, 2 ou 3)."
+
+
+    elif etat == 'attente_matricule_notes':
+        etudiant = get_etudiant(msg_lower)
+        if etudiant:
+            notes = Note.objects.filter(etudiant=etudiant)
             if notes.exists():
                 moyenne = sum([n.note for n in notes]) / notes.count()
-                decision = "ADMIS(E) ✅" if moyenne >= 5 else "AJOURNÉ(E) ❌"
-                rows = "".join([
-                    f"<tr>"
-                    f"<td>{n.matiere}</td>"
-                    f"<td><strong>{n.note}/10</strong></td>"
-                    f"<td>{n.session.nom}</td>"
-                    f"<td style='color:{'#00C3A3' if n.note >= 5 else '#DC3545'};'>"
-                    f"{'✓' if n.note >= 5 else '✗'}</td>"
-                    f"</tr>"
-                    for n in notes
-                ])
+                lignes = "".join([f"• {n.matiere} : {n.note}/20<br>" for n in notes])
                 reponse = f"""
-<strong>
-    <i class="fa-solid fa-chart-bar me-1" style="color:#00C3A3;"></i>
-    Vos notes
-</strong><br><br>
-<table class="notes-table">
-    <thead><tr><th>Matière</th><th>Note</th><th>Session</th><th>Résultat</th></tr></thead>
-    <tbody>{rows}</tbody>
-</table>
-<div class="moyenne-box">
-    <span>Moyenne générale</span>
-    <strong>{round(moyenne, 2)}/10</strong>
-    <span class="decision">{decision}</span>
-</div>
-<br>
-<div class="quick-btns">
-    <button class="qbtn qbtn-primary" onclick="sendQuick('releve')">
-        <i class="fa-solid fa-file-pdf"></i> Demander mon relevé
-    </button>
-    <button class="qbtn" onclick="sendQuick('retour')">
-        <i class="fa-solid fa-arrow-left"></i> Retour
-    </button>
-</div>
+✅ Étudiant identifié : {etudiant.nom} {etudiant.prenom}<br><br>
+Voici vos résultats :<br><br>
+{lignes}<br>
+📊 Moyenne générale : {moyenne:.2f}/20
 """
             else:
-                reponse = """
-<i class="fa-solid fa-circle-xmark" style="color:#DC3545;"></i>
-Aucune note disponible.<br>
-Contactez l'administration du Centre Informatique.
-"""
-            nouvel_etat = 'menu'
-
-        elif any(m in msg for m in ['historique', 'demande', 'demandes', 'statut',
-                                     'télécharger', 'telecharger', 'download']):
-            demandes = Demande.objects.filter(
-                etudiant=etudiant
-            ).order_by('-date_demande')[:5]
-
-            if demandes.exists():
-                rows = ""
-                for d in demandes:
-                    color = {'en_attente': '#FFC107', 'validee': '#00C3A3',
-                             'rejetee': '#DC3545'}.get(d.statut, '#64748B')
-                    icone = {'en_attente': 'fa-hourglass-half', 'validee': 'fa-circle-check',
-                             'rejetee': 'fa-circle-xmark'}.get(d.statut, 'fa-circle')
-
-                    if d.statut == 'validee':
-                        action = (
-                            f"<a href='/releves/telecharger/{d.id}/' target='_blank'"
-                            f" style='display:inline-flex;align-items:center;gap:6px;"
-                            f"background:#1A2744;color:white;padding:5px 12px;"
-                            f"border-radius:20px;text-decoration:none;font-size:0.78rem;"
-                            f"font-weight:700;'>"
-                            f"<i class='fa-solid fa-file-pdf' style='color:#00C3A3;'></i>"
-                            f" Télécharger PDF</a>"
-                        )
-                    elif d.statut == 'en_attente':
-                        action = (
-                            "<span style='display:inline-flex;align-items:center;gap:5px;"
-                            "background:#FFF8E1;color:#F59E0B;padding:4px 10px;"
-                            "border-radius:20px;font-size:0.75rem;font-weight:600;'>"
-                            "<i class='fa-solid fa-hourglass-half'></i> En attente admin</span>"
-                        )
-                    else:
-                        action = (
-                            "<span style='display:inline-flex;align-items:center;gap:5px;"
-                            "background:#FEE2E2;color:#DC3545;padding:4px 10px;"
-                            "border-radius:20px;font-size:0.75rem;font-weight:600;'>"
-                            "<i class='fa-solid fa-xmark'></i> Rejetée</span>"
-                        )
-
-                    rows += (
-                        f"<div style='background:white;border-radius:12px;padding:12px 14px;"
-                        f"margin-bottom:8px;border:1px solid #E8F0FB;"
-                        f"box-shadow:0 2px 8px rgba(26,39,68,0.05);'>"
-                        f"<div style='display:flex;align-items:center;"
-                        f"justify-content:space-between;margin-bottom:8px;'>"
-                        f"<span style='font-weight:700;color:#1A2744;font-size:0.85rem;'>"
-                        f"<i class='fa-solid fa-file-lines me-1' style='color:#00C3A3;'></i>"
-                        f" Demande #{d.id:04d}</span>"
-                        f"<span style='color:{color};font-size:0.78rem;font-weight:700;'>"
-                        f"<i class='fa-solid {icone} me-1'></i> {d.get_statut_display()}</span>"
-                        f"</div>"
-                        f"<div style='display:flex;gap:15px;margin-bottom:10px;"
-                        f"font-size:0.78rem;color:#64748B;'>"
-                        f"<span><i class='fa-solid fa-layer-group me-1'></i> {d.session}</span>"
-                        f"<span><i class='fa-solid fa-calendar me-1'></i>"
-                        f" {d.date_demande.strftime('%d/%m/%Y')}</span>"
-                        f"</div>{action}</div>"
-                    )
-
-                reponse = (
-                    f"<strong style='display:flex;align-items:center;gap:8px;"
-                    f"margin-bottom:12px;color:#1A2744;'>"
-                    f"<i class='fa-solid fa-clock-rotate-left' style='color:#00C3A3;'></i>"
-                    f" Vos demandes de relevés</strong>{rows}"
-                    f"<div style='background:#EFF4FB;border-radius:10px;padding:9px 13px;"
-                    f"font-size:0.78rem;color:#64748B;margin-top:5px;'>"
-                    f"<i class='fa-solid fa-circle-info me-1' style='color:#1A2744;'></i>"
-                    f" Les relevés <strong style='color:#00C3A3;'>validés</strong>"
-                    f" sont disponibles immédiatement en PDF.</div><br>"
-                    f"<div class='quick-btns'>"
-                    f"<button class='qbtn qbtn-primary' onclick=\"sendQuick('releve')\">"
-                    f"<i class='fa-solid fa-plus'></i> Nouvelle demande</button>"
-                    f"<button class='qbtn' onclick=\"sendQuick('retour')\">"
-                    f"<i class='fa-solid fa-house'></i> Menu</button></div>"
-                )
-            else:
-                reponse = (
-                    "<div style='text-align:center;padding:15px;'>"
-                    "<i class='fa-solid fa-folder-open fa-2x'"
-                    " style='color:#D4E0F0;margin-bottom:10px;display:block;'></i>"
-                    "<strong style='color:#1A2744;'>Aucune demande pour le moment</strong><br>"
-                    "<span style='color:#64748B;font-size:0.85rem;'>"
-                    "Faites votre première demande de relevé</span></div><br>"
-                    "<div class='quick-btns' style='justify-content:center;'>"
-                    "<button class='qbtn qbtn-primary' onclick=\"sendQuick('releve')\">"
-                    "<i class='fa-solid fa-file-pdf'></i> Demander mon relevé</button></div>"
-                )
-            nouvel_etat = 'menu'
-
-        elif any(m in msg for m in ['aide', 'help']):
-            reponse = """
-<strong><i class="fa-solid fa-circle-info me-1" style="color:#00C3A3;"></i> Aide — CI Assistant</strong><br><br>
-<div class="quick-btns">
-    <button class="qbtn qbtn-primary" onclick="sendQuick('releve')"><i class="fa-solid fa-file-pdf"></i> Demander un relevé</button>
-    <button class="qbtn" onclick="sendQuick('notes')"><i class="fa-solid fa-chart-bar"></i> Mes notes</button>
-    <button class="qbtn" onclick="sendQuick('historique')"><i class="fa-solid fa-clock-rotate-left"></i> Historique</button>
-</div>"""
-            nouvel_etat = 'menu'
-
-        elif any(m in msg for m in ['retour', 'menu', 'accueil']):
-            reponse = """
-<strong>Menu principal</strong><br><br>
-<div class="quick-btns">
-    <button class="qbtn qbtn-primary" onclick="sendQuick('releve')"><i class="fa-solid fa-file-pdf"></i> Demander un relevé</button>
-    <button class="qbtn" onclick="sendQuick('notes')"><i class="fa-solid fa-chart-bar"></i> Mes notes</button>
-    <button class="qbtn" onclick="sendQuick('historique')"><i class="fa-solid fa-clock-rotate-left"></i> Historique</button>
-    <button class="qbtn" onclick="sendQuick('aide')"><i class="fa-solid fa-circle-info"></i> Aide</button>
-</div>"""
-            nouvel_etat = 'menu'
-
+                reponse = f"✅ Étudiant identifié : {etudiant.nom} {etudiant.prenom}<br><br>❌ Aucune note n'est disponible pour l'instant."
+            
+            nouvel_etat = 'accueil'
+            nouveau_context.clear()
         else:
-            reponse = """
-Je n'ai pas compris. Choisissez une option :<br><br>
-<div class="quick-btns">
-    <button class="qbtn qbtn-primary" onclick="sendQuick('releve')"><i class="fa-solid fa-file-pdf"></i> Relevé</button>
-    <button class="qbtn" onclick="sendQuick('notes')"><i class="fa-solid fa-chart-bar"></i> Notes</button>
-    <button class="qbtn" onclick="sendQuick('historique')"><i class="fa-solid fa-clock-rotate-left"></i> Historique</button>
-</div>"""
+            reponse = "❌ Matricule introuvable. Veuillez vérifier votre saisie."
+            nouvel_etat = 'accueil'
 
-    # ════════════════════════════
-    # ÉTAT — ATTENTE SESSION
-    # ════════════════════════════
-    elif etat == 'attente_session':
-        msg_lower = message.lower().strip()
-
-        # Try to match session from DB
-        session_obj = None
-        try:
-            session_obj = Session.objects.filter(nom__icontains=msg_lower).first()
-        except Exception:
-            pass
-
-        # Fallback: map common inputs
-        if not session_obj:
-            fallback_map = {
-                '1': 'Session 1', 'session 1': 'Session 1',
-                '2': 'Session 2', 'session 2': 'Session 2',
-                'r': 'Session Rattrapage', 'rattrapage': 'Session Rattrapage',
-                'session rattrapage': 'Session Rattrapage',
-            }
-            for key, val in fallback_map.items():
-                if key in msg_lower:
-                    try:
-                        session_obj = Session.objects.filter(nom__icontains=val).first()
-                    except Exception:
-                        pass
-                    break
-
-        if session_obj:
-            session_nom = session_obj.nom
-            notes_session = Note.objects.filter(
-                etudiant=etudiant,
-                session=session_obj
-            )
-
-            if notes_session.exists():
-                rows = "".join([
-                    f"<tr><td>{n.matiere}</td>"
-                    f"<td><strong>{n.note}/10</strong></td>"
-                    f"<td style='color:{'#00C3A3' if n.note >= 5 else '#DC3545'};'>"
-                    f"{'✓ Validé' if n.note >= 5 else '✗ Ajourné'}</td></tr>"
-                    for n in notes_session
-                ])
-                moy = sum([n.note for n in notes_session]) / notes_session.count()
-
-                reponse = (
-                    f"<strong><i class='fa-solid fa-file-lines me-1'"
-                    f" style='color:#00C3A3;'></i> {session_nom} — Aperçu</strong><br><br>"
-                    f"<table class='notes-table'><thead><tr>"
-                    f"<th>Matière</th><th>Note</th><th>Résultat</th>"
-                    f"</tr></thead><tbody>{rows}</tbody></table>"
-                    f"<div class='moyenne-box'><span>Moyenne</span>"
-                    f"<strong>{round(moy, 2)}/10</strong>"
-                    f"<span class='decision'>"
-                    f"{'ADMIS(E) ✅' if moy >= 5 else 'AJOURNÉ(E) ❌'}</span></div><br>"
-                    f"Confirmer la demande de relevé pour <strong>{session_nom}</strong> ?<br><br>"
-                    f"<div class='quick-btns'>"
-                    f"<button class='qbtn qbtn-success'"
-                    f" onclick=\"sendQuick('confirmer|{session_nom}')\">"
-                    f"<i class='fa-solid fa-check'></i> Oui, confirmer</button>"
-                    f"<button class='qbtn qbtn-danger' onclick=\"sendQuick('annuler')\">"
-                    f"<i class='fa-solid fa-xmark'></i> Annuler</button></div>"
-                )
-                nouvel_etat = 'confirmation'
-                nouvelle_session = session_nom
-            else:
-                reponse = (
-                    f"<i class='fa-solid fa-triangle-exclamation' style='color:#FFC107;'></i>"
-                    f" Aucune note trouvée pour <strong>{session_nom}</strong>.<br>"
-                    f"Contactez l'administration.<br><br>"
-                    f"<div class='quick-btns'>"
-                    f"<button class='qbtn' onclick=\"sendQuick('releve')\">"
-                    f"<i class='fa-solid fa-rotate-left'></i> Choisir une autre session</button></div>"
-                )
-                nouvel_etat = 'menu'
-        else:
-            sessions = Session.objects.all()
-            btns = ""
-            for s in sessions:
-                btns += (
-                    f"<button class='qbtn qbtn-primary'"
-                    f" onclick=\"sendQuick('{s.nom}')\">"
-                    f"<i class='fa-solid fa-layer-group'></i> {s.nom}</button>\n"
-                )
-            reponse = f"Veuillez choisir une session valide :<br><br><div class='quick-btns'>{btns}</div>"
-
-    # ════════════════════════════
-    # ÉTAT — CONFIRMATION
-    # ════════════════════════════
-    elif etat == 'confirmation':
-        if message.startswith('confirmer|'):
-            session_finale = message.split('|')[1]
-
-            # ── Vérifier notes validées DG ──
-            from notes.models import ImportNotes
-
-            matricule = etudiant.matricule.upper()
-            if 'NT' in matricule or matricule.startswith('6642'):
-                filiere = 'NTIC'
-            elif 'DL' in matricule:
-                filiere = 'DL'
-            else:
-                filiere = None
-
-            notes_ok = False
-            if filiere:
-                notes_ok = ImportNotes.objects.filter(
-                    filiere=filiere,
-                    session=session_finale,
-                    statut='valide_dg'
-                ).exists()
-
-            if not notes_ok:
-                reponse = f"""
-<div style='
-    background:#FFF8E1;
-    border:1.5px solid #FFC107;
-    border-radius:10px;
-    padding:13px 15px;'>
-    <i class='fa-solid fa-triangle-exclamation'
-       style='color:#FFC107;margin-right:8px;'></i>
-    <strong>Notes non disponibles</strong><br><br>
-    <span style='color:#64748B;font-size:0.88rem;'>
-        Les notes pour <strong>{session_finale}</strong>
-        ne sont pas encore validées par la Direction.<br>
-        Revenez ultérieurement ou contactez
-        l'administration.
-    </span>
-</div>
-<br>
-<div class='quick-btns'>
-    <button class='qbtn' onclick="sendQuick('retour')">
-        <i class='fa-solid fa-house'></i> Menu
-    </button>
-</div>
+    elif etat == 'attente_matricule_mdp':
+        # On ne valide pas forcément le matricule pour des raisons de sécurité s'il n'existe pas, 
+        # mais on peut le vérifier au regard de l'exemple du user "Un lien de réinitialisation a été envoyé à votre adresse..."
+        reponse = """
+Un lien de réinitialisation a été envoyé à votre adresse email universitaire.<br><br>
+Si vous ne recevez aucun email dans les prochaines minutes, contactez l'administration.
 """
-                nouvel_etat = 'menu'
+        nouvel_etat = 'accueil'
 
-            else:
-                # ── Notes OK → Demande validée automatiquement ──
-
-                # Vérifier doublon
-                demande_exist = Demande.objects.filter(
-                    etudiant=etudiant,
-                    session=session_finale
-                ).exists()
-
-                if demande_exist:
-                    demande_obj = Demande.objects.filter(
-                        etudiant=etudiant,
-                        session=session_finale
-                    ).first()
-                    
-                    # On force le statut à validée si c'était bloqué en "en_attente" auparavant
-                    if demande_obj.statut != 'validee':
-                        demande_obj.statut = 'validee'
-                        demande_obj.save()
-                        
-                    reponse = f"""
-<div style='
-    background:#FFF8E1;
-    border:1.5px solid #FFC107;
-    border-radius:10px;
-    padding:12px 15px;'>
-    <i class='fa-solid fa-triangle-exclamation'
-       style='color:#FFC107;'></i>
-    Vous avez déjà un relevé pour
-    <strong>{session_finale}</strong>.
-</div>
-<br>
-<div class='quick-btns'>
-    <button class='qbtn qbtn-primary'
-            onclick="sendQuick('historique')">
-        <i class='fa-solid fa-file-pdf'></i>
-        Télécharger mon relevé
-    </button>
-    <button class='qbtn' onclick="sendQuick('retour')">
-        <i class='fa-solid fa-house'></i> Menu
-    </button>
-</div>
-"""
-                else:
-                    # ── Créer demande validée automatiquement ──
-                    demande_obj = Demande.objects.create(
-                        etudiant=etudiant,
-                        session=session_finale,
-                        statut='validee'  # ← Direct !
-                    )
-
-                    reponse = f"""
-<div style='
-    background:rgba(0,195,163,0.1);
-    border:1.5px solid #00C3A3;
-    border-radius:10px;
-    padding:13px 15px;'>
-    <i class='fa-solid fa-circle-check'
-       style='color:#00C3A3;font-size:1.1rem;
-              margin-right:8px;'></i>
-    <strong style='color:#00796B;'>
-        Relevé disponible !
-    </strong>
-</div>
-<br>
-<table class='info-table'>
-    <tr>
-        <td>N° Relevé</td>
-        <td><strong>#{demande_obj.id:04d}</strong></td>
-    </tr>
-    <tr>
-        <td>Session</td>
-        <td><strong>{session_finale}</strong></td>
-    </tr>
-    <tr>
-        <td>Statut</td>
-        <td style='color:#00C3A3;font-weight:700;'>
-            ✅ Disponible
-        </td>
-    </tr>
-</table>
-<br>
-<a href='/releves/telecharger/{demande_obj.id}/'
-   target='_blank'
-   style='
-       display:inline-flex;
-       align-items:center;gap:8px;
-       background:#1A2744;color:white;
-       padding:10px 20px;border-radius:25px;
-       text-decoration:none;font-weight:700;
-       font-size:0.9rem;'>
-    <i class='fa-solid fa-file-pdf'
-       style='color:#00C3A3;'></i>
-    Télécharger mon relevé PDF
-</a>
-<br><br>
-<div class='quick-btns'>
-    <button class='qbtn'
-            onclick="sendQuick('historique')">
-        <i class='fa-solid fa-clock-rotate-left'></i>
-        Historique
-    </button>
-    <button class='qbtn' onclick="sendQuick('retour')">
-        <i class='fa-solid fa-house'></i> Menu
-    </button>
-</div>
-"""
-                nouvel_etat = 'menu'
-                nouvelle_session = None
-
-        elif message.lower() == 'annuler':
-            reponse = (
-                "<i class='fa-solid fa-ban' style='color:#DC3545;'></i>"
-                " Demande annulée.<br><br>"
-                "<div class='quick-btns'>"
-                "<button class='qbtn qbtn-primary' onclick=\"sendQuick('releve')\">"
-                "<i class='fa-solid fa-rotate-left'></i> Recommencer</button>"
-                "<button class='qbtn' onclick=\"sendQuick('retour')\">"
-                "<i class='fa-solid fa-house'></i> Menu</button></div>"
-            )
-            nouvel_etat = 'menu'
-            nouvelle_session = None
-
-    return reponse, nouvel_etat, nouvelle_session
+    return reponse, nouvel_etat, nouveau_context
 
 
-@login_required
 def chatbot_view(request):
-    etudiant = Etudiant.objects.get(user=request.user)
-    return render(request, 'chatbot/chat.html', {
-        'etudiant': etudiant
-    })
-
+    # La vue peut être publique (retrait de @login_required si la page l'inclut directement, mais 
+    # généralement cette frame ou ce panel peut être mis sur n'importe quelle page.
+    return render(request, 'chatbot/chat.html')
 
 @csrf_exempt
-@login_required
 def chatbot_api(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         message = data.get('message', '').strip()
-        etat = data.get('etat', 'accueil')
-        session = data.get('session', None)
-
-        etudiant = Etudiant.objects.get(user=request.user)
-
-        reponse, nouvel_etat, nouvelle_session = traiter_message(
-            message, etudiant, etat, session
-        )
-
+        
+        # Récupération de l'état (Django session est disponible pour auth et non-auth users)
+        etat = request.session.get('chatbot_etat', 'accueil')
+        context = request.session.get('chatbot_context', {})
+        
+        reponse, nouvel_etat, nouveau_context = traiter_message(message, etat, context)
+        
+        # Sauvegarde de l'état
+        request.session['chatbot_etat'] = nouvel_etat
+        request.session['chatbot_context'] = nouveau_context
+        
         return JsonResponse({
             'reponse': reponse,
-            'etat': nouvel_etat,
-            'session': nouvelle_session,
+            'etat': nouvel_etat
         })
 
     return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
