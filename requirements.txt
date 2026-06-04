@@ -4,3 +4,5 @@ reportlab
 pandas
 openpyxl
 pillow
+pymysql
+django-environ

@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 import os
 import django
 from django.utils.text import slugify
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 from etudiants.models import Departement, Niveau, Session
-departements_data = ['Développement Logiciel', 'Nouvelle Technologie de l''Information et de la Communication']
+departements_data = ['DÃ©veloppement Logiciel', "Nouvelle Technologie de l'Information et de la Communication"]
 niveaux_data = ['Licence 1', 'Licence 2', 'Licence 3', 'Master 1', 'Master 2', 'Doctorat']
 sessions_data = ['Session 1', 'Session 2', 'Session Rattrapage']
 for dep_nom in departements_data:
