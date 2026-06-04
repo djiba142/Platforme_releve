@@ -39,14 +39,14 @@ def deposer_notes(request):
         profil = request.user.profiladmin
     except:
         messages.error(request, 'Accès refusé.')
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     if profil.role not in ['chef_ntic', 'chef_dl']:
         messages.error(
             request,
             'Seuls les Chefs de Département peuvent déposer des notes.'
         )
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     # Filière du chef
     filiere = get_filiere_admin(request.user)
@@ -58,7 +58,7 @@ def deposer_notes(request):
 
         if not fichier:
             messages.error(request, 'Aucun fichier sélectionné.')
-            return redirect('deposer_notes')
+            return redirect('dashboard_chef')
 
         try:
             # Lecture fichier
@@ -109,7 +109,10 @@ def deposer_notes(request):
                                         matiere=str(col).strip(),
                                         session=session_obj,
                                         annee=annee,
-                                        defaults={'note': note_val}
+                                        defaults={
+                                            'note': note_val,
+                                            'import_source': import_obj
+                                        }
                                     )
                                     compteur += 1
                                     notes_ajoutees = True
@@ -129,18 +132,9 @@ def deposer_notes(request):
         except Exception as e:
             messages.error(request, f'Erreur : {str(e)}')
 
-        return redirect('deposer_notes')
+        return redirect('dashboard_chef')
 
-    # Historique des imports du chef
-    mes_imports = ImportNotes.objects.filter(
-        depose_par=request.user
-    ).order_by('-date_depot')
-
-    return render(request, 'notes/deposer_notes.html', {
-        'profil':      request.user.profiladmin,
-        'filiere':     filiere,
-        'mes_imports': mes_imports,
-    })
+    return redirect('dashboard_chef')
 
 
 # ── DGA — Valide les notes ──
@@ -150,11 +144,11 @@ def valider_notes_dga(request, import_id):
     try:
         profil = request.user.profiladmin
     except:
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     if profil.role != 'dga':
         messages.error(request, 'Réservé au DGA.')
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     import_obj = get_object_or_404(ImportNotes, id=import_id)
     import_obj.statut         = 'valide_dga'
@@ -176,11 +170,11 @@ def valider_notes_dg(request, import_id):
     try:
         profil = request.user.profiladmin
     except:
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     if profil.role != 'dg':
         messages.error(request, 'Réservé au DG.')
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     import_obj = get_object_or_404(ImportNotes, id=import_id)
 
@@ -209,10 +203,10 @@ def rejeter_notes(request, import_id):
     try:
         profil = request.user.profiladmin
     except:
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     if profil.role not in ['dga', 'dg']:
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     import_obj = get_object_or_404(ImportNotes, id=import_id)
     commentaire = request.POST.get('commentaire', '')
@@ -233,27 +227,29 @@ def gestion_imports(request):
     try:
         profil = request.user.profiladmin
     except:
-        return redirect('dashboard')
+        return redirect('admin_dashboard')
 
     if profil.role == 'dga':
-        # DGA voit les imports déposés par les chefs
-        imports = ImportNotes.objects.filter(
-            statut='depose'
-        ).order_by('-date_depot')
-        titre = "Imports à valider — DGA"
-
+        return redirect('dashboard_dga')
     elif profil.role == 'dg':
-        # DG voit les imports validés par DGA
-        imports = ImportNotes.objects.filter(
-            statut='valide_dga'
-        ).order_by('-date_depot')
-        titre = "Imports à valider définitivement — DG"
+        return redirect('dashboard_dg')
 
-    else:
-        return redirect('dashboard')
+    return redirect('admin_dashboard')
 
-    return render(request, 'notes/gestion_imports.html', {
-        'imports': imports,
-        'profil':  profil,
-        'titre':   titre,
-    })
+# ── Consulter le détail d'un import ──
+@login_required
+def consulter_import(request, import_id):
+    try:
+        profil = request.user.profiladmin
+    except:
+        return redirect('admin_dashboard')
+
+    import_obj = get_object_or_404(ImportNotes, id=import_id)
+    notes = import_obj.lignes_notes.select_related('etudiant', 'session').all()
+    
+    context = {
+        'import_obj': import_obj,
+        'notes': notes,
+        'profil': profil,
+    }
+    return render(request, 'notes/consulter_import.html', context)

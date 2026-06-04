@@ -15,12 +15,12 @@
         .sidebar {
             width: 240px;
             min-height: 100vh;
-            background: #1A2744;
+            background: #0D2137;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 100;
-            border-right: 3px solid #00C3A3;
+            border-right: none;
         }
 
         .sidebar-logo {
@@ -52,8 +52,8 @@
         .menu-item:hover,
         .menu-item.active {
             color: white;
-            background: rgba(0, 195, 163, 0.1);
-            border-left-color: #00C3A3;
+            background: rgba(25, 118, 210, 0.08);
+            border-left-color: #1976D2;
         }
 
         .main {
@@ -76,7 +76,7 @@
         }
 
         .content-card h6 {
-            color: #1A2744;
+            color: #1565C0;
             font-weight: 700;
             border-bottom: 2px solid #EFF4FB;
             padding-bottom: 10px;
@@ -84,7 +84,7 @@
         }
 
         thead th {
-            background: #1A2744 !important;
+            background: #1565C0 !important;
             color: white;
         }
 
@@ -99,7 +99,7 @@
         }
 
         .badge-dg {
-            background: #00C3A3;
+            background: #1976D2;
             color: white;
         }
 
@@ -123,17 +123,20 @@
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-logo">
-            <div class="d-flex align-items-center gap-2 mb-2">
-                <img src="/static/images/logos_uganc.png" height="35" alt="UGANC">
-                <img src="/static/images/logosCI.png" height="30" alt="CI" style="filter:brightness(0) invert(1);
-                        opacity:0.85;">
+        <div class="sidebar-logo"
+            style="padding: 1.8rem 1.5rem; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+            <div class="d-flex align-items-center justify-content-center gap-3 mb-2"
+                style="background: white; padding: 0.8rem 0.6rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <img src="/static/images/logos_uganc.png" height="38" alt="UGANC"
+                    style="object-fit: contain; max-width: 45%;">
+                <div style="width: 2px; height: 35px; background: #E0E8F5; border-radius: 2px;"></div>
+                <img src="/static/images/logosCI.png" height="33" alt="CI" style="object-fit: contain; max-width: 45%;">
             </div>
-            <div style="color:white;font-weight:700;
-                    font-size:0.85rem;">
+            <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
                 Centre Informatique
             </div>
-            <div style="color:#00C3A3;font-size:0.7rem;">
+            <div
+                style="color:#1976D2; font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
                 DGA - Direction Générale
             </div>
         </div>
@@ -142,11 +145,10 @@
         <a href="{% url 'dashboard_dga' %}" class="menu-item active">
             <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
         </a>
-        <a href="{% url 'liste_etudiants' %}" class="menu-item">
+        <a href="#etudiants-section" class="menu-item">
             <i class="fa-solid fa-users"></i> Étudiants
         </a>
-        <a href="{% url 'gestion_inscriptions' %}"
-            class="menu-item {% if request.resolver_match.url_name == 'gestion_inscriptions' %}active{% endif %}">
+        <a href="#inscriptions-section" class="menu-item">
             <i class="fa-solid fa-user-clock"></i> Inscriptions
         </a>
 
@@ -182,7 +184,7 @@
         justify-content:space-between;
         box-shadow:0 2px 10px rgba(26,39,68,0.07);">
             <div>
-                <h5 style="margin:0;color:#1A2744;font-weight:700;">
+                <h5 style="margin:0;color:#1565C0;font-weight:700;">
                     Tableau de bord — DGA
                 </h5>
                 <small style="color:#64748B;">
@@ -192,27 +194,27 @@
         </div>
 
         <!-- Stats -->
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-4 animate-up stagger-1">
             <div class="col-md-3">
                 <div class="stat-card">
                     <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-users me-1" style="color:#1A2744;"></i> Total Étudiants
+                        <i class="fa-solid fa-users me-1" style="color:#1565C0;"></i> Total Étudiants
                     </div>
-                    <h2 style="color:#1A2744;font-weight:800;margin:5px 0 0;">
+                    <h2 style="color:#1565C0;font-weight:800;margin:5px 0 0;">
                         {{ total_etudiants }}
                     </h2>
                     <div class="mt-2" style="font-size:0.75rem;color:#94A3B8;">
-                        NTIC: <strong style="color:#1A2744;">{{ nb_nt }}</strong> |
-                        DL: <strong style="color:#1A2744;">{{ nb_dl }}</strong>
+                        NTIC: <strong style="color:#1565C0;">{{ nb_nt }}</strong> |
+                        DL: <strong style="color:#1565C0;">{{ nb_dl }}</strong>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card">
                     <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-list-ol me-1" style="color:#00C3A3;"></i> Total Notes
+                        <i class="fa-solid fa-list-ol me-1" style="color:#1976D2;"></i> Total Notes
                     </div>
-                    <h2 style="color:#1A2744;font-weight:800;margin:5px 0 0;">
+                    <h2 style="color:#1565C0;font-weight:800;margin:5px 0 0;">
                         {{ total_notes }}
                     </h2>
                 </div>
@@ -230,7 +232,7 @@
         </div>
 
         <!-- Validation -->
-        <div class="row g-4">
+        <div class="row g-4 animate-up stagger-2">
             <div class="col-md-12">
                 <div class="content-card">
                     <h6>
@@ -260,12 +262,19 @@
                                 <td>{{ imp.nb_notes_importees }}</td>
                                 <td>{{ imp.date_depot|date:"d/m/Y H:i" }}</td>
                                 <td class="text-end">
-                                    <a href="{% url 'valider_import' imp.id %}" class="btn btn-sm btn-success fw-bold"
-                                        style="font-size:0.8rem;">
+                                    {% if imp.fichier %}
+                                    <a href="{% url 'consulter_import' imp.id %}"
+                                        class="btn btn-sm btn-outline-info fw-bold" style="font-size:0.8rem;"
+                                        title="Consulter le détail de l'import">
+                                        <i class="fa-solid fa-eye me-1"></i> Consulter l'import
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'valider_notes_dga' imp.id %}"
+                                        class="btn btn-sm btn-success fw-bold" style="font-size:0.8rem;">
                                         <i class="fa-solid fa-check"></i>
                                         Valider
                                     </a>
-                                    <a href="{% url 'rejeter_import' imp.id %}" class="btn btn-sm btn-danger fw-bold"
+                                    <a href="{% url 'rejeter_notes' imp.id %}" class="btn btn-sm btn-danger fw-bold"
                                         style="font-size:0.8rem;">
                                         <i class="fa-solid fa-xmark"></i>
                                         Rejeter
@@ -287,7 +296,7 @@
             <div class="col-md-12">
                 <div class="content-card">
                     <h6>
-                        <i class="fa-solid fa-clock-rotate-left me-2" style="color:#00C3A3;"></i>
+                        <i class="fa-solid fa-clock-rotate-left me-2" style="color:#1976D2;"></i>
                         Historique de traitement
                     </h6>
                     <table class="table table-hover">
@@ -313,6 +322,14 @@
                                     {% else %}
                                     <span class="badge badge-rejete">Rejeté</span>
                                     {% endif %}
+
+                                    {% if imp.fichier %}
+                                    <a href="{{ imp.fichier.url }}" target="_blank"
+                                        class="ms-2 text-decoration-none fw-bold"
+                                        style="font-size:0.8rem; color:#1976D2;" title="Consulter le fichier">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -323,6 +340,107 @@
                             {% endif %}
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Étudiants -->
+        <div class="row g-4 mt-2 animate-up stagger-3" id="etudiants-section">
+            <div class="col-12">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-users me-2" style="color:#1976D2;"></i>
+                        Liste complète des étudiants
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Matricule</th>
+                                    <th>Nom Complet</th>
+                                    <th>Département</th>
+                                    <th>Niveau</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for etudiant in etudiants %}
+                                <tr>
+                                    <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
+                                        etudiant.matricule }}</td>
+                                    <td style="font-weight:600; color:#0D2137;">{{ etudiant.prenom }} {{ etudiant.nom }}
+                                    </td>
+                                    <td>{{ etudiant.departement.nom }}</td>
+                                    <td><span class="badge" style="background:rgba(26,39,68,0.06); color:#0D2137;">{{
+                                            etudiant.niveau.nom }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">
+                                        <i class="fa-solid fa-folder-open fa-2x mb-2 d-block"
+                                            style="color:#D4E0F0;"></i>
+                                        Aucun étudiant inscrit.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Inscriptions -->
+        <div class="row g-4 mt-2" id="inscriptions-section">
+            <div class="col-12">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-user-clock me-2" style="color:#FF9800;"></i>
+                        Inscriptions en attente de validation
+                    </h6>
+                    {% if inscriptions_attente %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Matricule</th>
+                                    <th>Nom Complet</th>
+                                    <th>Département</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for insc in inscriptions_attente %}
+                                <tr>
+                                    <td style="font-family:monospace; font-weight:600; color:#1976D2;">
+                                        {{ insc.matricule }}
+                                    </td>
+                                    <td style="font-weight:600; color:#0D2137;">
+                                        {{ insc.prenom }} {{ insc.nom }}
+                                    </td>
+                                    <td>
+                                        {{ insc.departement.nom }}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'valider_inscription' insc.id %}"
+                                            class="btn btn-sm text-white fw-bold" style="background:#1976D2;">
+                                            <i class="fa-solid fa-check"></i> Valider
+                                        </a>
+                                        <a href="{% url 'rejeter_inscription' insc.id %}"
+                                            class="btn btn-sm btn-danger fw-bold ms-1">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-check-circle fa-2x mb-2 d-block" style="color:#1976D2;"></i>
+                        Aucune inscription en attente
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -19,6 +19,17 @@ def verifier_admin(user):
     except:
         return False
 
+def verifier_super_admin(user):
+    """Vérifie que l'utilisateur est STRICTEMENT le Super Administrateur (Centre Informatique)"""
+    if not user.is_authenticated or not user.is_staff:
+        return False
+    if user.is_superuser:
+        return True
+    try:
+        return user.profiladmin.role == 'admin'
+    except:
+        return False
+
 def check_super_admin(user):
     """Vérifie si l'admin est DG ou DGA pour certaines actions sensibles"""
     if not verifier_admin(user):
@@ -36,47 +47,131 @@ def get_profil(user):
 
 @login_required
 def admin_dashboard(request):
-    if not verifier_admin(request.user):
-        messages.error(request, 'Accès réservé à l\'administration.')
-        return redirect('login_admin')
+    if not verifier_super_admin(request.user):
+        messages.error(request, 'Accès strictement réservé au Centre Informatique.')
+        # S'ils sont connectés mais non super admin, on les renvoie à l'accueil
+        return redirect('accueil')
 
     profil   = get_profil(request.user)
-    filiere  = get_filiere_admin(request.user)
 
-    # ── Statistiques selon le rôle ──
-    if filiere:
-        # Chef de département → voit seulement sa filière
-        etudiants = Etudiant.objects.filter(matricule__startswith=filiere)
-        demandes = Demande.objects.filter(etudiant__matricule__startswith=filiere).order_by('-date_demande')
-    else:
-        # DG/DGA → voit tout
-        etudiants = Etudiant.objects.all()
-        demandes  = Demande.objects.all().order_by('-date_demande')
+    # ── Cadres du système ──
+    cadres = ProfilAdmin.objects.select_related('user').all().order_by('role', 'nom')
 
-    total_etudiants      = etudiants.count()
-    total_demandes       = demandes.count()
-    demandes_en_attente  = demandes.filter(statut='en_attente').count()
-    demandes_validees    = demandes.filter(statut='validee').count()
-    demandes_rejetees    = demandes.filter(statut='rejetee').count()
-    total_releves        = Releve.objects.count()
-    total_notes          = Note.objects.count()
+    # Stats par rôle
+    nb_dg   = cadres.filter(role='dg').count()
+    nb_dga  = cadres.filter(role='dga').count()
+    nb_chef = cadres.filter(role__startswith='chef').count()
+    nb_comptes_actifs = cadres.filter(user__is_active=True).count()
+
+    # ── Statistiques globales ──
+    total_etudiants     = Etudiant.objects.count()
+    total_demandes      = Demande.objects.count()
+    demandes_en_attente = Demande.objects.filter(statut='en_attente').count()
+    demandes_validees   = Demande.objects.filter(statut='validee').count()
+    total_releves       = Releve.objects.count()
+    total_notes         = Note.objects.count()
 
     # Dernières demandes
-    dernieres_demandes = demandes[:8]
+    dernieres_demandes = Demande.objects.all().order_by('-date_demande')[:8]
+
+    # Choix de rôles pour le formulaire de création
+    role_choices = ProfilAdmin.ROLE_CHOICES
 
     return render(request, 'administration/dashboard.html', {
         'profil':               profil,
+        'cadres':               cadres,
+        'nb_dg':                nb_dg,
+        'nb_dga':               nb_dga,
+        'nb_chef':              nb_chef,
+        'nb_comptes_actifs':    nb_comptes_actifs,
         'nb_etudiants':         total_etudiants,
         'nb_demandes':          total_demandes,
         'nb_attente':           demandes_en_attente,
         'nb_validees':          demandes_validees,
-        'nb_rejetees':          demandes_rejetees,
         'nb_releves':           total_releves,
         'nb_notes':             total_notes,
         'dernières_demandes':   dernieres_demandes,
-        'est_directeur':        est_directeur(request.user),
-        'est_chef':             est_chef_dept(request.user),
+        'role_choices':         role_choices,
     })
+
+
+# ── Créer un utilisateur cadre ──
+@login_required
+def creer_utilisateur(request):
+    if not verifier_super_admin(request.user):
+        return redirect('accueil')
+
+    if request.method != 'POST':
+        return redirect('admin_dashboard')
+
+    nom       = request.POST.get('nom', '').strip()
+    prenom    = request.POST.get('prenom', '').strip()
+    email     = request.POST.get('email', '').strip()
+    telephone = request.POST.get('telephone', '').strip()
+    role      = request.POST.get('role', '')
+    password  = request.POST.get('password', '')
+
+    if not all([nom, prenom, email, role, password]):
+        messages.error(request, 'Tous les champs obligatoires doivent être remplis.')
+        return redirect('admin_dashboard')
+
+    # Générer un username unique
+    username = f"{prenom.lower()}.{nom.lower()}".replace(' ', '')
+    if User.objects.filter(username=username).exists():
+        username = f"{username}_{User.objects.count()}"
+
+    if User.objects.filter(email=email).exists():
+        messages.error(request, f'Un compte avec l\'email {email} existe déjà.')
+        return redirect('admin_dashboard')
+
+    try:
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=prenom,
+            last_name=nom,
+            is_staff=True,
+        )
+        ProfilAdmin.objects.create(
+            user=user,
+            role=role,
+            nom=nom,
+            prenom=prenom,
+            email=email,
+            telephone=telephone,
+        )
+        role_label = dict(ProfilAdmin.ROLE_CHOICES).get(role, role)
+        messages.success(
+            request,
+            f'Compte créé avec succès : {prenom} {nom} ({role_label}). '
+            f'Identifiant de connexion : {username}'
+        )
+    except Exception as e:
+        messages.error(request, f'Erreur lors de la création : {e}')
+
+    return redirect('admin_dashboard')
+
+
+# ── Activer / Désactiver un utilisateur ──
+@login_required
+def toggle_utilisateur(request, user_id):
+    if not verifier_super_admin(request.user):
+        return redirect('accueil')
+
+    target_user = get_object_or_404(User, id=user_id)
+
+    # Empêcher de se désactiver soi-même
+    if target_user == request.user:
+        messages.warning(request, 'Vous ne pouvez pas désactiver votre propre compte.')
+        return redirect('admin_dashboard')
+
+    target_user.is_active = not target_user.is_active
+    target_user.save()
+
+    statut = "activé" if target_user.is_active else "désactivé"
+    messages.success(request, f'Le compte de {target_user.get_full_name()} a été {statut}.')
+    return redirect('admin_dashboard')
 
 @login_required
 def liste_etudiants(request):
@@ -325,40 +420,6 @@ def rejeter_demande(request, demande_id):
 
 
 # ════════════════════════════════════════
-# DASHBOARD ÉTUDIANT
-# ════════════════════════════════════════
-@login_required
-def profil_etudiant(request):
-    try:
-        etudiant = Etudiant.objects.get(user=request.user)
-    except:
-        return redirect('login')
-
-    notes    = Note.objects.filter(etudiant=etudiant)
-    demandes = Demande.objects.filter(
-        etudiant=etudiant
-    ).order_by('-date_demande')
-
-    moyenne = 0
-    if notes.exists():
-        moyenne = sum([n.note for n in notes]) / notes.count()
-
-    nb_valides  = demandes.filter(statut='validee').count()
-    nb_attente  = demandes.filter(statut='en_attente').count()
-
-    return render(request, 'dashboards/etudiant.html', {
-        'etudiant':   etudiant,
-        'notes':      notes[:5],
-        'demandes':   demandes[:5],
-        'moyenne':    round(moyenne, 2),
-        'nb_valides': nb_valides,
-        'nb_attente': nb_attente,
-        'nb_notes':   notes.count(),
-        'admis': moyenne >= 5,
-    })
-
-
-# ════════════════════════════════════════
 # DASHBOARD CHEF DÉPARTEMENT
 # ════════════════════════════════════════
 @login_required
@@ -400,6 +461,7 @@ def dashboard_chef(request):
         'profil':       profil,
         'filiere':      filiere,
         'nom_filiere':  nom_filiere,
+        'etudiants':    etudiants,
         'nb_etudiants': etudiants.count(),
         'nb_notes':     notes.count(),
         'nb_imports':   imports.count(),
@@ -450,6 +512,8 @@ def dashboard_dga(request):
         'total_notes':      total_notes,
         'nb_nt':            nb_nt,
         'nb_dl':            nb_dl,
+        'etudiants':        Etudiant.objects.all().order_by('matricule'),
+        'inscriptions_attente': Etudiant.objects.filter(est_valide=False).order_by('-id'),
     })
 
 
@@ -499,4 +563,7 @@ def dashboard_dg(request):
         'nb_nt':              nb_nt,
         'nb_dl':              nb_dl,
         'imports_actifs':     imports_actifs,
+        'etudiants':          Etudiant.objects.all().order_by('matricule'),
+        'inscriptions_attente': Etudiant.objects.filter(est_valide=False).order_by('-id'),
+        'demandes':           Demande.objects.all().order_by('-date_demande')[:10],
     })

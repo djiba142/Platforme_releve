@@ -8,6 +8,7 @@ class Note(models.Model):
     note = models.FloatField()
     session = models.ForeignKey('etudiants.Session', on_delete=models.CASCADE, related_name='notes')
     annee = models.CharField(max_length=10)
+    import_source = models.ForeignKey('ImportNotes', on_delete=models.CASCADE, related_name='lignes_notes', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Note'

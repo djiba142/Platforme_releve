@@ -8,17 +8,17 @@
 <div class="admin-sidebar">
     <div class="admin-sidebar-header"
         style="flex-direction: column; text-align: center; padding: 1.8rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); gap: 0.5rem;">
-        <div class="d-flex flex-column align-items-center justify-content-center gap-2 mb-2"
-            style="background: white; padding: 1.2rem 1rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-            <img src="{% static 'images/logos_uganc.png' %}" height="55" alt="UGANC" style="object-fit: contain;">
-            <div style="width: 70%; height: 2px; background: #E0E8F5; border-radius: 2px; margin: 0.3rem 0;"></div>
-            <img src="{% static 'images/logosCI.png' %}" height="45" alt="CI" style="object-fit: contain;">
+        <div class="d-flex flex-row align-items-center justify-content-center gap-3 mb-2"
+            style="background: white; padding: 0.8rem 1rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="{% static 'images/logos_uganc.png' %}" height="35" alt="UGANC" style="object-fit: contain;">
+            <div style="width: 2px; height: 35px; background: #E0E8F5; border-radius: 2px; margin: 0;"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="32" alt="CI" style="object-fit: contain;">
         </div>
         <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
             Centre Informatique
         </div>
         <div
-            style="color:var(--teal); font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            style="color:#1976D2; font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
             UGANC • Admin Panel
         </div>
     </div>
@@ -38,9 +38,7 @@
         <a href="{% url 'gestion_notes' %}" class="sidebar-link">
             <i class="fa-solid fa-book-open"></i> Notes
         </a>
-        <a href="{% url 'import_csv' %}" class="sidebar-link">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
-        </a>
+
         <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
         <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
@@ -59,7 +57,7 @@
                 <small class="text-muted">Administrateur</small>
             </div>
             <div
-                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                style="width:40px; height:40px; background:#1976D2; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
                 <i class="fa-solid fa-user-shield"></i>
             </div>
         </div>
@@ -117,14 +115,13 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0" style="color: #1A2744; font-weight: 600;">{{ etudiant.prenom }}
-                                            {{
-                                            etudiant.nom }}</h6>
+                                            {{ etudiant.nom }}</h6>
                                     </div>
                                 </div>
                             </td>
                             <td style="padding: 15px 25px; border-color: #F0F4FA;">
                                 <span class="badge"
-                                    style="background: rgba(0, 195, 163, 0.1); color: #00C3A3; font-family: monospace; font-size: 0.9rem;">
+                                    style="background: rgba(25, 118, 210, 0.08); color: #00C3A3; font-family: monospace; font-size: 0.9rem;">
                                     {{ etudiant.matricule }}
                                 </span>
                             </td>

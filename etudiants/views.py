@@ -126,15 +126,19 @@ def login_etudiant(request):
                 try:
                     profil = user.profiladmin
                     redirections = {
+                        'admin':     'admin_dashboard',
                         'chef_ntic': 'dashboard_chef',
                         'chef_dl':   'dashboard_chef',
                         'dga':       'dashboard_dga',
                         'dg':        'dashboard_dg',
                     }
-                    url = redirections.get(profil.role, 'admin_dashboard')
+                    url = redirections.get(profil.role, 'accueil')
                     return redirect(url)
                 except:
-                    return redirect('admin_dashboard')
+                    # S'il y a une erreur Profil, mais is_superuser, on va au super admin
+                    if user.is_superuser:
+                        return redirect('admin_dashboard')
+                    return redirect('accueil')
             else:
                 messages.error(request, 'Mot de passe incorrect.')
                 return render(request, 'etudiants/login.html')
@@ -203,8 +207,12 @@ def profil_view(request):
 
     from notes.models import Note
     from demandes.models import Demande
+    from django.db.models import Q
 
-    notes = Note.objects.filter(etudiant=etudiant)
+    notes = Note.objects.filter(
+        Q(import_source__isnull=True) | Q(import_source__statut='valide_dg'),
+        etudiant=etudiant
+    )
     demandes = Demande.objects.filter(etudiant=etudiant).order_by('-date_demande')[:5]
 
     moyenne = 0

@@ -21,14 +21,14 @@
 
         /* ── COULEURS UGANC ── */
         :root {
-            --teal: #00C3A3;
-            --navy: #1A2744;
+            --teal: #42A5F5;
+            --navy: #0D2137;
             --bleu-ci: #1565C0;
             --bleu-ci-light: #1976D2;
             --white: #FFFFFF;
             --light: #F0F4FA;
             --gray: #64748B;
-            --dark: #1A2744;
+            --dark: #0D2137;
         }
 
         /* ── NAVBAR ── */
@@ -38,8 +38,8 @@
             position: sticky;
             top: 0;
             z-index: 999;
-            box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
-            border-bottom: 3px solid var(--teal);
+            box-shadow: 0 3px 20px rgba(0, 0, 0, 0.25);
+            border-bottom: none;
         }
 
         .navbar-brand-text h6 {
@@ -61,7 +61,7 @@
         }
 
         .nav-link:hover {
-            color: var(--teal) !important;
+            color: white !important;
         }
 
         .btn-nav-login {
@@ -83,10 +83,7 @@
         /* ── HERO ── */
         .hero {
             min-height: 100vh;
-            background: linear-gradient(135deg,
-                    var(--navy) 0%,
-                    #1E3055 50%,
-                    #233D6A 100%);
+            background: #1976D2;
             display: flex;
             align-items: center;
             position: relative;
@@ -96,36 +93,22 @@
         .hero::before {
             content: '';
             position: absolute;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle,
-                    rgba(0, 195, 163, 0.15) 0%,
-                    transparent 70%);
-            top: -150px;
-            right: -150px;
-            border-radius: 50%;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle,
-                    rgba(21, 101, 192, 0.12) 0%,
-                    transparent 70%);
-            bottom: -100px;
-            left: -100px;
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.8;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(0, 195, 163, 0.2);
-            border: 1px solid rgba(0, 195, 163, 0.4);
-            color: #00C3A3;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
             padding: 6px 16px;
             border-radius: 25px;
             font-size: 0.8rem;
@@ -142,7 +125,7 @@
         }
 
         .hero h1 span {
-            color: #00C3A3;
+            color: #BBDEFB;
         }
 
         .hero p {
@@ -166,7 +149,7 @@
             align-items: center;
             gap: 10px;
             transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(21, 101, 192, 0.4);
+            box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
         }
 
         .btn-hero-primary:hover {
@@ -191,8 +174,8 @@
         }
 
         .btn-hero-secondary:hover {
-            border-color: #00C3A3;
-            color: #00C3A3;
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* Stats */
@@ -205,14 +188,14 @@
         }
 
         .hero-stat h3 {
-            color: #00C3A3;
+            color: white;
             font-size: 1.8rem;
             font-weight: 800;
             margin: 0;
         }
 
         .hero-stat p {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.78rem;
             margin: 3px 0 0;
         }
@@ -321,9 +304,9 @@
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(0, 195, 163, 0.08);
-            border: 1px solid rgba(0, 195, 163, 0.15);
-            color: var(--teal);
+            background: rgba(25, 118, 210, 0.08);
+            border: 1px solid rgba(25, 118, 210, 0.15);
+            color: #1976D2;
             padding: 5px 14px;
             border-radius: 20px;
             font-size: 0.78rem;
@@ -351,7 +334,7 @@
             border-radius: 16px;
             padding: 28px;
             height: 100%;
-            border: 1px solid #EDE0DC;
+            border: 1px solid #E2E8F0;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
@@ -364,14 +347,14 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--teal), var(--navy));
+            background: linear-gradient(90deg, #1976D2, #0D2137);
             transform: scaleX(0);
             transition: transform 0.3s;
         }
 
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 18px 40px rgba(26, 39, 68, 0.15);
+            box-shadow: 0 18px 40px rgba(13, 33, 55, 0.15);
         }
 
         .feature-card:hover::after {
@@ -417,7 +400,7 @@
         .step-num {
             width: 58px;
             height: 58px;
-            background: var(--teal);
+            background: #1976D2;
             color: white;
             border-radius: 50%;
             display: flex;
@@ -426,7 +409,7 @@
             font-size: 1.3rem;
             font-weight: 800;
             margin: 0 auto 18px;
-            box-shadow: 0 8px 20px rgba(0, 195, 163, 0.3);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.3);
         }
 
         .step-item h5 {
@@ -450,9 +433,7 @@
 
         /* ── CTA ── */
         .cta-section {
-            background: linear-gradient(135deg,
-                    var(--navy),
-                    var(--teal));
+            background: #1976D2;
             padding: 80px 0;
             text-align: center;
             position: relative;
@@ -462,12 +443,14 @@
         .cta-section::before {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 195, 163, 0.1);
-            border-radius: 50%;
-            top: -100px;
-            right: -100px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.8;
+            border-radius: 0;
         }
 
         .cta-section h2 {

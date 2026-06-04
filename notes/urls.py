@@ -20,4 +20,7 @@ urlpatterns = [
     path('imports/rejeter/<int:import_id>/',
          views.rejeter_notes,
          name='rejeter_notes'),
+    path('imports/consulter/<int:import_id>/',
+         views.consulter_import,
+         name='consulter_import'),
 ]

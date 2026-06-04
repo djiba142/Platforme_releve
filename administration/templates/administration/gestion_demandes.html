@@ -17,7 +17,7 @@
             Centre Informatique
         </div>
         <div
-            style="color:var(--teal); font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            style="color:#1976D2; font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
             UGANC • Admin Panel
         </div>
     </div>
@@ -34,9 +34,7 @@
         <a href="{% url 'gestion_notes' %}" class="sidebar-link">
             <i class="fa-solid fa-book-open"></i> Notes
         </a>
-        <a href="{% url 'import_csv' %}" class="sidebar-link">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
-        </a>
+        
         <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
         <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
@@ -55,7 +53,7 @@
                 <small class="text-muted">Administrateur</small>
             </div>
             <div
-                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                style="width:40px; height:40px; background:#1976D2; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
                 <i class="fa-solid fa-user-shield"></i>
             </div>
         </div>
@@ -73,8 +71,7 @@
     <div class="content-card mt-3">
         <div class="card-header-custom" style="display:flex; justify-content:space-between; align-items:center;">
             <h5><i class="fa-solid fa-list-check"></i> Historique et Traitement</h5>
-            <span class="badge" style="background:var(--navy); padding:0.4rem 0.8rem; border-radius:20px;">Total : {{
-                demandes.count }}</span>
+            <span class="badge" style="background:var(--navy); padding:0.4rem 0.8rem; border-radius:20px;">Total : {{ demandes.count }}</span>
         </div>
         <div class="card-body-custom p-0">
             <table class="table-modern">
@@ -95,10 +92,9 @@
                         <td style="font-size:0.85rem; color:var(--text-light);">{{ demande.date_demande|date:"d M y,
                             H:i" }}</td>
                         <td>
-                            <div style="font-family:monospace; font-weight:600; color:var(--teal); font-size:0.95rem;">
+                            <div style="font-family:monospace; font-weight:600; color:#1976D2; font-size:0.95rem;">
                                 {{ demande.etudiant.matricule }}</div>
-                            <div style="font-size:0.85rem; font-weight:600;">{{ demande.etudiant.prenom }} {{
-                                demande.etudiant.nom }}</div>
+                            <div style="font-size:0.85rem; font-weight:600;">{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</div>
                         </td>
                         <td style="font-weight:600; color:var(--navy);">{{ demande.session }}</td>
                         <td>

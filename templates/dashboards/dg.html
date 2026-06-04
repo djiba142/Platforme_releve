@@ -15,12 +15,12 @@
         .sidebar {
             width: 240px;
             min-height: 100vh;
-            background: #1A2744;
+            background: #0D2137;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 100;
-            border-right: 3px solid #00C3A3;
+            border-right: none;
         }
 
         .sidebar-logo {
@@ -52,8 +52,8 @@
         .menu-item:hover,
         .menu-item.active {
             color: white;
-            background: rgba(0, 195, 163, 0.1);
-            border-left-color: #00C3A3;
+            background: rgba(25, 118, 210, 0.08);
+            border-left-color: #1976D2;
         }
 
         .main {
@@ -77,7 +77,7 @@
         }
 
         .content-card h6 {
-            color: #1A2744;
+            color: #1565C0;
             font-weight: 700;
             border-bottom: 2px solid #EFF4FB;
             padding-bottom: 10px;
@@ -85,7 +85,7 @@
         }
 
         thead th {
-            background: #1A2744 !important;
+            background: #1565C0 !important;
             color: white;
         }
 
@@ -100,7 +100,7 @@
         }
 
         .badge-dg {
-            background: #00C3A3;
+            background: #1976D2;
             color: white;
         }
 
@@ -110,14 +110,14 @@
         }
 
         .role-badge {
-            background: #1A2744;
+            background: #1565C0;
             color: white;
             padding: 4px 12px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
-            box-shadow: 0 2px 10px rgba(0, 195, 163, 0.3);
+            box-shadow: 0 2px 10px rgba(25, 118, 210, 0.25);
         }
     </style>
 </head>
@@ -125,17 +125,20 @@
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-logo">
-            <div class="d-flex align-items-center gap-2 mb-2">
-                <img src="/static/images/logos_uganc.png" height="35" alt="UGANC">
-                <img src="/static/images/logosCI.png" height="30" alt="CI" style="filter:brightness(0) invert(1);
-                        opacity:0.85;">
+        <div class="sidebar-logo"
+            style="padding: 1.8rem 1.5rem; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+            <div class="d-flex align-items-center justify-content-center gap-3 mb-2"
+                style="background: white; padding: 0.8rem 0.6rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <img src="/static/images/logos_uganc.png" height="38" alt="UGANC"
+                    style="object-fit: contain; max-width: 45%;">
+                <div style="width: 2px; height: 35px; background: #E0E8F5; border-radius: 2px;"></div>
+                <img src="/static/images/logosCI.png" height="33" alt="CI" style="object-fit: contain; max-width: 45%;">
             </div>
-            <div style="color:white;font-weight:700;
-                    font-size:0.85rem;">
+            <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
                 Centre Informatique
             </div>
-            <div style="color:#00C3A3;font-size:0.7rem;">
+            <div
+                style="color:#1976D2; font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
                 DG - Direction Générale
             </div>
         </div>
@@ -144,14 +147,13 @@
         <a href="{% url 'dashboard_dg' %}" class="menu-item active">
             <i class="fa-solid fa-globe"></i> Supervision
         </a>
-        <a href="{% url 'liste_etudiants' %}" class="menu-item">
+        <a href="#etudiants-section" class="menu-item">
             <i class="fa-solid fa-users"></i> Étudiants
         </a>
-        <a href="{% url 'gestion_inscriptions' %}"
-            class="menu-item {% if request.resolver_match.url_name == 'gestion_inscriptions' %}active{% endif %}">
+        <a href="#inscriptions-section" class="menu-item">
             <i class="fa-solid fa-user-clock"></i> Inscriptions
         </a>
-        <a href="{% url 'gestion_demandes' %}" class="menu-item">
+        <a href="#demandes-section" class="menu-item">
             <i class="fa-solid fa-file-pdf"></i> Demandes Relevés
         </a>
 
@@ -160,7 +162,7 @@
         right:0; padding:16px 18px;
         border-top:1px solid rgba(255,255,255,0.08);">
             <div style="
-            background:linear-gradient(135deg, #00C3A3, #1A2744);
+            background:linear-gradient(135deg, #1976D2, #1565C0);
             border-radius:10px; padding:12px;
             margin-bottom:12px;">
                 <div style="color:white;font-weight:700;
@@ -187,7 +189,7 @@
         justify-content:space-between;
         box-shadow:0 2px 10px rgba(26,39,68,0.07);">
             <div>
-                <h5 style="margin:0;color:#1A2744;font-weight:700;">
+                <h5 style="margin:0;color:#1565C0;font-weight:700;">
                     Tableau de bord — DG
                 </h5>
                 <small style="color:#64748B;">
@@ -195,19 +197,19 @@
                 </small>
             </div>
             <span class="role-badge">
-                <i class="fa-solid fa-star me-1" style="color:#00C3A3;"></i>
+                <i class="fa-solid fa-star me-1" style="color:#1976D2;"></i>
                 Autorité Finale
             </span>
         </div>
 
         <!-- Stats -->
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-4 animate-up stagger-1">
             <div class="col-md-3">
                 <div class="stat-card">
                     <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-check-double me-1" style="color:#00C3A3;"></i> Imports Validés DG
+                        <i class="fa-solid fa-check-double me-1" style="color:#1976D2;"></i> Imports Validés DG
                     </div>
-                    <h2 style="color:#00C3A3;font-weight:800;margin:5px 0 0;">
+                    <h2 style="color:#1976D2;font-weight:800;margin:5px 0 0;">
                         {{ imports_actifs }}
                     </h2>
                 </div>
@@ -215,9 +217,9 @@
             <div class="col-md-3">
                 <div class="stat-card">
                     <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-file-pdf me-1" style="color:#1A2744;"></i> Relevés Générés
+                        <i class="fa-solid fa-file-pdf me-1" style="color:#1565C0;"></i> Relevés Générés
                     </div>
-                    <h2 style="color:#1A2744;font-weight:800;margin:5px 0 0;">
+                    <h2 style="color:#1565C0;font-weight:800;margin:5px 0 0;">
                         {{ total_releves }}
                     </h2>
                 </div>
@@ -238,19 +240,19 @@
                         <i class="fa-solid fa-users me-1"></i>
                         Étudiants
                     </div>
-                    <h2 style="color:#1A2744;font-weight:800;margin:5px 0 0;">
+                    <h2 style="color:#1565C0;font-weight:800;margin:5px 0 0;">
                         {{ total_etudiants }}
                     </h2>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 animate-up stagger-2">
             <!-- Validation Finale -->
             <div class="col-md-7">
                 <div class="content-card">
                     <h6>
-                        <i class="fa-solid fa-signature me-2" style="color:#00C3A3;"></i>
+                        <i class="fa-solid fa-signature me-2" style="color:#1976D2;"></i>
                         Action Requise : Validation Finale
                     </h6>
                     {% if imports_a_valider %}
@@ -272,12 +274,19 @@
                                 <td>{{ imp.nb_notes_importees }}</td>
                                 <td>{{ imp.date_depot|date:"d/m/Y" }}</td>
                                 <td class="text-end">
-                                    <a href="{% url 'valider_import' imp.id %}" class="btn btn-sm text-white fw-bold"
-                                        style="background:#00C3A3;">
+                                    {% if imp.fichier %}
+                                    <a href="{{ imp.fichier.url }}" target="_blank"
+                                        class="btn btn-sm btn-info fw-bold text-white mb-1"
+                                        title="Consulter le fichier">
+                                        <i class="fa-solid fa-eye"></i> Consulter
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'valider_notes_dg' imp.id %}"
+                                        class="btn btn-sm text-white fw-bold mb-1" style="background:#1976D2;">
                                         <i class="fa-solid fa-check-double"></i>
                                         Approuver & Activer
                                     </a>
-                                    <a href="{% url 'rejeter_import' imp.id %}"
+                                    <a href="{% url 'rejeter_notes' imp.id %}"
                                         class="btn btn-sm btn-danger fw-bold ms-1">
                                         <i class="fa-solid fa-xmark"></i>
                                     </a>
@@ -288,7 +297,7 @@
                     </table>
                     {% else %}
                     <div class="text-center py-4 text-muted">
-                        <i class="fa-solid fa-check-circle fa-2x mb-2 d-block" style="color:#00C3A3;"></i>
+                        <i class="fa-solid fa-check-circle fa-2x mb-2 d-block" style="color:#1976D2;"></i>
                         Aucun import en attente de validation finale
                     </div>
                     {% endif %}
@@ -299,7 +308,7 @@
             <div class="col-md-5">
                 <div class="content-card">
                     <h6>
-                        <i class="fa-solid fa-chart-line me-2" style="color:#1A2744;"></i>
+                        <i class="fa-solid fa-chart-line me-2" style="color:#1565C0;"></i>
                         Vue d'ensemble système
                     </h6>
                     <ul class="list-group list-group-flush">
@@ -320,6 +329,233 @@
                             <span class="badge bg-info rounded-pill">{{ total_notes }}</span>
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique Systématique des Imports -->
+        <div class="row g-4 mt-2 animate-up stagger-3" id="historique-imports-section">
+            <div class="col-12">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-clock-rotate-left me-2" style="color:#1976D2;"></i>
+                        Historique Général des Imports (Consultation)
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Filière</th>
+                                    <th>Session</th>
+                                    <th>Notes</th>
+                                    <th>Statut</th>
+                                    <th>Fichier Source</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for imp in tous_imports %}
+                                <tr>
+                                    <td><strong>{{ imp.filiere }}</strong></td>
+                                    <td>{{ imp.session }}</td>
+                                    <td>{{ imp.nb_notes_importees }}</td>
+                                    <td>
+                                        {% if imp.statut == 'valide_dg' %}
+                                        <span class="badge badge-dg">Actif DG</span>
+                                        {% elif imp.statut == 'valide_dga' %}
+                                        <span class="badge bg-success">Validé (DGA)</span>
+                                        {% elif imp.statut == 'depose' %}
+                                        <span class="badge bg-warning text-dark">Déposé (Chef)</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Rejeté</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'consulter_import' imp.id %}"
+                                            class="btn btn-sm btn-outline-info fw-bold" style="font-size:0.8rem;"
+                                            title="Consulter le détail de l'import">
+                                            <i class="fa-solid fa-eye me-1"></i> Consulter l'import
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">Aucun import enregistré dans le
+                                        système.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Étudiants -->
+        <div class="row g-4 mt-2 animate-up stagger-4" id="etudiants-section">
+            <div class="col-12">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-users me-2" style="color:#1976D2;"></i>
+                        Liste complète des étudiants
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Matricule</th>
+                                    <th>Nom Complet</th>
+                                    <th>Département</th>
+                                    <th>Niveau</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for etudiant in etudiants %}
+                                <tr>
+                                    <td style="font-family:monospace; font-weight:600; color:#1976D2;">
+                                        {{ etudiant.matricule }}
+                                    </td>
+                                    <td style="font-weight:600; color:#0D2137;">
+                                        {{ etudiant.prenom }} {{ etudiant.nom }}
+                                    </td>
+                                    <td>
+                                        {{ etudiant.departement.nom }}
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background:rgba(26,39,68,0.06); color:#0D2137;">
+                                            {{ etudiant.niveau.nom }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">
+                                        <i class="fa-solid fa-folder-open fa-2x mb-2 d-block"
+                                            style="color:#D4E0F0;"></i>
+                                        Aucun étudiant inscrit.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Inscriptions -->
+        <div class="row g-4 mt-2" id="inscriptions-section">
+            <div class="col-12">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-user-clock me-2" style="color:#FF9800;"></i>
+                        Inscriptions en attente de validation
+                    </h6>
+                    {% if inscriptions_attente %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Matricule</th>
+                                    <th>Nom Complet</th>
+                                    <th>Département</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for insc in inscriptions_attente %}
+                                <tr>
+                                    <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{ insc.matricule
+                                        }}</td>
+                                    <td style="font-weight:600; color:#0D2137;">{{ insc.prenom }} {{ insc.nom }}</td>
+                                    <td>{{ insc.departement.nom }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'valider_inscription' insc.id %}"
+                                            class="btn btn-sm text-white fw-bold" style="background:#1976D2;">
+                                            <i class="fa-solid fa-check"></i> Valider
+                                        </a>
+                                        <a href="{% url 'rejeter_inscription' insc.id %}"
+                                            class="btn btn-sm btn-danger fw-bold ms-1">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-check-circle fa-2x mb-2 d-block" style="color:#1976D2;"></i>
+                        Aucune inscription en attente
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Demandes Relevés -->
+        <div class="row g-4 mt-2" id="demandes-section">
+            <div class="col-12">
+                <div class="content-card">
+                    <h6>
+                        <i class="fa-solid fa-file-pdf me-2" style="color:#1565C0;"></i>
+                        Demandes de relevés récentes
+                    </h6>
+                    {% if demandes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>Étudiant</th>
+                                    <th>Matricule</th>
+                                    <th>Session</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for demande in demandes %}
+                                <tr>
+                                    <td style="font-weight:700;">#{{ demande.id }}</td>
+                                    <td>{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</td>
+                                    <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
+                                        demande.etudiant.matricule }}</td>
+                                    <td>{{ demande.session }}</td>
+                                    <td style="font-size:0.85rem; color:#64748B;">{{ demande.date_demande|date:"d M y"
+                                        }}</td>
+                                    <td>
+                                        {% if demande.statut == 'en_attente' %}<span class="badge"
+                                            style="background:#FF9800; color:white;">En attente</span>
+                                        {% elif demande.statut == 'validee' %}<span class="badge"
+                                            style="background:#1976D2; color:white;">Validée</span>
+                                        {% else %}<span class="badge"
+                                            style="background:#DC3545; color:white;">Rejetée</span>{% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        {% if demande.statut == 'en_attente' %}
+                                        <a href="{% url 'valider_demande' demande.id %}"
+                                            class="btn btn-sm text-white fw-bold" style="background:#1976D2;"><i
+                                                class="fa-solid fa-check"></i></a>
+                                        <a href="{% url 'rejeter_demande' demande.id %}"
+                                            class="btn btn-sm btn-danger fw-bold ms-1"><i
+                                                class="fa-solid fa-xmark"></i></a>
+                                        {% else %}
+                                        <span class="text-muted"><i class="fa-solid fa-lock"></i> Traitée</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-check-circle fa-2x mb-2 d-block" style="color:#1976D2;"></i>
+                        Aucune demande de relevé
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Dashboard Admin{% endblock %}
+{% block title %}Dashboard Admin — Centre Informatique{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Sidebar Layout for Admin */
     body {
         background: #EFF4FB;
         display: flex;
@@ -34,11 +33,6 @@
         gap: 0.8rem;
     }
 
-    .sidebar-logo {
-        font-size: 1.8rem;
-        color: var(--teal);
-    }
-
     .admin-sidebar-nav {
         padding: 1rem 0;
         flex: 1;
@@ -60,9 +54,9 @@
 
     .sidebar-link:hover,
     .sidebar-link.active {
-        background: rgba(0, 195, 163, 0.1);
+        background: rgba(25, 118, 210, 0.08);
         color: white;
-        border-left-color: var(--teal);
+        border-left-color: #1976D2;
     }
 
     .sidebar-link i {
@@ -74,6 +68,9 @@
         flex: 1;
         margin-left: 260px;
         padding: 2rem 3rem;
+        width: calc(100% - 260px);
+        /* Prevents flex children from blowing out widths */
+        display: block;
     }
 
     .topbar {
@@ -86,6 +83,182 @@
         box-shadow: var(--shadow-sm);
         margin-bottom: 2rem;
     }
+
+    .metric-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .metric-card .metric-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .metric-card h2 {
+        font-weight: 800;
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .metric-card p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #64748B;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .section-card h5 {
+        font-weight: 800;
+        color: #0D2137;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .form-row-grid .form-group label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748B;
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .form-row-grid .form-group input,
+    .form-row-grid .form-group select {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 1.5px solid #E0E8F5;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-row-grid .form-group input:focus,
+    .form-row-grid .form-group select:focus {
+        border-color: #1976D2;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    }
+
+    .table-cadres {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-cadres thead th {
+        background: #F1F5F9;
+        padding: 0.8rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748B;
+        text-align: left;
+    }
+
+    .table-cadres thead th:first-child {
+        border-radius: 8px 0 0 0;
+    }
+
+    .table-cadres thead th:last-child {
+        border-radius: 0 8px 0 0;
+    }
+
+    .table-cadres tbody td {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid #F1F5F9;
+        font-size: 0.9rem;
+    }
+
+    .table-cadres tbody tr:hover {
+        background: rgba(25, 118, 210, 0.03);
+    }
+
+    .badge-role {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .badge-role-dg {
+        background: rgba(25, 118, 210, 0.1);
+        color: #1565C0;
+    }
+
+    .badge-role-dga {
+        background: rgba(21, 101, 192, 0.1);
+        color: #0D47A1;
+    }
+
+    .badge-role-chef {
+        background: rgba(46, 125, 50, 0.1);
+        color: #2E7D32;
+    }
+
+    .badge-active {
+        background: rgba(46, 125, 50, 0.1);
+        color: #2E7D32;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-inactive {
+        background: rgba(211, 47, 47, 0.1);
+        color: #D32F2F;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .btn-submit-user {
+        background: #1976D2;
+        color: white;
+        border: none;
+        padding: 0.7rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-submit-user:hover {
+        background: #1565C0;
+    }
+
+    .si-primary {
+        background: rgba(25, 118, 210, 0.1);
+        color: #1565C0;
+    }
 </style>
 {% endblock %}
 
@@ -95,37 +268,45 @@
 <!-- ── SIDEBAR ── -->
 <div class="admin-sidebar">
     <div class="admin-sidebar-header"
-        style="flex-direction: column; text-align: center; padding: 1.8rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); gap: 0.5rem;">
-        <div class="d-flex flex-column align-items-center justify-content-center gap-2 mb-2"
-            style="background: white; padding: 1.2rem 1rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-            <img src="{% static 'images/logos_uganc.png' %}" height="55" alt="UGANC" style="object-fit: contain;">
-            <div style="width: 70%; height: 2px; background: #E0E8F5; border-radius: 2px; margin: 0.3rem 0;"></div>
-            <img src="{% static 'images/logosCI.png' %}" height="45" alt="CI" style="object-fit: contain;">
+        style="flex-direction: column; text-align: center; padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); gap: 0.5rem;">
+        <div class="d-flex flex-row align-items-center justify-content-center gap-3 mb-2"
+            style="background: white; padding: 1rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="{% static 'images/logos_uganc.png' %}" height="45" alt="UGANC"
+                style="object-fit: contain; max-width: 45%;">
+            <div style="width: 2px; height: 40px; background: #E0E8F5; border-radius: 2px;"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="40" alt="CI"
+                style="object-fit: contain; max-width: 45%;">
         </div>
         <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
             Centre Informatique
         </div>
         <div
-            style="color:var(--teal); font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-            UGANC • Admin Panel
+            style="color:#1976D2; font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            UGANC • Super Admin
         </div>
     </div>
     <div class="admin-sidebar-nav">
-        <a href="{% url 'admin_dashboard' %}" class="sidebar-link active">
+        <a href="#overview-section" class="sidebar-link active">
             <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
         </a>
+        <a href="#gestion-acces-section" class="sidebar-link">
+            <i class="fa-solid fa-user-gear"></i> Gestion des Accès
+        </a>
+        <a href="#demandes-section" class="sidebar-link">
+            <i class="fa-solid fa-file-lines"></i> Demandes Récentes
+        </a>
+
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
         <a href="{% url 'liste_etudiants' %}" class="sidebar-link">
             <i class="fa-solid fa-users"></i> Étudiants
         </a>
         <a href="{% url 'gestion_demandes' %}" class="sidebar-link">
-            <i class="fa-solid fa-file-lines"></i> Demandes
+            <i class="fa-solid fa-clipboard-list"></i> Toutes les Demandes
         </a>
         <a href="{% url 'gestion_notes' %}" class="sidebar-link">
             <i class="fa-solid fa-book-open"></i> Notes
         </a>
-        <a href="{% url 'import_csv' %}" class="sidebar-link">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Import Rapide
-        </a>
+
         <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
         <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
@@ -135,120 +316,367 @@
 
 <!-- ── MAIN CONTENT ── -->
 <div class="admin-main">
-    <div class="topbar">
-        <h4 style="margin:0; font-weight:800; color:var(--navy);">
-            <i class="fa-solid fa-chart-pie text-muted me-2"></i> Tableau de bord
-        </h4>
-        <div style="display:flex; align-items:center; gap:1rem;">
-            <div style="text-align:right;">
-                <h6 style="margin:0; font-weight:700;">{{ request.user.username }}</h6>
-                <small class="text-muted">Administrateur</small>
-            </div>
-            <div
-                style="width:40px; height:40px; background:var(--teal); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
-                <i class="fa-solid fa-user-shield"></i>
+    <div class="container-fluid p-0">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h4 style="margin:0; font-weight:800; color:var(--navy);">
+                <i class="fa-solid fa-shield-halved text-muted me-2"></i> Panneau de Contrôle
+            </h4>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <div style="text-align:right;">
+                    <h6 style="margin:0; font-weight:700;">{{ request.user.username }}</h6>
+                    <small class="text-muted">Super Administrateur</small>
+                </div>
+                <div
+                    style="width:40px; height:40px; background:#1976D2; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Stats summary -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="stat-card" style="background:var(--navy); color:white;">
-                <div class="stat-icon" style="background:rgba(255,255,255,0.1);"><i
-                        class="fa-solid fa-users text-white"></i></div>
-                <div class="stat-info">
-                    <h3 style="color:white;">{{ nb_etudiants }}</h3>
-                    <p style="color:rgba(255,255,255,0.7);">Étudiants inscrits</p>
-                </div>
+        <!-- Messages Django -->
+        {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"
+                style="border-radius:10px; font-weight:600; font-size:0.9rem;">
+                {% if message.tags == 'success' %}
+                <i class="fa-solid fa-circle-check me-2"></i>
+                {% elif message.tags == 'error' %}
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                {% else %}
+                <i class="fa-solid fa-info-circle me-2"></i>
+                {% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+            {% endfor %}
         </div>
-        <div class="col-md-3">
-            <div class="stat-card bg-white">
-                <div class="stat-icon si-teal"><i class="fa-solid fa-file-pdf"></i></div>
-                <div class="stat-info">
-                    <h3>{{ nb_releves }}</h3>
-                    <p>Relevés générés</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card bg-white">
-                <div class="stat-icon si-warning"><i class="fa-solid fa-hourglass-half"></i></div>
-                <div class="stat-info">
-                    <h3>{{ nb_attente }}</h3>
-                    <p>Demandes en attente</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card bg-white">
-                <div class="stat-icon si-success"><i class="fa-solid fa-check"></i></div>
-                <div class="stat-info">
-                    <h3>{{ nb_validees }}</h3>
-                    <p>Demandes approuvées</p>
-                </div>
-            </div>
-        </div>
-    </div>
+        {% endif %}
 
-    <!-- Recents -->
-    <div class="content-card">
-        <div class="card-header-custom">
-            <h5><i class="fa-solid fa-bolt"></i> Demandes récentes (Activité en direct)</h5>
-            <a href="{% url 'gestion_demandes' %}" class="btn-action btn-outline-custom">Gérer tout</a>
+        <!-- ═══════════════════════════════ -->
+        <!-- SECTION 1 : VUE D'ENSEMBLE     -->
+        <!-- ═══════════════════════════════ -->
+        <div id="overview-section">
+            <div class="row g-3 mb-4">
+                <!-- Comptes Actifs -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(25,118,210,0.1);">
+                                <i class="fa-solid fa-user-shield" style="color:#1976D2;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#1976D2;">{{ nb_comptes_actifs }}</h2>
+                                <p>Comptes Actifs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Étudiants -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(13,33,55,0.08);">
+                                <i class="fa-solid fa-users" style="color:#0D2137;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#0D2137;">{{ nb_etudiants }}</h2>
+                                <p>Étudiants Inscrits</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relevés -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(21,101,192,0.1);">
+                                <i class="fa-solid fa-file-pdf" style="color:#1565C0;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#1565C0;">{{ nb_releves }}</h2>
+                                <p>Relevés Générés</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demandes en Attente -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(255,152,0,0.1);">
+                                <i class="fa-solid fa-hourglass-half" style="color:#FF9800;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#FF9800;">{{ nb_attente }}</h2>
+                                <p>Demandes en Attente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Répartition des rôles -->
+            <div class="row g-3 mb-4 animate-up stagger-1">
+                <div class="col-md-4">
+                    <div class="metric-card" style="border-left: 4px solid #1976D2;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p style="font-weight:700; color:#0D2137; margin:0;">Directeur Général</p>
+                                <small class="text-muted">Autorité finale</small>
+                            </div>
+                            <h2 style="color:#1976D2; font-size:2rem;">{{ nb_dg }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card" style="border-left: 4px solid #0D47A1;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p style="font-weight:700; color:#0D2137; margin:0;">DGA</p>
+                                <small class="text-muted">Validation intermédiaire</small>
+                            </div>
+                            <h2 style="color:#0D47A1; font-size:2rem;">{{ nb_dga }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card" style="border-left: 4px solid #2E7D32;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p style="font-weight:700; color:#0D2137; margin:0;">Chefs de Département</p>
+                                <small class="text-muted">Dépôt des notes</small>
+                            </div>
+                            <h2 style="color:#2E7D32; font-size:2rem;">{{ nb_chef }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body-custom p-0">
-            <table class="table-modern">
-                <thead>
-                    <tr>
-                        <th>N°</th>
-                        <th>Étudiant</th>
-                        <th>Matricule</th>
-                        <th>Session</th>
-                        <th>Date</th>
-                        <th>Statut</th>
-                        <th class="text-end">Actions Rapides</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for demande in dernières_demandes %}
-                    <tr>
-                        <td style="font-weight:700;">#{{ demande.id }}</td>
-                        <td>{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</td>
-                        <td style="font-family:monospace; font-weight:600; color:var(--teal);">{{
-                            demande.etudiant.matricule }}</td>
-                        <td>{{ demande.session }}</td>
-                        <td style="font-size:0.85rem; color:var(--text-light);">{{ demande.date_demande|date:"d M y,
-                            H:i" }}</td>
-                        <td>
-                            {% if demande.statut == 'en_attente' %}<span class="badge-status badge-attente">En
-                                attente</span>
-                            {% elif demande.statut == 'validee' %}<span
-                                class="badge-status badge-validee">Validée</span>
-                            {% else %}<span class="badge-status badge-rejetee">Rejetée</span>{% endif %}
-                        </td>
-                        <td class="text-end">
-                            {% if demande.statut == 'en_attente' %}
-                            <a href="{% url 'valider_demande' demande.id %}"
-                                class="btn-action btn-success-action py-1 px-2"><i class="fa-solid fa-check"></i>
-                                Approuver</a>
-                            <a href="{% url 'rejeter_demande' demande.id %}"
-                                class="btn-action btn-danger-action py-1 px-2 ms-1"><i
-                                    class="fa-solid fa-xmark"></i></a>
-                            {% else %}
-                            <span class="text-muted"><i class="fa-solid fa-lock"></i> Traitée</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center py-4">Aucune demande trouvée.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+        <!-- ═══════════════════════════════ -->
+        <!-- SECTION 2 : GESTION DES ACCÈS  -->
+        <!-- ═══════════════════════════════ -->
+        <div id="gestion-acces-section" class="animate-up stagger-2">
+            <!-- Formulaire de création -->
+            <div class="section-card">
+                <h5>
+                    <i class="fa-solid fa-user-plus me-2" style="color:#1976D2;"></i>
+                    Créer un Nouveau Compte Cadre
+                </h5>
+                <form method="POST" action="{% url 'creer_utilisateur' %}">
+                    {% csrf_token %}
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label>Prénom *</label>
+                            <input type="text" name="prenom" placeholder="Ex: Mamadou" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nom *</label>
+                            <input type="text" name="nom" placeholder="Ex: Diallo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Institutionnel *</label>
+                            <input type="email" name="email" placeholder="Ex: m.diallo@uganc.edu.gn" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="tel" name="telephone" placeholder="Ex: +224 620 00 00 00">
+                        </div>
+                        <div class="form-group">
+                            <label>Rôle *</label>
+                            <select name="role" required>
+                                <option value="">— Sélectionner un rôle —</option>
+                                {% for value, label in role_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mot de passe *</label>
+                            <input type="password" name="password" placeholder="Minimum 8 caractères" required
+                                minlength="8">
+                        </div>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <button type="submit" class="btn-submit-user">
+                            <i class="fa-solid fa-user-plus me-1"></i> Créer le Compte
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tableau des cadres existants -->
+            <div class="section-card">
+                <h5>
+                    <i class="fa-solid fa-users-gear me-2" style="color:#1976D2;"></i>
+                    Cadres du Système ({{ cadres|length }} comptes)
+                </h5>
+                <div class="table-responsive">
+                    <table class="table-cadres">
+                        <thead>
+                            <tr>
+                                <th>Nom Complet</th>
+                                <th>Rôle</th>
+                                <th>Email</th>
+                                <th>Identifiant</th>
+                                <th>Dernière Connexion</th>
+                                <th>Statut</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cadre in cadres %}
+                            <tr>
+                                <td style="font-weight:700; color:#0D2137;">
+                                    {{ cadre.prenom }} {{ cadre.nom }}
+                                </td>
+                                <td>
+                                    {% if cadre.role == 'dg' %}
+                                    <span class="badge-role badge-role-dg">Directeur Général</span>
+                                    {% elif cadre.role == 'dga' %}
+                                    <span class="badge-role badge-role-dga">DGA</span>
+                                    {% else %}
+                                    <span class="badge-role badge-role-chef">{{ cadre.get_role_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="color:#64748B;">{{ cadre.email }}</td>
+                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
+                                    cadre.user.username }}</td>
+                                <td style="font-size:0.85rem; color:#64748B;">
+                                    {% if cadre.user.last_login %}
+                                    {{ cadre.user.last_login|date:"d/m/Y H:i" }}
+                                    {% else %}
+                                    <span class="text-muted">Jamais connecté</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if cadre.user.is_active %}
+                                    <span class="badge-active"><i class="fa-solid fa-circle"
+                                            style="font-size:0.5rem;"></i>
+                                        Actif</span>
+                                    {% else %}
+                                    <span class="badge-inactive"><i class="fa-solid fa-circle"
+                                            style="font-size:0.5rem;"></i> Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if cadre.user != request.user %}
+                                    <a href="{% url 'toggle_utilisateur' cadre.user.id %}"
+                                        class="btn btn-sm {% if cadre.user.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} fw-bold"
+                                        style="font-size:0.75rem; border-radius:6px;"
+                                        onclick="return confirm('{% if cadre.user.is_active %}Désactiver{% else %}Réactiver{% endif %} le compte de {{ cadre.prenom }} {{ cadre.nom }} ?')">
+                                        {% if cadre.user.is_active %}
+                                        <i class="fa-solid fa-ban"></i> Désactiver
+                                        {% else %}
+                                        <i class="fa-solid fa-rotate-right"></i> Réactiver
+                                        {% endif %}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted" style="font-size:0.8rem;">
+                                        <i class="fa-solid fa-lock"></i> Vous
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="fa-solid fa-user-slash fa-2x d-block mb-2" style="color:#D4E0F0;"></i>
+                                    Aucun cadre enregistré. Créez le premier compte ci-dessus.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- ═══════════════════════════════ -->
+        <!-- SECTION 3 : DEMANDES RÉCENTES  -->
+        <!-- ═══════════════════════════════ -->
+        <div id="demandes-section" class="animate-up stagger-3">
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-bolt me-2" style="color:#FF9800;"></i>
+                        Demandes Récentes (Activité en direct)
+                    </h5>
+                    <a href="{% url 'gestion_demandes' %}" class="btn btn-sm btn-outline-primary fw-bold"
+                        style="border-radius:8px;">
+                        Gérer tout <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-cadres">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Étudiant</th>
+                                <th>Matricule</th>
+                                <th>Session</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for demande in dernières_demandes %}
+                            <tr>
+                                <td style="font-weight:700;">#{{ demande.id }}</td>
+                                <td>{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</td>
+                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
+                                    demande.etudiant.matricule }}</td>
+                                <td>{{ demande.session }}</td>
+                                <td style="font-size:0.85rem; color:#64748B;">{{ demande.date_demande|date:"d M y, H:i"
+                                    }}</td>
+                                <td>
+                                    {% if demande.statut == 'en_attente' %}
+                                    <span class="badge-role" style="background:rgba(255,152,0,0.1); color:#FF9800;">En
+                                        attente</span>
+                                    {% elif demande.statut == 'validee' %}
+                                    <span class="badge-role"
+                                        style="background:rgba(46,125,50,0.1); color:#2E7D32;">Validée</span>
+                                    {% else %}
+                                    <span class="badge-role"
+                                        style="background:rgba(211,47,47,0.1); color:#D32F2F;">Rejetée</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if demande.statut == 'en_attente' %}
+                                    <a href="{% url 'valider_demande' demande.id %}"
+                                        class="btn btn-sm btn-success fw-bold"
+                                        style="font-size:0.75rem; border-radius:6px;">
+                                        <i class="fa-solid fa-check"></i> Approuver
+                                    </a>
+                                    <a href="{% url 'rejeter_demande' demande.id %}"
+                                        class="btn btn-sm btn-danger fw-bold ms-1"
+                                        style="font-size:0.75rem; border-radius:6px;">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </a>
+                                    <a href="{% url 'consulter_import' imp.id %}"
+                                        class="btn btn-sm btn-outline-info fw-bold" style="font-size:0.8rem;"
+                                        title="Consulter le détail de l'import">
+                                        <i class="fa-solid fa-eye me-1"></i> Consulter l'import
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">Aucune demande trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End container-fluid -->
 </div>
 {% endblock %}

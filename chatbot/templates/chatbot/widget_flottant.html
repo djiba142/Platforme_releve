@@ -308,10 +308,25 @@
 
         // Toggle open / close
         toggle.addEventListener('click', function () {
+            const wasOpen = toggle.classList.contains('open');
             toggle.classList.toggle('open');
             widget.classList.toggle('show');
             if (widget.classList.contains('show')) {
                 input.focus();
+            } else if (wasOpen) {
+                // Trigger backend clear
+                const csrfEl = widget.querySelector('[name=csrfmiddlewaretoken]');
+                const csrfToken = csrfEl ? csrfEl.value : '';
+
+                fetch("{% url 'chatbot_api' %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                    body: JSON.stringify({ action: 'clear' })
+                }).then(() => {
+                    // Reset UI to default state
+                    msgBox.innerHTML = '<div class="w-msg w-msg-bot">👋 Bonjour ! Je suis votre assistant académique.<br>Tapez <strong>bonjour</strong> pour commencer ou <strong>aide</strong> pour voir les commandes.</div>';
+                    input.value = '';
+                }).catch(e => console.error(e));
             }
         });
 

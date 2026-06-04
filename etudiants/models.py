@@ -78,6 +78,7 @@ class Etudiant(models.Model):
 class ProfilAdmin(models.Model):
 
     ROLE_CHOICES = [
+        ('admin',      'Administrateur Système'),
         ('dg',         'Directeur Général'),
         ('dga',        'Directeur Général Adjoint'),
         ('chef_ntic',  'Chef de Département NTIC'),
@@ -109,6 +110,7 @@ class ProfilAdmin(models.Model):
 
     def get_role_label(self):
         labels = {
+            'admin':     'Administrateur Système',
             'dg':        'Directeur Général',
             'dga':       'Directeur Général Adjoint',
             'chef_ntic': 'Chef de Département NTIC',

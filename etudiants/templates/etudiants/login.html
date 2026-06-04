@@ -10,13 +10,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --teal: #00C3A3;
-            --navy: #1A2744;
+            --teal: #42A5F5;
+            --navy: #0D2137;
             --bleu-ci: #1565C0;
             --bleu-ci-light: #1976D2;
             --light: #F0F4FA;
             --gray: #64748B;
-            --dark: #0F1A2E;
+            --dark: #0D2137;
         }
 
         * {
@@ -65,6 +65,7 @@
             z-index: 2;
             text-align: center;
             max-width: 380px;
+            animation: floatAnimation 4s ease-in-out infinite;
         }
 
         .logos-row {
@@ -89,7 +90,7 @@
         }
 
         .left-content .subtitle {
-            color: rgba(255, 255, 255, 0.55);
+            color: rgba(255, 255, 255, 0.85);
             font-size: 0.9rem;
             margin-bottom: 38px;
         }
@@ -106,7 +107,7 @@
         }
 
         .info-card h6 {
-            color: #00C3A3;
+            color: white;
             font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 1.8px;
@@ -123,7 +124,7 @@
 
         .info-badge {
             background: rgba(255, 255, 255, 0.12);
-            color: #00C3A3;
+            color: white;
             padding: 4px 12px;
             border-radius: 6px;
             font-family: 'Consolas', monospace;
@@ -134,7 +135,7 @@
         }
 
         .info-desc {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.75);
             font-size: 0.8rem;
         }
 
@@ -153,7 +154,7 @@
         }
 
         .left-note {
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.6);
             font-size: 0.76rem;
             margin-top: 8px;
         }
@@ -175,6 +176,7 @@
         .login-header {
             text-align: center;
             margin-bottom: 32px;
+            animation: slideUpFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
         .login-header .logo-mobile {
@@ -276,6 +278,21 @@
             margin-top: 5px;
         }
 
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 22px;
+            opacity: 0;
+            animation: slideUpFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .input-group-custom:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .input-group-custom:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
         /* Détection en temps réel */
         .detect-indicator {
             display: none;
@@ -317,24 +334,30 @@
 
         /* Bouton */
         .btn-login {
-            background: var(--bleu-ci-light);
+            width: 100%;
+            background: #1976D2;
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(25, 118, 210, 0.25);
+            opacity: 0;
+            animation: slideUpFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation-delay: 0.3s;
         }
 
         .btn-login:hover {
-            background: var(--bleu-ci);
-            color: white;
+            background: #1565C0;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(25, 118, 210, 0.35);
         }
 
         .btn-login:active {
-            transform: scale(0.98);
+            transform: translateY(0);
         }
 
         .back-link {
@@ -393,6 +416,32 @@
             background: #EFF6FF;
             color: #1E40AF;
             border: 1px solid #BFDBFE;
+        }
+
+        @keyframes slideUpFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatAnimation {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         /* ── RESPONSIVE ── */
