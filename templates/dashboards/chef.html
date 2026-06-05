@@ -1,488 +1,240 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Chef Département — UGANC</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #EFF4FB;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .sidebar {
-            width: 240px;
-            min-height: 100vh;
-            background: #0D2137;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 100;
-            border-right: none;
-        }
-
-        .sidebar-logo {
-            padding: 20px 18px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .menu-label {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            padding: 12px 18px 5px;
-            text-transform: uppercase;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 18px;
-            color: rgba(255, 255, 255, 0.6);
-            text-decoration: none;
-            font-size: 0.88rem;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-
-        .menu-item:hover,
-        .menu-item.active {
-            color: white;
-            background: rgba(25, 118, 210, 0.08);
-            border-left-color: #1976D2;
-        }
-
-        .main {
-            margin-left: 240px;
-            padding: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 14px;
-            padding: 20px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(26, 39, 68, 0.08);
-        }
-
-        .content-card {
-            background: white;
-            border-radius: 14px;
-            padding: 22px;
-            box-shadow: 0 4px 15px rgba(26, 39, 68, 0.08);
-            margin-bottom: 20px;
-        }
-
-        .content-card h6 {
-            color: #1565C0;
-            font-weight: 700;
-            border-bottom: 2px solid #EFF4FB;
-            padding-bottom: 10px;
-            margin-bottom: 16px;
-        }
-
-        thead th {
-            background: #1565C0 !important;
-            color: white;
-        }
-
-        .badge-depose {
-            background: #1565C0;
-            color: white;
-        }
-
-        .badge-dga {
-            background: #FF9800;
-            color: white;
-        }
-
-        .badge-dg {
-            background: #1976D2;
-            color: white;
-        }
-
-        .badge-rejete {
-            background: #DC3545;
-            color: white;
-        }
-
-        .role-badge {
-            background: rgba(25, 118, 210, 0.12);
-            border: 1px solid rgba(25, 118, 210, 0.25);
-            color: #1976D2;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .upload-zone {
-            border: 2px dashed #D4E0F0;
-            border-radius: 14px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .upload-zone:hover {
-            border-color: #1976D2;
-            background: rgba(25, 118, 210, 0.03);
-        }
-    </style>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Chef Département — UGANC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body{background:#EFF4FB;font-family:'Segoe UI',sans-serif;margin:0;}
+    .sidebar{width:240px;min-height:100vh;background:#0D2137;position:fixed;top:0;left:0;z-index:100;}
+    .sidebar-logo{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.08);text-align:center;}
+    .sidebar-logo h6{color:#fff;font-weight:800;font-size:.9rem;margin:8px 0 2px;}
+    .sidebar-logo small{color:rgba(255,255,255,.4);font-size:.72rem;}
+    .menu-label{color:rgba(255,255,255,.3);font-size:.65rem;font-weight:700;letter-spacing:2px;padding:12px 18px 5px;text-transform:uppercase;}
+    .menu-item{display:flex;align-items:center;gap:10px;padding:10px 18px;color:rgba(255,255,255,.6);text-decoration:none;font-size:.88rem;transition:all .2s;border-left:3px solid transparent;}
+    .menu-item:hover,.menu-item.active{color:#fff;background:rgba(25,118,210,.1);border-left-color:#1976D2;}
+    .main{margin-left:240px;padding:25px;}
+    .topbar{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:14px 22px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-bottom:24px;}
+    .stat-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(26,39,68,.07);height:100%;}
+    .stat-val{font-size:2rem;font-weight:900;color:#0D2137;}
+    .stat-lbl{font-size:.8rem;color:#64748B;margin-top:2px;}
+    .content-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 10px rgba(26,39,68,.07);margin-bottom:20px;}
+    .content-card h6{color:#1565C0;font-weight:800;font-size:.95rem;padding-bottom:10px;border-bottom:2px solid #EFF4FB;margin-bottom:16px;}
+    .badge-att{background:rgba(25,118,210,.1);color:#1565C0;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;}
+    .badge-actif{background:rgba(0,195,163,.1);color:#0D8A73;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;}
+    table thead th{background:#1565C0;color:#fff;font-size:.8rem;font-weight:700;padding:10px 14px;}
+    table tbody td{font-size:.88rem;padding:10px 14px;vertical-align:middle;}
+    table tbody tr:hover{background:#F8FAFC;}
+    .btn-valider{background:rgba(0,195,163,.1);color:#0D8A73;border:1px solid rgba(0,195,163,.2);border-radius:7px;padding:5px 12px;font-size:.8rem;font-weight:700;cursor:pointer;}
+    .btn-rejeter{background:rgba(220,53,69,.1);color:#dc3545;border:1px solid rgba(220,53,69,.2);border-radius:7px;padding:5px 12px;font-size:.8rem;font-weight:700;cursor:pointer;}
+    .alert-att{background:linear-gradient(135deg,#1976D2,#1565C0);color:#fff;border-radius:14px;padding:16px 22px;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+    @media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}}
+  </style>
 </head>
-
 <body>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div style="font-size:32px;">🏫</div>
+    <h6>Chef de Département</h6>
+    <small>{{ filiere }} — UGANC</small>
+  </div>
+  <nav>
+    <div class="menu-label">Navigation</div>
+    <a href="{% url 'dashboard_chef' %}" class="menu-item active"><i class="fas fa-gauge-high"></i> Tableau de bord</a>
+    <a href="{% url 'gestion_notes' %}" class="menu-item"><i class="fas fa-file-import"></i> Notes</a>
+    <a href="{% url 'liste_etudiants' %}" class="menu-item"><i class="fas fa-users"></i> Étudiants</a>
+    <div class="menu-label">Compte</div>
+    <a href="{% url 'logout' %}" class="menu-item" style="color:#ff8a8a;"><i class="fas fa-right-from-bracket"></i> Déconnexion</a>
+  </nav>
+</div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="sidebar-logo"
-            style="padding: 1.8rem 1.5rem; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-            <div class="d-flex align-items-center justify-content-center gap-3 mb-2"
-                style="background: white; padding: 0.8rem 0.6rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                <img src="/static/images/logos_uganc.png" height="38" alt="UGANC"
-                    style="object-fit: contain; max-width: 45%;">
-                <div style="width: 2px; height: 35px; background: #E0E8F5; border-radius: 2px;"></div>
-                <img src="/static/images/logosCI.png" height="33" alt="CI" style="object-fit: contain; max-width: 45%;">
-            </div>
-            <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
-                Centre Informatique
-            </div>
-            <div
-                style="color:#1976D2; font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-                Chef de Département
-            </div>
-        </div>
-
-        <div class="menu-label">Navigation</div>
-        <a href="{% url 'dashboard_chef' %}" class="menu-item active">
-            <i class="fa-solid fa-chart-pie"></i> Dashboard
-        </a>
-        <a href="#deposer-section" class="menu-item">
-            <i class="fa-solid fa-file-import"></i>
-            Déposer notes
-        </a>
-        <a href="#imports-section" class="menu-item">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            Mes imports
-        </a>
-        <a href="#etudiants-section" class="menu-item">
-            <i class="fa-solid fa-users"></i>
-            Mes étudiants
-        </a>
-
-        <div style="
-        position:absolute; bottom:0; left:0;
-        right:0; padding:16px 18px;
-        border-top:1px solid rgba(255,255,255,0.08);">
-            <div style="
-            background:rgba(25,118,210,0.08);
-            border-radius:10px; padding:12px;
-            margin-bottom:12px;">
-                <div style="color:white;font-weight:700;
-                        font-size:0.82rem;">
-                    {{ profil.prenom }} {{ profil.nom }}
-                </div>
-                <div class="role-badge mt-1">
-                    {{ profil.get_role_display }}
-                </div>
-            </div>
-            <a href="{% url 'logout' %}" class="menu-item" style="padding:0;color:rgba(255,255,255,0.4);">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Déconnexion
-            </a>
-        </div>
+<div class="main">
+  <div class="topbar">
+    <div>
+      <h5 style="margin:0;font-weight:800;color:#0D2137;">Tableau de bord — Chef de Département</h5>
+      <small style="color:#64748B;">{{ filiere }} · UGANC Centre Informatique</small>
     </div>
-
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- Topbar -->
-        <div style="
-        background:white; border-radius:12px;
-        padding:14px 20px; margin-bottom:24px;
-        display:flex; align-items:center;
-        justify-content:space-between;
-        box-shadow:0 2px 10px rgba(26,39,68,0.07);">
-            <div>
-                <h5 style="margin:0;color:#1565C0;font-weight:700;">
-                    Dashboard — Chef Département
-                </h5>
-                <small style="color:#64748B;">
-                    Filière :
-                    <strong style="color:#1976D2;">
-                        {{ nom_filiere }}
-                    </strong>
-                </small>
-            </div>
-            <span class="role-badge">
-                <i class="fa-solid fa-chalkboard-teacher me-1"></i>
-                {{ profil.get_role_display }}
-            </span>
-        </div>
-
-        <!-- Stats -->
-        <div class="row g-3 mb-4 animate-up stagger-1">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-users me-1" style="color:#1565C0;"></i>
-                        Étudiants {{ filiere }}
-                    </div>
-                    <h2 style="color:#1565C0;font-weight:800;margin:5px 0 0;">
-                        {{ nb_etudiants }}
-                    </h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-list-ol me-1" style="color:#1976D2;"></i>
-                        Notes importées
-                    </div>
-                    <h2 style="color:#1565C0;font-weight:800;margin:5px 0 0;">
-                        {{ nb_notes }}
-                    </h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-hourglass-half me-1" style="color:#FFC107;"></i>
-                        En attente DGA
-                    </div>
-                    <h2 style="color:#FFC107;font-weight:800;margin:5px 0 0;">
-                        {{ nb_deposes }}
-                    </h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div style="color:#64748B;font-size:0.8rem;">
-                        <i class="fa-solid fa-circle-check me-1" style="color:#1976D2;"></i>
-                        Validés DG
-                    </div>
-                    <h2 style="color:#1976D2;font-weight:800;margin:5px 0 0;">
-                        {{ nb_valides }}
-                    </h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-4 animate-up stagger-2">
-
-            <div class="col-md-5" id="deposer-section">
-                <div class="content-card">
-                    <h6>
-                        <i class="fa-solid fa-file-import me-2" style="color:#1976D2;"></i>
-                        Déposer les notes — {{ filiere }}
-                    </h6>
-
-                    {% if messages %}
-                    {% for msg in messages %}
-                    <div class="alert
-                        {% if 'succès' in msg.message %}
-                            alert-success
-                        {% else %}
-                            alert-danger
-                        {% endif %}
-                        d-flex align-items-center gap-2">
-                        <i class="fa-solid
-                            {% if 'succès' in msg.message %}
-                                fa-circle-check
-                            {% else %}
-                                fa-triangle-exclamation
-                            {% endif %}"></i>
-                        {{ msg }}
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-
-                    <form method="POST" action="{% url 'deposer_notes' %}" enctype="multipart/form-data">
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold" style="font-size:0.88rem;">
-                                <i class="fa-solid fa-layer-group me-1" style="color:#1976D2;"></i>
-                                Session
-                            </label>
-                            <select name="session" class="form-select" required>
-                                <option value="">Choisir...</option>
-                                <option>Session 1</option>
-                                <option>Session 2</option>
-                                <option>Session Rattrapage</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold" style="font-size:0.88rem;">
-                                <i class="fa-solid fa-calendar me-1" style="color:#1976D2;"></i>
-                                Année académique
-                            </label>
-                            <input type="text" name="annee" class="form-control" placeholder="ex: 2024" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold" style="font-size:0.88rem;">
-                                <i class="fa-solid fa-file-excel me-1" style="color:#1976D2;"></i>
-                                Fichier Excel / CSV
-                            </label>
-                            <div class="upload-zone" onclick="document.getElementById('fichierInput').click()">
-                                <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2 d-block" style="color:#D4E0F0;"></i>
-                                <div style="color:#64748B;font-size:0.88rem;">
-                                    Cliquer pour choisir le fichier
-                                </div>
-                                <small style="color:#94A3B8;">
-                                    .xlsx ou .csv acceptés
-                                </small>
-                            </div>
-                            <input type="file" id="fichierInput" name="fichier" accept=".xlsx,.csv"
-                                style="display:none;" onchange="showFileName(this)" required>
-                            <div id="fileName" style="margin-top:8px;font-size:0.82rem;
-                                    color:#1976D2;display:none;">
-                                <i class="fa-solid fa-file-excel me-1"></i>
-                                <span id="fileNameText"></span>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn w-100 fw-bold py-2" style="background:#1565C0;color:white;
-                                   border-radius:10px;">
-                            <i class="fa-solid fa-paper-plane me-2" style="color:#1976D2;"></i>
-                            Déposer pour validation DGA
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Historique imports -->
-            <div class="col-md-7" id="imports-section">
-                <div class="content-card">
-                    <h6>
-                        <i class="fa-solid fa-clock-rotate-left me-2" style="color:#1976D2;"></i>
-                        Historique de mes dépôts
-                    </h6>
-                    {% if derniers_imports %}
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Session</th>
-                                    <th>Année</th>
-                                    <th>Notes</th>
-                                    <th>Date</th>
-                                    <th>Statut</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for imp in derniers_imports %}
-                                <tr>
-                                    <td>{{ imp.session }}</td>
-                                    <td>{{ imp.annee }}</td>
-                                    <td>
-                                        <strong>
-                                            {{ imp.nb_notes_importees }}
-                                        </strong>
-                                    </td>
-                                    <td style="font-size:0.82rem;">
-                                        {{ imp.date_depot|date:"d/m/Y" }}
-                                    </td>
-                                    <td>
-                                        {% if imp.statut == 'depose' %}
-                                        <span class="badge badge-depose">
-                                            <i class="fa-solid fa-hourglass-half me-1"></i>
-                                            Att. DGA
-                                        </span>
-                                        {% elif imp.statut == 'valide_dga' %}
-                                        <span class="badge badge-dga">
-                                            <i class="fa-solid fa-check me-1"></i>
-                                            Validé DGA
-                                        </span>
-                                        {% elif imp.statut == 'valide_dg' %}
-                                        <span class="badge badge-dg">
-                                            <i class="fa-solid fa-check-double me-1"></i>
-                                            Actif ✓
-                                        </span>
-                                        {% else %}
-                                        <span class="badge badge-rejete">
-                                            <i class="fa-solid fa-xmark me-1"></i>
-                                            Rejeté
-                                        </span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-4 text-muted">
-                        <i class="fa-solid fa-folder-open fa-2x mb-2 d-block" style="color:#D4E0F0;"></i>
-                        Aucun dépôt effectué
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Fichiers Rejetés / Erreurs -->
-        <div class="row g-4 mt-2 animate-up stagger-3" id="import-erreurs-section">
-            <div class="col-12">
-                <div class="content-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                        <h6 style="margin:0;">
-                            <i class="fa-solid fa-users me-2" style="color:#1976D2;"></i>
-                            Liste de mes étudiants inscrits ({{ filiere }})
-                        </h6>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Matricule</th>
-                                    <th>Nom Complet</th>
-                                    <th>Niveau</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for etudiant in etudiants %}
-                                <tr>
-                                    <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{ etudiant.matricule }}</td>
-                                    <td style="font-weight:600; color:#0D2137;">{{ etudiant.prenom }} {{ etudiant.nom }}
-                                    </td>
-                                    <td>
-                                        <span class="badge" style="background:rgba(26,39,68,0.06); color:#0D2137;">{{ etudiant.niveau.nom }}</span>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted">
-                                        <i class="fa-solid fa-folder-open fa-2x mb-2 d-block"
-                                            style="color:#D4E0F0;"></i>
-                                        Aucun étudiant inscrit dans votre département pour le moment.
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="text-align:right;">
+        <div style="font-weight:700;font-size:.9rem;color:#0D2137;">{{ request.user.get_full_name }}</div>
+        <small style="color:#64748B;">{{ profil.get_role_display }}</small>
+      </div>
+      <div style="width:40px;height:40px;background:#1565C0;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;">
+        {{ request.user.first_name.0 }}{{ request.user.last_name.0 }}
+      </div>
     </div>
+  </div>
 
-    <script>
-        function showFileName(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('fileName').style.display = 'block';
-                document.getElementById('fileNameText').textContent =
-                    input.files[0].name;
-            }
-        }
-    </script>
+  {% if messages %}{% for m in messages %}
+  <div class="alert alert-{% if m.tags == 'error' %}danger{% elif m.tags == 'warning' %}warning{% else %}success{% endif %} mb-3" style="border-radius:10px;">{{ m }}</div>
+  {% endfor %}{% endif %}
+
+  <!-- Alerte inscriptions en attente -->
+  {% if nb_att > 0 %}
+  <div class="alert-att">
+    <div style="font-size:28px;">⏳</div>
+    <div>
+      <strong style="font-size:1rem;">{{ nb_att }} inscription{{ nb_att|pluralize }} en attente de votre validation</strong>
+      <div style="font-size:.82rem;opacity:.85;margin-top:2px;">Ces étudiants ont soumis leur demande et attendent votre pré-validation avant d'accéder à la plateforme.</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-val" style="color:#1976D2;">{{ nb_att }}</div>
+        <div class="stat-lbl">⏳ En attente de validation</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-val" style="color:#0D8A73;">{{ nb_valides }}</div>
+        <div class="stat-lbl">✅ Étudiants actifs</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-val">{{ nb_etudiants }}</div>
+        <div class="stat-lbl">👥 Total étudiants</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-val" style="color:#F59E0B;">{{ notes_imports|length }}</div>
+        <div class="stat-lbl">📤 Mes imports de notes</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Formulaire Import CSV -->
+  <div class="content-card" style="border-left:4px solid #1976D2;">
+    <h6><i class="fas fa-file-csv me-2"></i>Importer les notes — Fichier CSV</h6>
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px;margin-bottom:16px;font-size:.84rem;color:#1565C0;">
+      <strong><i class="fas fa-info-circle me-1"></i>Format CSV requis :</strong>
+      La première ligne doit contenir les entêtes.
+      Colonne obligatoire : <code>matricule</code>.
+      Colonnes suivantes = noms des matières (ex: Algorithmique, Réseaux...).
+      Les notes doivent être entre 0 et 20.
+      <a href="/static/examples/modele_notes.csv" download style="color:#1976D2;font-weight:700;">
+        <i class="fas fa-download me-1"></i>Télécharger le modèle CSV
+      </a>
+    </div>
+    <form method="POST" action="{% url 'deposer_notes' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="session_import" class="form-label fw-bold" style="font-size:.85rem;color:#0D2137;">
+            Session <span style="color:red;">*</span>
+          </label>
+          <select name="session" id="session_import" class="form-select" required style="border-radius:8px;">
+            <option value="">Choisir une session</option>
+            <option value="Session 1">Session 1</option>
+            <option value="Session 2">Session 2</option>
+            <option value="Rattrapage">Rattrapage</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="annee_import" class="form-label fw-bold" style="font-size:.85rem;color:#0D2137;">
+            Année académique <span style="color:red;">*</span>
+          </label>
+          <select name="annee" id="annee_import" class="form-select" style="border-radius:8px;">
+            <option value="2024-2025">2024-2025</option>
+            <option value="2025-2026">2025-2026</option>
+            <option value="2026-2027">2026-2027</option>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label for="fichier_csv" class="form-label fw-bold" style="font-size:.85rem;color:#0D2137;">
+            Fichier CSV <span style="color:red;">*</span>
+          </label>
+          <input type="file" name="fichier" id="fichier_csv" class="form-control"
+                 accept=".csv" required style="border-radius:8px;">
+          <small style="color:#64748B;font-size:.75rem;">Format .csv uniquement — Max 10 MB</small>
+        </div>
+      </div>
+      <div class="mt-3 d-flex align-items-center gap-3">
+        <button type="submit" style="background:#1976D2;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;font-size:.9rem;">
+          <i class="fas fa-upload me-2"></i>Importer et insérer en base MySQL
+        </button>
+        <small style="color:#64748B;font-size:.8rem;">
+          <i class="fas fa-database me-1"></i>Les notes seront automatiquement insérées dans la base de données MySQL
+        </small>
+      </div>
+    </form>
+  </div>
+
+  <!-- Inscriptions en attente -->
+  <div class="content-card">
+    <h6><i class="fas fa-user-clock me-2"></i>Inscriptions en attente de votre validation</h6>
+    {% if etudiants_att %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Matricule</th><th>Étudiant</th><th>Département</th><th>Niveau</th><th>Date</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for e in etudiants_att %}
+          <tr>
+            <td><span style="font-family:monospace;color:#1976D2;font-weight:700;">{{ e.matricule }}</span></td>
+            <td>
+              <div style="font-weight:600;color:#0D2137;">{{ e.prenom }} {{ e.nom }}</div>
+            </td>
+            <td>{{ e.departement.nom|default:"—" }}</td>
+            <td>{{ e.niveau.nom|default:"—" }}</td>
+            <td style="color:#64748B;font-size:.82rem;">{{ e.date_inscription|date:"d/m/Y H:i" }}</td>
+            <td class="text-end">
+              <form method="POST" action="{% url 'prevalider_inscription' e.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-valider" onclick="return confirm('Valider l\'inscription de {{ e.prenom }} {{ e.nom }} ?');">
+                  <i class="fas fa-check"></i> Valider
+                </button>
+              </form>
+              <form method="POST" action="{% url 'rejeter_inscription_chef' e.id %}" style="display:inline;margin-left:5px;">
+                {% csrf_token %}
+                <button type="submit" class="btn-rejeter" onclick="return confirm('Rejeter et supprimer l\'inscription de {{ e.prenom }} {{ e.nom }} ?');">
+                  <i class="fas fa-xmark"></i> Rejeter
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="text-center py-4 text-muted"><i class="fas fa-check-circle me-2"></i>Aucune inscription en attente.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4 text-muted">
+      <i class="fas fa-check-circle" style="font-size:2.5rem;color:#0D8A73;display:block;margin-bottom:10px;"></i>
+      Aucune inscription en attente de validation.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Derniers imports -->
+  {% if notes_imports %}
+  <div class="content-card">
+    <h6><i class="fas fa-file-csv me-2"></i>Mes derniers imports de notes</h6>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Date</th><th>Filière</th><th>Session</th><th>Notes</th><th>Statut</th></tr></thead>
+        <tbody>
+          {% for imp in notes_imports %}
+          <tr>
+            <td style="font-size:.82rem;color:#64748B;">{{ imp.date_depot|date:"d/m/Y" }}</td>
+            <td>{{ imp.filiere }}</td>
+            <td>{{ imp.session }}</td>
+            <td><span style="font-weight:700;">{{ imp.nb_notes_importees }}</span></td>
+            <td><span class="badge-att">{{ imp.get_statut_display }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
 </body>
-
 </html>

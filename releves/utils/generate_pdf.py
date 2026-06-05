@@ -277,7 +277,7 @@ def generer_releve(demande):
         [
             Paragraph("Niveau :", lbl),
             Paragraph(
-                getattr(etudiant, 'niveau', 'Licence 3'), val
+                str(getattr(etudiant, 'niveau', 'Licence 3')), val
             ),
             Paragraph("Année d'entrée :", lbl),
             Paragraph(annee_entree, val),
@@ -701,4 +701,155 @@ def generer_releve(demande):
     ))
 
     doc.build(elements)
-    return f"releves/{nom_fichier}"
+    return chemin  # chemin absolu vers le fichier PDF
+
+
+# ══════════════════════════════════════════════════════════
+# GÉNÉRATION PDF DIRECTE (sans objet Demande)
+# Utilisé quand l'étudiant entre son matricule directement
+# ══════════════════════════════════════════════════════════
+def generer_releve_direct(etudiant, notes_qs, session_nom='Toutes sessions'):
+    """
+    Génère un relevé PDF à partir d'un étudiant et d'un queryset de notes.
+    Ne nécessite pas d'objet Demande — génération immédiate.
+    Retourne le chemin absolu du PDF généré.
+    """
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.platypus import (
+        SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
+        HRFlowable, KeepTogether
+    )
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+    from django.conf import settings
+    import os
+
+    # ── Chemin de sortie ──
+    dossier = os.path.join(settings.MEDIA_ROOT, 'releves')
+    os.makedirs(dossier, exist_ok=True)
+    session_slug = session_nom.replace(' ', '_').replace('/', '-')
+    nom_fichier  = f"releve_{etudiant.matricule}_{session_slug}_auto.pdf"
+    chemin       = os.path.join(dossier, nom_fichier)
+
+    # ── Styles ──
+    styles = getSampleStyleSheet()
+    BLEU   = colors.HexColor('#0D2137')
+    VERT   = colors.HexColor('#0D8A73')
+    GRIS   = colors.HexColor('#64748B')
+    BLEU_L = colors.HexColor('#EFF6FF')
+
+    s_title  = ParagraphStyle('title',  fontName='Helvetica-Bold', fontSize=13, textColor=BLEU, alignment=TA_CENTER, spaceAfter=4)
+    s_sub    = ParagraphStyle('sub',    fontName='Helvetica',      fontSize=9,  textColor=GRIS, alignment=TA_CENTER, spaceAfter=2)
+    s_head   = ParagraphStyle('head',   fontName='Helvetica-Bold', fontSize=10, textColor=BLEU, spaceBefore=10, spaceAfter=4)
+    s_normal = ParagraphStyle('normal', fontName='Helvetica',      fontSize=9,  textColor=BLEU)
+    s_small  = ParagraphStyle('small',  fontName='Helvetica',      fontSize=7,  textColor=GRIS, alignment=TA_CENTER)
+
+    story = []
+
+    # ── En-tête institution ──
+    story.append(Paragraph("UNIVERSITÉ GAMAL ABDEL NASSER DE CONAKRY", s_title))
+    story.append(Paragraph("Centre Informatique — Direction des Études", s_sub))
+    story.append(HRFlowable(width="100%", thickness=2, color=BLEU))
+    story.append(Spacer(1, 0.3*cm))
+
+    # Titre document
+    titre_doc = ParagraphStyle('titre_doc', fontName='Helvetica-Bold', fontSize=14,
+                               textColor=colors.white, alignment=TA_CENTER,
+                               backColor=BLEU, borderPad=8, spaceBefore=6, spaceAfter=6)
+    story.append(Paragraph(f"RELEVÉ DE NOTES", titre_doc))
+    story.append(Paragraph(f"Session : {session_nom}", s_sub))
+    story.append(Spacer(1, 0.4*cm))
+
+    # ── Info étudiant ──
+    annee_vals = list(notes_qs.values_list('annee', flat=True).distinct())
+    annee_str  = annee_vals[0] if annee_vals else '2024-2025'
+
+    info_data = [
+        ['Matricule',    etudiant.matricule,    'Année académique', annee_str],
+        ['Nom & Prénom', etudiant.nom_complet,  'Département',      str(etudiant.departement or '—')],
+        ['Niveau',       str(etudiant.niveau or '—'), 'Filière', str(getattr(etudiant.departement, 'slug', '—')).upper()],
+    ]
+    info_table = Table(info_data, colWidths=[3.5*cm, 6*cm, 4*cm, 5*cm])
+    info_table.setStyle(TableStyle([
+        ('BACKGROUND',   (0,0), (-1,-1), BLEU_L),
+        ('FONTNAME',     (0,0), (-1,-1), 'Helvetica'),
+        ('FONTNAME',     (0,0), (0,-1), 'Helvetica-Bold'),
+        ('FONTNAME',     (2,0), (2,-1), 'Helvetica-Bold'),
+        ('FONTSIZE',     (0,0), (-1,-1), 8.5),
+        ('TEXTCOLOR',    (0,0), (-1,-1), BLEU),
+        ('GRID',         (0,0), (-1,-1), 0.4, colors.HexColor('#CBD5E1')),
+        ('ROWBACKGROUNDS', (0,0), (-1,-1), [colors.HexColor('#F8FAFC'), colors.HexColor('#EFF4FB')]),
+        ('PADDING',      (0,0), (-1,-1), 5),
+    ]))
+    story.append(info_table)
+    story.append(Spacer(1, 0.5*cm))
+
+    # ── Notes groupées par session ──
+    from collections import defaultdict
+    sessions_dict = defaultdict(list)
+    for n in notes_qs:
+        sessions_dict[str(n.session)].append(n)
+
+    for sess_label, sess_notes in sessions_dict.items():
+        story.append(Paragraph(f"Session : {sess_label}", s_head))
+
+        # Tableau des notes
+        data = [['Matière', 'Note /20', 'Mention']]
+        total = 0
+        for n in sorted(sess_notes, key=lambda x: x.matiere):
+            mention = _mention(n.note)
+            data.append([n.matiere, f"{n.note:.2f}", mention])
+            total += n.note
+
+        moy = total / len(sess_notes) if sess_notes else 0
+        data.append(['', '', ''])
+        data.append(['MOYENNE GÉNÉRALE', f"{moy:.2f} / 20", _mention(moy)])
+
+        t = Table(data, colWidths=[10*cm, 4*cm, 4.5*cm])
+        t.setStyle(TableStyle([
+            ('BACKGROUND',   (0,0), (-1,0), BLEU),
+            ('TEXTCOLOR',    (0,0), (-1,0), colors.white),
+            ('FONTNAME',     (0,0), (-1,0), 'Helvetica-Bold'),
+            ('FONTSIZE',     (0,0), (-1,-1), 9),
+            ('ROWBACKGROUNDS',(0,1),(-1,-3), [colors.white, colors.HexColor('#F8FAFC')]),
+            ('BACKGROUND',   (0,-1), (-1,-1), colors.HexColor('#FFF3CD')),
+            ('FONTNAME',     (0,-1), (-1,-1), 'Helvetica-Bold'),
+            ('GRID',         (0,0), (-1,-2), 0.3, colors.HexColor('#CBD5E1')),
+            ('LINEABOVE',    (0,-1), (-1,-1), 1.5, BLEU),
+            ('ALIGN',        (1,0), (-1,-1), 'CENTER'),
+            ('PADDING',      (0,0), (-1,-1), 6),
+        ]))
+        story.append(t)
+        story.append(Spacer(1, 0.6*cm))
+
+    # ── Pied de page ──
+    story.append(HRFlowable(width="100%", thickness=1, color=BLEU))
+    from datetime import date
+    story.append(Paragraph(
+        f"Document généré automatiquement le {date.today().strftime('%d/%m/%Y')} — "
+        f"UGANC Centre Informatique · Conakry, République de Guinée",
+        s_small
+    ))
+    story.append(Paragraph(
+        "Ce document est officiel. Toute falsification est passible de sanctions disciplinaires et pénales.",
+        s_small
+    ))
+
+    # ── Build ──
+    doc = SimpleDocTemplate(chemin, pagesize=A4,
+                            topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    doc.build(story)
+    return chemin
+
+
+def _mention(note):
+    """Retourne la mention selon la note /20."""
+    if note >= 18:   return "Très Bien"
+    elif note >= 16: return "Bien"
+    elif note >= 14: return "Assez Bien"
+    elif note >= 12: return "Passable"
+    elif note >= 10: return "Passable"
+    else:            return "Insuffisant"

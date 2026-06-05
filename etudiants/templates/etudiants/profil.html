@@ -27,7 +27,7 @@
             <a href="{% url 'profil' %}" class="btn btn-outline-light btn-sm">
                 <i class="fa-solid fa-user me-1"></i> Profil
             </a>
-            <a href="{% url 'historique' %}" class="btn btn-outline-light btn-sm">
+            <a href="{% url 'historique_demandes' %}" class="btn btn-outline-light btn-sm">
                 <i class="fa-solid fa-clock-rotate-left me-1"></i> Demandes
             </a>
             <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
@@ -136,7 +136,7 @@
                 <div class="card-header-custom"
                     style="display:flex; justify-content:space-between; align-items:center;">
                     <h5><i class="fa-solid fa-clock-rotate-left"></i> Activité récente</h5>
-                    <a href="{% url 'historique' %}"
+                    <a href="{% url 'historique_demandes' %}"
                         style="color:var(--teal); font-size:0.85rem; text-decoration:none; font-weight:600;">Voir tout
                         <i class="fa-solid fa-arrow-right"></i></a>
                 </div>

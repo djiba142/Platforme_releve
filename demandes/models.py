@@ -11,7 +11,7 @@ class Demande(models.Model):
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE, related_name='demandes')
     date_demande = models.DateTimeField(auto_now_add=True)
     session = models.CharField(max_length=50)
-    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='validee')
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en_attente')
 
     class Meta:
         verbose_name = 'Demande'

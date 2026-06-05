@@ -3,109 +3,133 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Etudiant, Departement, Niveau
+from .models import Etudiant, Departement, Niveau, ProfilAdmin
 
+
+# ── Helpers ──────────────────────────────────
+
+def _redirect_apres_login(user):
+    """Renvoie vers la bonne URL selon le rôle."""
+    if hasattr(user, 'etudiant'):
+        return redirect('profil')
+    if user.is_staff:
+        try:
+            role = user.profiladmin.role
+            mapping = {
+                'admin':     'admin_dashboard',
+                'dg':        'dashboard_dg',
+                'dga':       'dashboard_dga',
+                'chef_ntic': 'dashboard_chef',
+                'chef_dl':   'dashboard_chef',
+            }
+            return redirect(mapping.get(role, 'admin_dashboard'))
+        except Exception:
+            return redirect('admin_dashboard')
+    return redirect('accueil')
+
+
+# ── Pages publiques ───────────────────────────
 
 def accueil_view(request):
-    """Page d'accueil publique"""
     if request.user.is_authenticated:
-        if hasattr(request.user, 'etudiant'):
-            return redirect('profil')
-        elif request.user.is_staff:
-            return redirect('admin_dashboard')
+        return _redirect_apres_login(request.user)
     return render(request, 'etudiants/accueil.html')
 
+
+def landing_page(request):
+    return redirect('accueil')
+
+
+# ── Inscription étudiant ──────────────────────
+
 def inscription_etudiant(request):
-    """Plateforme d'inscription pour les étudiants"""
     if request.user.is_authenticated:
-        return redirect('accueil')
+        return _redirect_apres_login(request.user)
+
+    departements = Departement.objects.all()
+    niveaux      = Niveau.objects.all()
 
     if request.method == 'POST':
-        matricule = request.POST.get('matricule', '').strip()
-        nom = request.POST.get('nom', '').strip()
-        prenom = request.POST.get('prenom', '').strip()
-        departement_id = request.POST.get('departement', '').strip()
-        niveau_id = request.POST.get('niveau', '').strip()
-        password = request.POST.get('password', '')
+        matricule        = request.POST.get('matricule', '').strip().upper()
+        nom              = request.POST.get('nom', '').strip()
+        prenom           = request.POST.get('prenom', '').strip()
+        departement_id   = request.POST.get('departement', '').strip()
+        niveau_id        = request.POST.get('niveau', '').strip()
+        password         = request.POST.get('password', '')
         password_confirm = request.POST.get('password_confirm', '')
 
-        # Validations basiques
+        # Validations
+        if not all([matricule, nom, prenom, password]):
+            messages.error(request, 'Tous les champs obligatoires doivent être remplis.')
+            return render(request, 'etudiants/inscription.html', {'departements': departements, 'niveaux': niveaux})
+
         if password != password_confirm:
             messages.error(request, 'Les mots de passe ne correspondent pas.')
-            return redirect('inscription')
+            return render(request, 'etudiants/inscription.html', {'departements': departements, 'niveaux': niveaux})
+
         if len(password) < 6:
             messages.error(request, 'Le mot de passe doit contenir au moins 6 caractères.')
-            return redirect('inscription')
+            return render(request, 'etudiants/inscription.html', {'departements': departements, 'niveaux': niveaux})
 
         if Etudiant.objects.filter(matricule=matricule).exists() or User.objects.filter(username=matricule).exists():
             messages.error(request, 'Ce matricule est déjà utilisé ou en attente de validation.')
-            return redirect('inscription')
+            return render(request, 'etudiants/inscription.html', {'departements': departements, 'niveaux': niveaux})
 
         try:
-            user = User.objects.create_user(
-                username=matricule,
-                password=password
-            )
-            # Créer l'étudiant avec est_valide=False par défaut
+            user = User.objects.create_user(username=matricule, password=password)
             Etudiant.objects.create(
                 user=user,
                 matricule=matricule,
                 nom=nom,
                 prenom=prenom,
-                departement_id=departement_id if departement_id else None,
-                niveau_id=niveau_id if niveau_id else None,
-                mot_de_passe_change=True, # Pas besoin de les forcer à changer, ils viennent de le définir
-                est_valide=False
+                departement_id=departement_id or None,
+                niveau_id=niveau_id or None,
+                mot_de_passe_change=True,   # BUG FIX : l'étudiant définit lui-même son mdp
+                est_valide=False,            # en attente de validation
+                valide_par_chef=False,       # le chef de dept doit d'abord valider
             )
-            messages.success(request, "Inscription réussie ! Votre compte est en attente de validation par l'administration.")
+            messages.success(
+                request,
+                "✅ Inscription soumise ! Votre demande sera d'abord examinée par votre "
+                "Chef de Département, puis activée par la Direction."
+            )
             return redirect('login')
         except Exception as e:
             messages.error(request, f"Erreur lors de l'inscription : {str(e)}")
-            return redirect('inscription')
 
-    departements = Departement.objects.all()
-    niveaux = Niveau.objects.all()
     return render(request, 'etudiants/inscription.html', {
         'departements': departements,
         'niveaux': niveaux
     })
 
-def landing_page(request):
-    """Ancienne page d'accueil (conservée par sécurité)"""
-    return redirect('accueil')
+
+# ── Login unifié ──────────────────────────────
 
 def login_etudiant(request):
-    """Connexion unifiée — détecte automatiquement étudiant ou admin"""
     if request.user.is_authenticated:
-        if hasattr(request.user, 'etudiant'):
-            return redirect('profil')
-        elif request.user.is_staff:
-            return redirect('admin_dashboard')
+        return _redirect_apres_login(request.user)
 
     if request.method == 'POST':
         identifiant = request.POST.get('matricule', '').strip()
-        password = request.POST.get('password', '')
+        password    = request.POST.get('password', '')
 
-        # 1) Essayer en tant qu'étudiant (matricule)
+        # 1) Étudiant via matricule
         try:
-            etudiant = Etudiant.objects.get(matricule=identifiant)
-            user = authenticate(request,
-                                username=etudiant.user.username,
-                                password=password)
+            etudiant = Etudiant.objects.get(matricule__iexact=identifiant)
+            user     = authenticate(request, username=etudiant.user.username, password=password)
             if user:
-                # Vérifier si le compte est validé
-                if not etudiant.est_valide:
-                    messages.error(request, "Votre compte est en attente de validation par l'administration.")
-                    logout(request)
-                    return redirect('login')
-
+                statut = etudiant.statut_inscription
+                if statut == 'en_attente_chef':
+                    messages.error(request, "⏳ Votre inscription est en attente de validation par votre Chef de Département.")
+                    return render(request, 'etudiants/login.html')
+                elif statut == 'en_attente_dg':
+                    messages.error(request, "⏳ Votre inscription a été validée par le Chef de Département et attend l'activation par la Direction.")
+                    return render(request, 'etudiants/login.html')
+                # Compte actif
                 login(request, user)
-
-                # Vérifier si c'est la première connexion
                 if not etudiant.mot_de_passe_change:
-                    messages.info(request, "Veuillez changer votre mot de passe par défaut pour continuer.")
+                    messages.info(request, "Veuillez changer votre mot de passe par défaut.")
                     return redirect('changer_mot_de_passe')
-
                 messages.success(request, f'Bienvenue {etudiant.prenom} !')
                 return redirect('profil')
             else:
@@ -114,74 +138,40 @@ def login_etudiant(request):
         except Etudiant.DoesNotExist:
             pass
 
-        # 2) Essayer en tant qu'admin (username)
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
+        # 2) Admin / cadre via username
         try:
             admin_user = User.objects.get(username=identifiant, is_staff=True)
             user = authenticate(request, username=identifiant, password=password)
             if user and user.is_staff:
                 login(request, user)
-                messages.success(request, f'Bienvenue !')
-                try:
-                    profil = user.profiladmin
-                    redirections = {
-                        'admin':     'admin_dashboard',
-                        'chef_ntic': 'dashboard_chef',
-                        'chef_dl':   'dashboard_chef',
-                        'dga':       'dashboard_dga',
-                        'dg':        'dashboard_dg',
-                    }
-                    url = redirections.get(profil.role, 'accueil')
-                    return redirect(url)
-                except:
-                    # S'il y a une erreur Profil, mais is_superuser, on va au super admin
-                    if user.is_superuser:
-                        return redirect('admin_dashboard')
-                    return redirect('accueil')
+                messages.success(request, 'Bienvenue !')
+                return _redirect_apres_login(user)
             else:
                 messages.error(request, 'Mot de passe incorrect.')
                 return render(request, 'etudiants/login.html')
         except User.DoesNotExist:
             pass
 
-        # 3) Rien trouvé
-        messages.error(request, 'Identifiant introuvable. Vérifiez votre matricule ou nom d\'utilisateur.')
+        messages.error(request, "Identifiant introuvable. Vérifiez votre matricule ou votre identifiant.")
 
     return render(request, 'etudiants/login.html')
 
 
 def login_admin(request):
-    """Connexion administration"""
+    """Connexion dédiée administration."""
     if request.user.is_authenticated and request.user.is_staff:
-        try:
-            role = request.user.profiladmin.role
-            return redirect('dashboard_chef' if role in ['chef_ntic', 'chef_dl'] else f'dashboard_{role}')
-        except:
-            return redirect('admin_dashboard')
+        return _redirect_apres_login(request.user)
 
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
-
         user = authenticate(request, username=username, password=password)
         if user and user.is_staff:
             login(request, user)
-            messages.success(request, f'Bienvenue Administrateur !')
-            try:
-                profil = user.profiladmin
-                redirections = {
-                    'chef_ntic': 'dashboard_chef',
-                    'chef_dl':   'dashboard_chef',
-                    'dga':       'dashboard_dga',
-                    'dg':        'dashboard_dg',
-                }
-                url = redirections.get(profil.role, 'admin_dashboard')
-                return redirect(url)
-            except:
-                return redirect('admin_dashboard')
+            messages.success(request, 'Bienvenue !')
+            return _redirect_apres_login(user)
         elif user:
-            messages.error(request, 'Vous n\'êtes pas administrateur.')
+            messages.error(request, "Vous n'êtes pas autorisé à accéder à l'administration.")
         else:
             messages.error(request, 'Identifiants incorrects.')
 
@@ -189,19 +179,19 @@ def login_admin(request):
 
 
 def logout_view(request):
-    """Déconnexion"""
     logout(request)
     return redirect('accueil')
 
 
+# ── Profil étudiant ───────────────────────────
+
 @login_required
 def profil_view(request):
-    """Dashboard / Profil étudiant"""
     try:
         etudiant = Etudiant.objects.get(user=request.user)
     except Etudiant.DoesNotExist:
         if request.user.is_staff:
-            return redirect('admin_dashboard')
+            return _redirect_apres_login(request.user)
         messages.error(request, 'Profil étudiant non trouvé.')
         return redirect('accueil')
 
@@ -209,77 +199,52 @@ def profil_view(request):
     from demandes.models import Demande
     from django.db.models import Q
 
-    notes = Note.objects.filter(
-        Q(import_source__isnull=True) | Q(import_source__statut='valide_dg'),
-        etudiant=etudiant
-    )
+    notes    = Note.objects.filter(etudiant=etudiant)
     demandes = Demande.objects.filter(etudiant=etudiant).order_by('-date_demande')[:5]
+    moyenne  = round(sum(n.note for n in notes) / notes.count(), 2) if notes.exists() else 0
 
-    moyenne = 0
-    if notes.exists():
-        moyenne = round(sum(n.note for n in notes) / notes.count(), 2)
-
-    context = {
-        'etudiant': etudiant,
-        'notes': notes,
-        'demandes': demandes,
-        'moyenne': moyenne,
-        'nb_notes': notes.count(),
-        'nb_demandes': Demande.objects.filter(etudiant=etudiant).count(),
-        'nb_validees': Demande.objects.filter(etudiant=etudiant, statut='validee').count(),
-    }
-    return render(request, 'etudiants/profil.html', context)
+    return render(request, 'etudiants/profil.html', {
+        'etudiant':     etudiant,
+        'notes':        notes,
+        'demandes':     demandes,
+        'moyenne':      moyenne,
+        'nb_notes':     notes.count(),
+        'nb_demandes':  Demande.objects.filter(etudiant=etudiant).count(),
+        'nb_validees':  Demande.objects.filter(etudiant=etudiant, statut='validee').count(),
+    })
 
 
 @login_required
 def changer_mot_de_passe(request):
-    """Vue pour forcer le changement de mot de passe"""
     try:
         etudiant = Etudiant.objects.get(user=request.user)
     except Etudiant.DoesNotExist:
-        messages.error(request, "Seuls les étudiants peuvent changer leur mot de passe ici.")
+        messages.error(request, "Profil non trouvé.")
         return redirect('accueil')
 
     if request.method == 'POST':
-        ancien = request.POST.get('ancien')
-        nouveau = request.POST.get('nouveau')
-        confirmation = request.POST.get('confirmation')
+        ancien       = request.POST.get('ancien', '')
+        nouveau      = request.POST.get('nouveau', '')
+        confirmation = request.POST.get('confirmation', '')
 
-        # Vérifier ancien mot de passe
         if not request.user.check_password(ancien):
             messages.error(request, 'Ancien mot de passe incorrect.')
             return redirect('changer_mot_de_passe')
-
-        # Vérifier que nouveau != ancien
-        if nouveau == ancien:
-            messages.error(request, 'Le nouveau mot de passe doit être différent de l\'ancien.')
-            return redirect('changer_mot_de_passe')
-
-        # Vérifier confirmation
-        if nouveau != confirmation:
-            messages.error(request, 'Les mots de passe ne correspondent pas.')
-            return redirect('changer_mot_de_passe')
-
-        # Vérifier longueur
         if len(nouveau) < 6:
-            messages.error(request, 'Le mot de passe doit contenir au moins 6 caractères.')
+            messages.error(request, 'Le nouveau mot de passe doit contenir au moins 6 caractères.')
+            return redirect('changer_mot_de_passe')
+        if nouveau != confirmation:
+            messages.error(request, 'Les nouveaux mots de passe ne correspondent pas.')
             return redirect('changer_mot_de_passe')
 
-        # Sauvegarder le nouveau mot de passe
         request.user.set_password(nouveau)
         request.user.save()
-
-        # Mettre à jour la session pour éviter la déconnexion
-        from django.contrib.auth import update_session_auth_hash
-        update_session_auth_hash(request, request.user)
-
-        # Marquer comme changé
         etudiant.mot_de_passe_change = True
         etudiant.save()
-
-        messages.success(request, 'Votre mot de passe a été modifié avec succès !')
+        messages.success(request, 'Mot de passe modifié avec succès !')
+        user = authenticate(request, username=request.user.username, password=nouveau)
+        if user:
+            login(request, user)
         return redirect('profil')
 
-    return render(request, 'etudiants/changer_mot_de_passe.html', {
-        'etudiant': etudiant
-    })
+    return render(request, 'etudiants/changer_mot_de_passe.html', {'etudiant': etudiant})

@@ -28,7 +28,7 @@
             <a href="{% url 'profil' %}" class="btn btn-outline-light btn-sm">
                 <i class="fa-solid fa-user me-1"></i> Profil
             </a>
-            <a href="{% url 'historique' %}" class="btn btn-outline-light btn-sm">
+            <a href="{% url 'historique_demandes' %}" class="btn btn-outline-light btn-sm">
                 <i class="fa-solid fa-clock-rotate-left me-1"></i> Demandes
             </a>
             <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
@@ -70,7 +70,7 @@
             <button type="submit" class="btn-submit" style="padding:0.9rem; font-size:1.05rem;">
                 <i class="fa-solid fa-paper-plane"></i> Soumettre la demande
             </button>
-            <a href="{% url 'historique' %}"
+            <a href="{% url 'historique_demandes' %}"
                 class="btn-action btn-outline-custom w-100 mt-3 d-flex justify-content-center py-3">
                 <i class="fa-solid fa-arrow-left"></i> Retour à l'historique
             </a>

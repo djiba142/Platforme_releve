@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Recherche de Notes — UGANC CI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body{background:linear-gradient(135deg,#0D2137 0%,#1565C0 100%);min-height:100vh;font-family:'Segoe UI',sans-serif;padding:30px 0;}
+    .card-main{background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;max-width:900px;margin:0 auto;}
+    .card-header-custom{background:#0D2137;padding:28px 32px;color:#fff;}
+    .card-header-custom h1{font-size:1.6rem;font-weight:900;margin:0;}
+    .card-header-custom p{color:rgba(255,255,255,.65);font-size:.9rem;margin:6px 0 0;}
+    .search-box{background:#EFF4FB;border-radius:14px;padding:24px;margin:24px;}
+    .input-matricule{font-size:1.2rem;font-weight:700;letter-spacing:2px;border:2px solid #CBD5E1;border-radius:10px;padding:12px 18px;}
+    .input-matricule:focus{border-color:#1976D2;box-shadow:0 0 0 3px rgba(25,118,210,.15);}
+    .btn-search{background:#1976D2;color:#fff;border:none;border-radius:10px;padding:12px 28px;font-weight:800;font-size:1rem;}
+    .btn-pdf{background:#E53935;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-weight:700;font-size:.95rem;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+    .btn-pdf:hover{background:#C62828;color:#fff;}
+    .etudiant-card{background:linear-gradient(135deg,#0D2137,#1565C0);color:#fff;border-radius:14px;padding:20px 24px;margin:0 24px 10px;}
+    .etudiant-card h5{font-weight:900;font-size:1.1rem;margin:0 0 8px;}
+    .etudiant-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:20px;padding:4px 12px;font-size:.8rem;margin-right:6px;}
+    .notes-section{padding:0 24px 24px;}
+    .session-block{border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;margin-bottom:20px;}
+    .session-header{background:#1565C0;color:#fff;padding:12px 18px;font-weight:800;font-size:.95rem;display:flex;justify-content:space-between;align-items:center;}
+    .moyenne-badge{background:rgba(255,255,255,.15);padding:4px 14px;border-radius:20px;font-size:.85rem;}
+    table thead th{background:#0D2137;color:#fff;font-size:.8rem;font-weight:700;padding:10px 14px;}
+    table tbody td{padding:10px 14px;font-size:.9rem;vertical-align:middle;}
+    table tbody tr:nth-child(even){background:#F8FAFC;}
+    .mention-tb{color:#0D8A73;font-weight:700;}
+    .mention-b{color:#1976D2;font-weight:700;}
+    .mention-ab{color:#7C3AED;font-weight:700;}
+    .mention-p{color:#F59E0B;font-weight:700;}
+    .mention-i{color:#E53935;font-weight:700;}
+    .alert-custom{background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:16px 20px;color:#991B1B;margin:20px 24px;}
+    .info-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:16px 20px;margin:20px 24px;color:#1E40AF;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card-main">
+    <!-- Header -->
+    <div class="card-header-custom">
+      <div class="d-flex align-items-center gap-3">
+        <div style="font-size:2.5rem;">🎓</div>
+        <div>
+          <h1>Consultation des Notes</h1>
+          <p>Entrez votre matricule pour consulter et télécharger votre relevé PDF</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire de recherche -->
+    <div class="search-box">
+      <form method="GET" action="{% url 'recherche_notes' %}">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label fw-bold" style="color:#0D2137;">Matricule étudiant</label>
+            <input type="text" name="matricule" class="form-control input-matricule"
+                   value="{{ matricule }}" placeholder="Ex : 6642001"
+                   autocomplete="off" autocorrect="off" style="text-transform:uppercase;"/>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-bold" style="color:#0D2137;">Session (optionnel)</label>
+            <select name="session" class="form-select" style="border-radius:10px;padding:12px;">
+              <option value="">— Toutes les sessions —</option>
+              {% for sess in sessions_list %}
+              <option value="{{ sess.nom }}" {% if sess.nom == session_nom %}selected{% endif %}>{{ sess }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn-search w-100">
+              <i class="fas fa-search me-2"></i>Rechercher
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Erreur -->
+    {% if erreur %}
+    <div class="alert-custom">
+      <i class="fas fa-exclamation-triangle me-2"></i><strong>{{ erreur }}</strong>
+    </div>
+    {% endif %}
+
+    <!-- Résultats -->
+    {% if etudiant %}
+    <!-- Carte étudiant -->
+    <div class="etudiant-card">
+      <h5>{{ etudiant.prenom }} {{ etudiant.nom }}</h5>
+      <span class="etudiant-badge"><i class="fas fa-id-card"></i> {{ etudiant.matricule }}</span>
+      <span class="etudiant-badge"><i class="fas fa-building"></i> {{ etudiant.departement }}</span>
+      <span class="etudiant-badge"><i class="fas fa-layer-group"></i> {{ etudiant.niveau }}</span>
+    </div>
+
+    <!-- Bouton PDF -->
+    <div style="padding:8px 24px 16px;display:flex;justify-content:flex-end;">
+      <a href="{% url 'pdf_par_matricule' %}?matricule={{ etudiant.matricule }}{% if session_nom %}&session={{ session_nom }}{% endif %}"
+         class="btn-pdf">
+        <i class="fas fa-file-pdf"></i>
+        Télécharger le relevé PDF
+      </a>
+    </div>
+
+    <!-- Notes par session -->
+    <div class="notes-section">
+      {% for session_data in sessions_data %}
+      <div class="session-block">
+        <div class="session-header">
+          <span><i class="fas fa-calendar-check me-2"></i>{{ session_data.session }}</span>
+          <span class="moyenne-badge">Moyenne : {{ session_data.moyenne }}/20</span>
+        </div>
+        <table class="table mb-0">
+          <thead><tr><th>Matière</th><th class="text-center">Note /20</th><th class="text-center">Mention</th></tr></thead>
+          <tbody>
+            {% for note in session_data.notes %}
+            <tr>
+              <td>{{ note.matiere }}</td>
+              <td class="text-center fw-bold">{{ note.note }}</td>
+              <td class="text-center">
+                {% if note.note >= 16 %}<span class="mention-tb">Très Bien</span>
+                {% elif note.note >= 14 %}<span class="mention-b">Bien</span>
+                {% elif note.note >= 12 %}<span class="mention-ab">Assez Bien</span>
+                {% elif note.note >= 10 %}<span class="mention-p">Passable</span>
+                {% else %}<span class="mention-i">Insuffisant</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% empty %}
+      <div class="info-box">
+        <i class="fas fa-info-circle me-2"></i>
+        Aucune note disponible pour ce matricule{% if session_nom %} et cette session{% endif %}.
+      </div>
+      {% endfor %}
+    </div>
+
+    {% elif matricule and not erreur %}
+    <div class="info-box">
+      <i class="fas fa-search me-2"></i> Aucun résultat.
+    </div>
+
+    {% else %}
+    <!-- Aide -->
+    <div class="info-box">
+      <i class="fas fa-info-circle me-2"></i>
+      <strong>Comment ça marche :</strong> Entrez votre matricule (ex : <code>6642001</code>) et cliquez sur <em>Rechercher</em>.
+      Vos notes apparaissent instantanément et vous pouvez télécharger votre relevé en PDF.
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+// Auto-uppercase matricule
+document.querySelector('input[name="matricule"]').addEventListener('input', function() {
+  this.value = this.value.toUpperCase();
+});
+</script>
+</body>
+</html>

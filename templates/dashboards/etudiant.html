@@ -376,7 +376,7 @@
                                 </td>
                                 <td>
                                     {% if d.statut == 'validee' %}
-                                    <a href="{% url 'generer_pdf_demande' d.id %}" class="btn btn-sm" style="background:#1565C0;
+                                    <a href="{% url 'telecharger_releve' d.id %}" class="btn btn-sm" style="background:#1565C0;
                                           color:white;">
                                         <i class="fa-solid fa-file-pdf me-1" style="color:#1976D2;"></i>
                                         PDF
@@ -426,7 +426,7 @@
                             </small>
                         </div>
                     </a>
-                    <a href="{% url 'historique' %}" class="action-btn btn-teal">
+                    <a href="{% url 'historique_demandes' %}" class="action-btn btn-teal">
                         <i class="fa-solid fa-clock-rotate-left" style="font-size:18px;color:#1565C0;"></i>
                         <div>
                             <div>Historique</div>

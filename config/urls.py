@@ -12,3 +12,10 @@ urlpatterns = [
     path('chatbot/', include('chatbot.urls')),
     path('administration/', include('administration.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# ── Route raccourci recherche notes (accessible sans /notes/) ──
+from notes.views import recherche_notes as _recherche_notes, pdf_par_matricule as _pdf_par_matricule
+urlpatterns += [
+    path('mes-notes/',  _recherche_notes,   name='mes_notes_publique'),
+    path('releve-pdf/', _pdf_par_matricule,  name='releve_pdf_direct'),
+]
