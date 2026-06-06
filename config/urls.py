@@ -11,7 +11,8 @@ urlpatterns = [
     path('releves/', include('releves.urls')),
     path('chatbot/', include('chatbot.urls')),
     path('administration/', include('administration.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+       + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
 
 # ── Route raccourci recherche notes (accessible sans /notes/) ──
 from notes.views import recherche_notes as _recherche_notes, pdf_par_matricule as _pdf_par_matricule

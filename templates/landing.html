@@ -9,9 +9,11 @@
 <!-- ══ NAVBAR ══ -->
 <nav class="nav-landing">
     <div class="nav-container">
-        <a href="/" class="nav-brand">
-            <i class="fa-solid fa-graduation-cap"></i>
-            Plateforme Relevés
+        <a href="/" class="nav-brand" style="gap:0.75rem;">
+            <img src="{% static 'images/logos_uganc.png' %}" height="38" alt="UGANC" style="object-fit:contain;">
+            <div style="width:1px; height:28px; background:rgba(255,255,255,0.25);"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="32" alt="CI" style="object-fit:contain; filter:brightness(0) invert(1);">
+            <span style="font-weight:800; font-size:0.95rem; color:white;">Plateforme Relevés</span>
         </a>
         <div class="nav-links">
             <a href="#features" class="nav-link-text">
@@ -56,21 +58,29 @@
             </div>
         </div>
         <div class="hero-visual">
-            <div class="hero-card-stack">
-                <div class="floating-card fc-1">
-                    <div class="fc-icon"><i class="fa-solid fa-robot"></i></div>
-                    <div class="fc-title">Chatbot Intelligent</div>
-                    <div class="fc-desc">Assistant virtuel disponible 24h/24 pour vos demandes</div>
+            <!-- Visuel principal : logo UGANC mis en valeur -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:1.5rem;">
+                <div style="background:white; border-radius:20px; padding:2rem 2.5rem; box-shadow:0 20px 60px rgba(0,0,0,0.3); display:flex; align-items:center; gap:1.5rem; max-width:380px;">
+                    <img src="{% static 'images/logos_uganc.png' %}" style="height:80px; object-fit:contain;" alt="UGANC">
+                    <div style="width:2px; height:60px; background:#E0E8F5; border-radius:2px;"></div>
+                    <img src="{% static 'images/logosCI.png' %}" style="height:65px; object-fit:contain;" alt="Centre Informatique">
                 </div>
-                <div class="floating-card fc-2">
-                    <div class="fc-icon"><i class="fa-solid fa-file-pdf"></i></div>
-                    <div class="fc-title">Relevés PDF</div>
-                    <div class="fc-desc">Génération automatique et téléchargement instantané</div>
-                </div>
-                <div class="floating-card fc-3">
-                    <div class="fc-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                    <div class="fc-title">100% Sécurisé</div>
-                    <div class="fc-desc">Authentification sécurisée et données protégées</div>
+                <div class="hero-card-stack">
+                    <div class="floating-card fc-1">
+                        <div class="fc-icon"><i class="fa-solid fa-robot"></i></div>
+                        <div class="fc-title">Chatbot Intelligent</div>
+                        <div class="fc-desc">Assistant virtuel 24h/24</div>
+                    </div>
+                    <div class="floating-card fc-2">
+                        <div class="fc-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="fc-title">Relevés PDF</div>
+                        <div class="fc-desc">Génération instantanée</div>
+                    </div>
+                    <div class="floating-card fc-3">
+                        <div class="fc-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="fc-title">100% Sécurisé</div>
+                        <div class="fc-desc">Données protégées</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,6 +136,47 @@
             </div>
             <h3>Accessible 24h/24</h3>
             <p>Accédez à la plateforme depuis n'importe quel appareil, à tout moment, sans vous déplacer.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══ WORKFLOW ══ -->
+<section style="background:#EFF4FB; padding:4rem 2rem;">
+    <div style="max-width:1000px; margin:0 auto;">
+        <h2 style="text-align:center; color:#0D2137; font-weight:800; font-size:1.8rem; margin-bottom:0.5rem;">
+            <i class="fa-solid fa-route" style="color:#1565C0;"></i> Comment ça marche ?
+        </h2>
+        <p style="text-align:center; color:#64748B; margin-bottom:2.5rem;">En 4 étapes simples, obtenez votre relevé de notes</p>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center;">
+            <div style="background:white; border-radius:16px; padding:1.5rem; text-align:center; flex:1; min-width:180px; box-shadow:0 4px 15px rgba(0,0,0,0.08); border-top:4px solid #1565C0;">
+                <div style="width:48px; height:48px; background:#1565C0; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.3rem; color:white; font-weight:800;">1</div>
+                <h4 style="color:#0D2137; font-weight:700; margin-bottom:0.5rem;">Inscription</h4>
+                <p style="color:#64748B; font-size:0.9rem;">Créez votre compte avec votre matricule universitaire</p>
+            </div>
+            <div style="font-size:1.5rem; color:#1565C0; display:flex; align-items:center; padding:0 0.5rem;">→</div>
+            <div style="background:white; border-radius:16px; padding:1.5rem; text-align:center; flex:1; min-width:180px; box-shadow:0 4px 15px rgba(0,0,0,0.08); border-top:4px solid #0D8A73;">
+                <div style="width:48px; height:48px; background:#0D8A73; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.3rem; color:white; font-weight:800;">2</div>
+                <h4 style="color:#0D2137; font-weight:700; margin-bottom:0.5rem;">Validation</h4>
+                <p style="color:#64748B; font-size:0.9rem;">Votre chef de département active votre compte</p>
+            </div>
+            <div style="font-size:1.5rem; color:#1565C0; display:flex; align-items:center; padding:0 0.5rem;">→</div>
+            <div style="background:white; border-radius:16px; padding:1.5rem; text-align:center; flex:1; min-width:180px; box-shadow:0 4px 15px rgba(0,0,0,0.08); border-top:4px solid #7C3AED;">
+                <div style="width:48px; height:48px; background:#7C3AED; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.3rem; color:white; font-weight:800;">3</div>
+                <h4 style="color:#0D2137; font-weight:700; margin-bottom:0.5rem;">Demande</h4>
+                <p style="color:#64748B; font-size:0.9rem;">Demandez votre relevé via le chatbot ou le formulaire</p>
+            </div>
+            <div style="font-size:1.5rem; color:#1565C0; display:flex; align-items:center; padding:0 0.5rem;">→</div>
+            <div style="background:white; border-radius:16px; padding:1.5rem; text-align:center; flex:1; min-width:180px; box-shadow:0 4px 15px rgba(0,0,0,0.08); border-top:4px solid #EA580C;">
+                <div style="width:48px; height:48px; background:#EA580C; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.3rem; color:white; font-weight:800;">4</div>
+                <h4 style="color:#0D2137; font-weight:700; margin-bottom:0.5rem;">Téléchargement</h4>
+                <p style="color:#64748B; font-size:0.9rem;">Téléchargez votre relevé PDF officiel UGANC</p>
+            </div>
+        </div>
+        <!-- Bouton recherche rapide -->
+        <div style="text-align:center; margin-top:2rem;">
+            <a href="{% url 'recherche_notes' %}" style="display:inline-block; background:#0D2137; color:white; padding:0.9rem 2rem; border-radius:12px; text-decoration:none; font-weight:700; font-size:1rem;">
+                <i class="fa-solid fa-magnifying-glass me-2"></i> Chercher mes notes sans connexion
+            </a>
         </div>
     </div>
 </section>

@@ -86,8 +86,7 @@
                                 required>
                                 <option value="">Choisir un étudiant...</option>
                                 {% for etudiant in etudiants %}
-                                <option value="{{ etudiant.id }}">{{ etudiant.matricule }} - {{ etudiant.prenom }} {{
-                                    etudiant.nom }} ({{ etudiant.departement.nom }} - {{ etudiant.niveau.nom }})
+                                <option value="{{ etudiant.id }}">{{ etudiant.matricule }} - {{ etudiant.prenom }} {{ etudiant.nom }} ({{ etudiant.departement.nom }} - {{ etudiant.niveau.nom }})
                                 </option>
                                 {% endfor %}
                             </select>
@@ -163,17 +162,13 @@
                             {% for note in notes %}
                             <tr>
                                 <td>
-                                    <div style="font-size:0.9rem; font-weight:600;">{{ note.etudiant.prenom }} {{
-                                        note.etudiant.nom }}</div>
-                                    <div style="font-size:0.8rem; font-family:monospace; color:#1976D2;">{{
-                                        note.etudiant.matricule }}</div>
+                                    <div style="font-size:0.9rem; font-weight:600;">{{ note.etudiant.prenom }} {{ note.etudiant.nom }}</div>
+                                    <div style="font-size:0.8rem; font-family:monospace; color:#1976D2;">{{ note.etudiant.matricule }}</div>
                                 </td>
                                 <td>
-                                    <span style="font-weight:600; font-size:0.85rem; color:var(--navy);">{{
-                                        note.etudiant.departement.nom }}</span><br>
+                                    <span style="font-weight:600; font-size:0.85rem; color:var(--navy);">{{ note.etudiant.departement.nom }}</span><br>
                                     <span
-                                        style="font-size:0.75rem; color:var(--gray); background:var(--light); padding:0.1rem 0.4rem; border-radius:4px;">{{
-                                        note.etudiant.niveau.nom }}</span>
+                                        style="font-size:0.75rem; color:var(--gray); background:var(--light); padding:0.1rem 0.4rem; border-radius:4px;">{{ note.etudiant.niveau.nom }}</span>
                                 </td>
                                 <td style="font-weight:600; color:var(--navy);">{{ note.matiere }}</td>
                                 <td class="text-center">
@@ -187,8 +182,7 @@
                                     </div>
                                     {% endif %}
                                 </td>
-                                <td><span style="font-size:0.85rem; color:var(--text-light);">{{ note.session.nom
-                                        }}<br>{{ note.annee }}</span></td>
+                                <td><span style="font-size:0.85rem; color:var(--text-light);">{{ note.session.nom }}<br>{{ note.annee }}</span></td>
                             </tr>
                             {% empty %}
                             <tr>

@@ -397,13 +397,17 @@ def gestion_notes(request):
     prefix  = get_filiere_admin(request.user)
     imports = ImportNotes.objects.order_by('-date_depot')
     notes   = Note.objects.select_related('etudiant','session').order_by('-id')[:50]
+    # Étudiants actifs pour le formulaire d'ajout manuel
+    etudiants_qs = Etudiant.objects.filter(est_valide=True).select_related('departement','niveau').order_by('matricule')
     if prefix:
         imports = imports.filter(filiere=('NTIC' if prefix=='6642' else 'DL'))
         notes   = notes.filter(etudiant__matricule__startswith=prefix)
+        etudiants_qs = etudiants_qs.filter(matricule__startswith=prefix)
     sessions_all = Session.objects.all()
     return render(request,'administration/gestion_notes.html',{
         'profil': profil, 'imports': imports, 'notes': notes,
         'sessions': sessions_all,
+        'etudiants': etudiants_qs,
         'est_directeur': _est_direction(request.user),
         'est_chef': _est_chef(request.user),
     })
@@ -413,23 +417,45 @@ def gestion_notes(request):
 def ajouter_note(request):
     if not est_admin(request.user): return redirect('login_admin')
     if request.method == 'POST':
-        matricule  = request.POST.get('matricule','').strip().upper()
-        matiere    = request.POST.get('matiere','').strip()
-        note_val   = request.POST.get('note','0')
-        session_id = request.POST.get('session','')
-        annee      = request.POST.get('annee','2024-2025').strip()
+        # Le select envoie l'ID de l'étudiant
+        etudiant_id = request.POST.get('etudiant', '').strip()
+        matiere     = request.POST.get('matiere', '').strip()
+        note_val    = request.POST.get('note', '0')
+        session_id  = request.POST.get('session', '')
+        annee       = request.POST.get('annee', '2024-2025').strip()
+
+        if not etudiant_id:
+            messages.error(request, 'Veuillez sélectionner un étudiant.')
+            return redirect('gestion_notes')
+        if not matiere:
+            messages.error(request, 'Veuillez sélectionner une matière.')
+            return redirect('gestion_notes')
+
         try:
-            etudiant = Etudiant.objects.get(matricule=matricule)
+            etudiant = Etudiant.objects.get(id=int(etudiant_id))
             session  = Session.objects.get(id=session_id)
-            note, created = Note.objects.update_or_create(
-                etudiant=etudiant, matiere=matiere, session=session, annee=annee,
-                defaults={'note': float(note_val)}
+            note_float = float(str(note_val).replace(',','.'))
+            if not (0 <= note_float <= 20):
+                messages.error(request, f'La note doit être entre 0 et 20.')
+                return redirect('gestion_notes')
+            note_obj, created = Note.objects.update_or_create(
+                etudiant=etudiant,
+                matiere=matiere,
+                session=session,
+                annee=annee,
+                defaults={'note': note_float}
             )
-            messages.success(request,f'Note {"ajoutée" if created else "mise à jour"} : {matiere} — {note_val}/10')
+            action = "ajoutée" if created else "mise à jour"
+            messages.success(request,
+                f'✅ Note {action} : {etudiant.matricule} — {matiere} — {note_float}/20 (Session : {session.nom})')
         except Etudiant.DoesNotExist:
-            messages.error(request,f'Matricule {matricule} introuvable.')
+            messages.error(request, 'Étudiant introuvable.')
+        except Session.DoesNotExist:
+            messages.error(request, 'Session introuvable.')
+        except (ValueError, TypeError) as e:
+            messages.error(request, f'Valeur de note invalide : {e}')
         except Exception as e:
-            messages.error(request,f'Erreur : {e}')
+            messages.error(request, f'Erreur : {e}')
     return redirect('gestion_notes')
 
 

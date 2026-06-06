@@ -286,6 +286,8 @@
         </div>
     </div>
     <div class="admin-sidebar-nav">
+        <!-- Sections internes au dashboard -->
+        <div style="padding:0.5rem 1.5rem 0.2rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.35);">Vue rapide</div>
         <a href="#overview-section" class="sidebar-link active">
             <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
         </a>
@@ -296,18 +298,23 @@
             <i class="fa-solid fa-file-lines"></i> Demandes Récentes
         </a>
 
-        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
-        <a href="{% url 'liste_etudiants' %}" class="sidebar-link">
-            <i class="fa-solid fa-users"></i> Étudiants
+        <!-- Navigation vers pages complètes -->
+        <hr style="border-color:rgba(255,255,255,0.1); margin:0.8rem 1.5rem;">
+        <div style="padding:0.3rem 1.5rem 0.2rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.35);">Gestion complète</div>
+        <a href="{% url 'liste_etudiants' %}" class="sidebar-link" style="background:rgba(25,118,210,0.15);">
+            <i class="fa-solid fa-users"></i> Tous les Étudiants
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto; font-size:0.65rem; opacity:0.6;"></i>
         </a>
-        <a href="{% url 'gestion_demandes' %}" class="sidebar-link">
+        <a href="{% url 'gestion_demandes' %}" class="sidebar-link" style="background:rgba(25,118,210,0.15);">
             <i class="fa-solid fa-clipboard-list"></i> Toutes les Demandes
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto; font-size:0.65rem; opacity:0.6;"></i>
         </a>
-        <a href="{% url 'gestion_notes' %}" class="sidebar-link">
-            <i class="fa-solid fa-book-open"></i> Notes
+        <a href="{% url 'gestion_notes' %}" class="sidebar-link" style="background:rgba(25,118,210,0.15);">
+            <i class="fa-solid fa-book-open"></i> Toutes les Notes
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto; font-size:0.65rem; opacity:0.6;"></i>
         </a>
 
-        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <hr style="border-color:rgba(255,255,255,0.1); margin:0.8rem 1.5rem;">
         <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
         </a>
@@ -358,6 +365,18 @@
         <!-- SECTION 1 : VUE D'ENSEMBLE     -->
         <!-- ═══════════════════════════════ -->
         <div id="overview-section">
+            <!-- Accès rapide pages complètes -->
+            <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+                <a href="{% url 'liste_etudiants' %}" class="btn-action btn-primary-custom" style="font-size:0.9rem; text-decoration:none;">
+                    <i class="fa-solid fa-users me-1"></i> Gérer les Étudiants
+                </a>
+                <a href="{% url 'gestion_demandes' %}" class="btn-action" style="font-size:0.9rem; text-decoration:none; background:#FF9800; color:white; padding:0.6rem 1.2rem; border-radius:10px; font-weight:700;">
+                    <i class="fa-solid fa-file-lines me-1"></i> Gérer les Demandes
+                </a>
+                <a href="{% url 'gestion_notes' %}" class="btn-action" style="font-size:0.9rem; text-decoration:none; background:#0D8A73; color:white; padding:0.6rem 1.2rem; border-radius:10px; font-weight:700;">
+                    <i class="fa-solid fa-book-open me-1"></i> Gérer les Notes
+                </a>
+            </div>
             <div class="row g-3 mb-4">
                 <!-- Comptes Actifs -->
                 <div class="col-md-3">
@@ -545,8 +564,7 @@
                                     {% endif %}
                                 </td>
                                 <td style="color:#64748B;">{{ cadre.email }}</td>
-                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
-                                    cadre.user.username }}</td>
+                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{ cadre.user.username }}</td>
                                 <td style="font-size:0.85rem; color:#64748B;">
                                     {% if cadre.user.last_login %}
                                     {{ cadre.user.last_login|date:"d/m/Y H:i" }}
@@ -630,11 +648,9 @@
                             <tr>
                                 <td style="font-weight:700;">#{{ demande.id }}</td>
                                 <td>{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</td>
-                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
-                                    demande.etudiant.matricule }}</td>
+                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{ demande.etudiant.matricule }}</td>
                                 <td>{{ demande.session }}</td>
-                                <td style="font-size:0.85rem; color:#64748B;">{{ demande.date_demande|date:"d M y, H:i"
-                                    }}</td>
+                                <td style="font-size:0.85rem; color:#64748B;">{{ demande.date_demande|date:"d M y, H:i" }}</td>
                                 <td>
                                     {% if demande.statut == 'en_attente' %}
                                     <span class="badge-role" style="background:rgba(255,152,0,0.1); color:#FF9800;">En
@@ -659,10 +675,10 @@
                                         style="font-size:0.75rem; border-radius:6px;">
                                         <i class="fa-solid fa-xmark"></i>
                                     </a>
-                                    <a href="{% url 'consulter_import' imp.id %}"
+                                    <a href="{% url 'gestion_demandes' %}"
                                         class="btn btn-sm btn-outline-info fw-bold" style="font-size:0.8rem;"
-                                        title="Consulter le détail de l'import">
-                                        <i class="fa-solid fa-eye me-1"></i> Consulter l'import
+                                        title="Voir toutes les demandes">
+                                        <i class="fa-solid fa-eye me-1"></i> Voir détail
                                     </a>
                                     {% endif %}
                                 </td>
