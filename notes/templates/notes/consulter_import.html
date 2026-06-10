@@ -83,12 +83,12 @@
                 </a>
 
                 {% if profil.role == 'dga' and import_obj.statut == 'depose' %}
-                <a href="{% url 'valider_import_dga' import_obj.id %}" class="btn text-white"
+                <a href="{% url 'notes:valider_import_dga' import_obj.id %}" class="btn text-white"
                     style="background:#1976D2;">
                     Validation DGA
                 </a>
                 {% elif profil.role == 'dg' and import_obj.statut == 'valide_dga' %}
-                <a href="{% url 'valider_import_dg' import_obj.id %}" class="btn btn-success">
+                <a href="{% url 'notes:valider_import_dg' import_obj.id %}" class="btn btn-success">
                     Validation Définitive (Activer)
                 </a>
                 {% endif %}

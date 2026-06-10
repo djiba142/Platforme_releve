@@ -203,14 +203,24 @@ def profil_view(request):
     demandes = Demande.objects.filter(etudiant=etudiant).order_by('-date_demande')[:5]
     moyenne  = round(sum(n.note for n in notes) / notes.count(), 2) if notes.exists() else 0
 
-    return render(request, 'etudiants/profil.html', {
-        'etudiant':     etudiant,
-        'notes':        notes,
-        'demandes':     demandes,
-        'moyenne':      moyenne,
-        'nb_notes':     notes.count(),
-        'nb_demandes':  Demande.objects.filter(etudiant=etudiant).count(),
-        'nb_validees':  Demande.objects.filter(etudiant=etudiant, statut='validee').count(),
+    # Regrouper notes par session pour le dashboard
+    from collections import defaultdict
+    notes_par_session = defaultdict(list)
+    for n in notes.select_related('session'):
+        notes_par_session[str(n.session)].append(n)
+
+    nb_sessions = len(notes_par_session)
+
+    return render(request, 'dashboards/etudiant.html', {
+        'etudiant':          etudiant,
+        'notes':             notes,
+        'notes_par_session': dict(notes_par_session),
+        'demandes':          demandes,
+        'moyenne_generale':  moyenne,
+        'nb_notes':          notes.count(),
+        'nb_demandes':       Demande.objects.filter(etudiant=etudiant).count(),
+        'nb_validees':       Demande.objects.filter(etudiant=etudiant, statut='validee').count(),
+        'nb_sessions':       nb_sessions,
     })
 
 

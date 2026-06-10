@@ -52,7 +52,7 @@
 
     <!-- Formulaire de recherche -->
     <div class="search-box">
-      <form method="GET" action="{% url 'recherche_notes' %}">
+      <form method="GET" action="{% url 'notes:recherche_notes' %}">
         <div class="row g-3 align-items-end">
           <div class="col-md-4">
             <label class="form-label fw-bold" style="color:#0D2137;">Matricule étudiant</label>
@@ -97,7 +97,7 @@
 
     <!-- Bouton PDF -->
     <div style="padding:8px 24px 16px;display:flex;justify-content:flex-end;">
-      <a href="{% url 'pdf_par_matricule' %}?matricule={{ etudiant.matricule }}{% if session_nom %}&session={{ session_nom }}{% endif %}"
+      <a href="{% url 'notes:pdf_par_matricule' %}?matricule={{ etudiant.matricule }}{% if session_nom %}&session={{ session_nom }}{% endif %}"
          class="btn-pdf">
         <i class="fas fa-file-pdf"></i>
         Télécharger le relevé PDF

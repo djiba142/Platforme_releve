@@ -1,668 +1,155 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UGANC — Connexion</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --teal: #42A5F5;
-            --navy: #0D2137;
-            --bleu-ci: #1565C0;
-            --bleu-ci-light: #1976D2;
-            --light: #F0F4FA;
-            --gray: #64748B;
-            --dark: #0D2137;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            font-family: 'Segoe UI', sans-serif;
-            background: var(--light);
-        }
-
-        /* ── PANNEAU GAUCHE ── */
-        .left-panel {
-            width: 48%;
-            background: #1976D2;
-            /* Bleu classique UGANC */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 50px 45px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Motif subtil géométrique au lieu de glowing orbs */
-        .left-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.8;
-            z-index: 1;
-        }
-
-        .left-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            max-width: 380px;
-            animation: floatAnimation 4s ease-in-out infinite;
-        }
-
-        .logos-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 22px;
-            margin-bottom: 32px;
-        }
-
-        .logo-divider {
-            width: 1px;
-            height: 55px;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .left-content h2 {
-            color: white;
-            font-weight: 800;
-            font-size: 1.6rem;
-            margin-bottom: 6px;
-        }
-
-        .left-content .subtitle {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 0.9rem;
-            margin-bottom: 38px;
-        }
-
-        /* Carte info matricule */
-        .info-card {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            padding: 22px;
-            width: 100%;
-            margin-bottom: 18px;
-            text-align: left;
-        }
-
-        .info-card h6 {
-            color: white;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 1.8px;
-            text-transform: uppercase;
-            margin-bottom: 14px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .info-badge {
-            background: rgba(255, 255, 255, 0.12);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-family: 'Consolas', monospace;
-            font-size: 0.88rem;
-            font-weight: 700;
-            min-width: 82px;
-            text-align: center;
-        }
-
-        .info-desc {
-            color: rgba(255, 255, 255, 0.75);
-            font-size: 0.8rem;
-        }
-
-        .info-card-admin {
-            background: rgba(21, 101, 192, 0.12);
-            border: 1px solid rgba(21, 101, 192, 0.2);
-        }
-
-        .info-card-admin h6 {
-            color: #64B5F6;
-        }
-
-        .info-card-admin .info-badge {
-            background: rgba(21, 101, 192, 0.2);
-            color: #64B5F6;
-        }
-
-        .left-note {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.76rem;
-            margin-top: 8px;
-        }
-
-        /* ── PANNEAU DROIT ── */
-        .right-panel {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .login-box {
-            width: 100%;
-            max-width: 430px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-            animation: slideUpFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        .login-header .logo-mobile {
-            display: none;
-            margin-bottom: 20px;
-        }
-
-        .login-header h3 {
-            color: var(--navy);
-            font-weight: 800;
-            font-size: 1.6rem;
-            margin-bottom: 6px;
-        }
-
-        .login-header p {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        /* Indicateur détection auto */
-        .auto-detect-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(21, 101, 192, 0.08);
-            border: 1px solid rgba(21, 101, 192, 0.15);
-            color: var(--bleu-ci);
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            margin-bottom: 28px;
-        }
-
-        .auto-detect-badge i {
-            font-size: 0.85rem;
-        }
-
-        /* Formulaire */
-        .form-label {
-            font-weight: 600;
-            font-size: 0.88rem;
-            color: #1A2744;
-            margin-bottom: 6px;
-        }
-
-        .form-control {
-            border: 1px solid #CBD5E1;
-            border-radius: 6px;
-            padding: 12px 16px;
-            font-size: 0.95rem;
-            background: white;
-            transition: all 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(0, 195, 163, 0.15);
-        }
-
-        .input-icon-wrapper {
-            position: relative;
-        }
-
-        .input-icon-wrapper .input-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--teal);
-            font-size: 0.92rem;
-        }
-
-        .input-icon-wrapper .form-control {
-            padding-left: 42px;
-        }
-
-        .input-group-text {
-            border: 1px solid #CBD5E1;
-            background: #F8FAFC;
-            cursor: pointer;
-            border-left: none;
-            border-radius: 0 6px 6px 0 !important;
-            transition: background 0.2s;
-        }
-
-        .input-group-text:hover {
-            background: #E2E8F0;
-        }
-
-        .input-group .form-control {
-            border-right: none;
-            border-radius: 6px 0 0 6px !important;
-        }
-
-        .form-text {
-            font-size: 0.78rem;
-            color: var(--gray);
-            margin-top: 5px;
-        }
-
-        .input-group-custom {
-            position: relative;
-            margin-bottom: 22px;
-            opacity: 0;
-            animation: slideUpFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        .input-group-custom:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .input-group-custom:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        /* Détection en temps réel */
-        .detect-indicator {
-            display: none;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            margin-top: 8px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .detect-indicator.student {
-            display: flex;
-            background: rgba(0, 195, 163, 0.08);
-            color: var(--teal);
-            border: 1px solid rgba(0, 195, 163, 0.15);
-        }
-
-        .detect-indicator.admin {
-            display: flex;
-            background: rgba(21, 101, 192, 0.08);
-            color: var(--bleu-ci);
-            border: 1px solid rgba(21, 101, 192, 0.15);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Bouton */
-        .btn-login {
-            width: 100%;
-            background: #1976D2;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(25, 118, 210, 0.25);
-            opacity: 0;
-            animation: slideUpFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            animation-delay: 0.3s;
-        }
-
-        .btn-login:hover {
-            background: #1565C0;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(25, 118, 210, 0.35);
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .back-link a {
-            color: var(--teal);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .back-link a:hover {
-            color: var(--navy);
-        }
-
-        /* Aide */
-        .help-box {
-            margin-top: 24px;
-            padding: 14px 16px;
-            background: #F0F6FF;
-            border-radius: 12px;
-            border: 1px solid #D0D8E8;
-        }
-
-        .help-box p {
-            margin: 0;
-            font-size: 0.78rem;
-            color: var(--navy);
-        }
-
-        /* Alertes */
-        .alert {
-            border-radius: 10px;
-            font-size: 0.88rem;
-            border: none;
-            padding: 12px 16px;
-        }
-
-        .alert-danger {
-            background: #FEF2F2;
-            color: #B91C1C;
-            border: 1px solid #FECACA;
-        }
-
-        .alert-success {
-            background: #F0FDF4;
-            color: #166534;
-            border: 1px solid #BBF7D0;
-        }
-
-        .alert-info {
-            background: #EFF6FF;
-            color: #1E40AF;
-            border: 1px solid #BFDBFE;
-        }
-
-        @keyframes slideUpFadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes floatAnimation {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-6px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 992px) {
-            .left-panel {
-                display: none;
-            }
-
-            .right-panel {
-                padding: 24px;
-            }
-
-            .login-header .logo-mobile {
-                display: block;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- ══════════ PANNEAU GAUCHE ══════════ -->
-    <div class="left-panel">
-        <div class="left-content">
-            <div class="logos-row">
-                <img src="{% static 'images/logos_uganc.png' %}" height="85" alt="UGANC">
-                <div class="logo-divider"></div>
-                <img src="{% static 'images/logosCI.png' %}" height="70" alt="Centre Informatique"
-                    style="opacity:0.95;">
-            </div>
-
-            <h2>Centre Informatique</h2>
-            <p class="subtitle">Université Gamal Abdel Nasser de Conakry</p>
-
-            <!-- Illustration plateforme (épurée) -->
-            <div class="info-card"
-                style="text-align:center; padding:30px 20px; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                <h6 style="color:white; margin-bottom:10px; letter-spacing: 1px;">Plateforme de Gestion des Relevés</h6>
-                <p style="color:rgba(255,255,255,0.85); font-size:0.84rem; margin:0; line-height:1.6;">
-                    Demandez, consultez et téléchargez vos relevés de notes officiels en ligne, 24h/24 et 7j/7.
-                </p>
-            </div>
-
-            <div class="info-card" style="text-align:center; padding:18px 20px; background: transparent; border:none;">
-                <div style="display:flex; justify-content:center; gap:30px;">
-                    <div>
-                        <i class="fa-solid fa-shield-halved"
-                            style="font-size:1.3rem; color:rgba(255,255,255,0.8); margin-bottom:6px;"></i>
-                        <p style="color:rgba(255,255,255,0.7); font-size:0.75rem; margin:0;">Sécurisé</p>
-                    </div>
-                    <div>
-                        <i class="fa-solid fa-bolt"
-                            style="font-size:1.3rem; color:rgba(255,255,255,0.8); margin-bottom:6px;"></i>
-                        <p style="color:rgba(255,255,255,0.7); font-size:0.75rem; margin:0;">Efficace</p>
-                    </div>
-                    <div>
-                        <i class="fa-solid fa-file-pdf"
-                            style="font-size:1.3rem; color:rgba(255,255,255,0.8); margin-bottom:6px;"></i>
-                        <p style="color:rgba(255,255,255,0.7); font-size:0.75rem; margin:0;">PDF Officiels</p>
-                    </div>
-                </div>
-            </div>
-
-            <p class="left-note">
-                <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
-                Connexion unique — Le système détecte automatiquement votre profil
-            </p>
-        </div>
+{% block title %}Connexion — Plateforme Relevés UGANC{% endblock %}
+
+{% block chatbot_widget %}{% endblock %}
+
+{% block extra_css %}
+<style>
+body {
+  background: linear-gradient(135deg, #1A237E 0%, #283593 60%, #1565C0 100%);
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.login-container {
+  background: white; border-radius: 20px;
+  border-top: 5px solid #D4AF37;
+  box-shadow: 0 25px 70px rgba(26,35,126,0.35);
+  width: 100%; max-width: 430px;
+  overflow: hidden;
+}
+.login-header {
+  background: #1A237E; padding: 1.8rem 2rem;
+  text-align: center; border-bottom: 3px solid #D4AF37;
+}
+.login-logos {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  background: white; border-radius: 12px; padding: 0.7rem 1.5rem;
+  margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.login-title { color: white; font-weight: 800; font-size: 1.2rem; margin: 0; }
+.login-sub   { color: #D4AF37; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.3rem; }
+
+.login-body  { padding: 2rem; }
+
+.form-label { color: #1A237E; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; }
+.form-input {
+  width: 100%; border: 2px solid #e0e0e0; border-radius: 10px;
+  padding: 0.7rem 1rem; font-size: 0.95rem;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+.form-input:focus { border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
+.input-group { position: relative; }
+.input-icon  {
+  position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%);
+  color: #7B1E3A; font-size: 1rem;
+}
+.form-input.with-icon { padding-left: 2.5rem; }
+
+.btn-login {
+  width: 100%; background: #1A237E; color: #D4AF37;
+  border: 2px solid #D4AF37; border-radius: 12px;
+  padding: 0.85rem; font-weight: 800; font-size: 1rem;
+  cursor: pointer; transition: all 0.25s;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+.btn-login:hover { background: #D4AF37; color: #1A237E; transform: translateY(-1px); }
+
+.alert-error {
+  background: rgba(198,40,40,0.08); border-left: 4px solid #C62828;
+  color: #C62828; padding: 0.75rem 1rem; border-radius: 8px;
+  margin-bottom: 1rem; font-size: 0.88rem; font-weight: 600;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.alert-success {
+  background: rgba(46,125,50,0.08); border-left: 4px solid #2E7D32;
+  color: #2E7D32; padding: 0.75rem 1rem; border-radius: 8px;
+  margin-bottom: 1rem; font-size: 0.88rem; font-weight: 600;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.alert-info {
+  background: rgba(21,101,192,0.08); border-left: 4px solid #1565C0;
+  color: #1565C0; padding: 0.75rem 1rem; border-radius: 8px;
+  margin-bottom: 1rem; font-size: 0.88rem; font-weight: 600;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+.divider { height: 1px; background: #ECEFF1; margin: 1.2rem 0; }
+.link-text { color: #1565C0; text-decoration: none; font-weight: 600; }
+.link-text:hover { color: #D4AF37; }
+.login-footer-links {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.83rem; color: #64748B;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="login-container">
+  <!-- En-tête -->
+  <div class="login-header">
+    <div class="login-logos">
+      <img src="{% static 'images/logos_uganc.png' %}" height="42" alt="UGANC" style="object-fit:contain;">
+      <div style="width:1px;height:32px;background:#ECEFF1;border-radius:2px;"></div>
+      <img src="{% static 'images/logosCI.png' %}" height="36" alt="Centre Informatique" style="object-fit:contain;">
     </div>
+    <h1 class="login-title"><i class="fa-solid fa-graduation-cap me-2"></i>Espace Étudiant</h1>
+    <p class="login-sub">Université de Conakry — Plateforme Relevés</p>
+  </div>
 
-    <!-- ══════════ PANNEAU DROIT ══════════ -->
-    <div class="right-panel">
-        <div class="login-box">
+  <!-- Corps -->
+  <div class="login-body">
+    {% if messages %}
+    {% for msg in messages %}
+      {% if 'error' in msg.tags %}
+      <div class="alert-error"><i class="fa-solid fa-circle-exclamation"></i>{{ msg }}</div>
+      {% elif 'success' in msg.tags %}
+      <div class="alert-success"><i class="fa-solid fa-circle-check"></i>{{ msg }}</div>
+      {% else %}
+      <div class="alert-info"><i class="fa-solid fa-circle-info"></i>{{ msg }}</div>
+      {% endif %}
+    {% endfor %}
+    {% endif %}
 
-            <!-- Logos pour mobile -->
-            <div class="login-header">
-                <div class="logo-mobile">
-                    <div class="d-flex justify-content-center align-items-center gap-3">
-                        <img src="{% static 'images/logos_uganc.png' %}" height="55" alt="UGANC">
-                        <img src="{% static 'images/logosCI.png' %}" height="48" alt="CI" style="opacity:0.85;">
-                    </div>
-                </div>
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
 
-                <h3>
-                    <i class="fa-solid fa-right-to-bracket me-2" style="color:var(--teal);"></i>
-                    Connexion
-                </h3>
-                <p>Accédez à votre espace académique UGANC</p>
-            </div>
-
-            <!-- Alertes -->
-            {% if messages %}
-            {% for msg in messages %}
-            <div
-                class="alert {% if msg.tags == 'error' %}alert-danger{% elif msg.tags == 'success' %}alert-success{% elif msg.tags == 'info' %}alert-info{% else %}alert-danger{% endif %} d-flex align-items-center gap-2 mb-3">
-                <i
-                    class="fa-solid {% if msg.tags == 'error' %}fa-triangle-exclamation{% elif msg.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %}"></i>
-                {{ msg }}
-            </div>
-            {% endfor %}
-            {% endif %}
-
-            <!-- Formulaire unique -->
-            <form method="POST">
-                {% csrf_token %}
-
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="fa-solid fa-id-card me-1" style="color:var(--teal);"></i>
-                        Identifiant
-                    </label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-user input-icon"></i>
-                        <input type="text" name="matricule" class="form-control" id="inputIdentifiant"
-                            placeholder="Matricule ou identifiant admin" autocomplete="username" required
-                            oninput="detectRole(this.value)">
-                    </div>
-                    <div class="form-text" id="helpText">
-                        Entrez votre matricule étudiant (ex: 22NT001) ou votre identifiant admin
-                    </div>
-
-                    <!-- Indicateur de détection -->
-                    <div class="detect-indicator" id="detectIndicator">
-                        <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i>
-                        <span id="detectText"></span>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">
-                        <i class="fa-solid fa-lock me-1" style="color:var(--teal);"></i>
-                        Mot de passe
-                    </label>
-                    <div class="input-group">
-                        <div class="input-icon-wrapper" style="flex:1;">
-                            <i class="fa-solid fa-key input-icon"></i>
-                            <input type="password" name="password" id="passwordInput" class="form-control"
-                                placeholder="Votre mot de passe" autocomplete="current-password" required>
-                        </div>
-                        <span class="input-group-text" onclick="togglePassword()">
-                            <i class="fa-solid fa-eye text-muted" id="eyeIcon"></i>
-                        </span>
-                    </div>
-                    <div class="form-text">
-                        Première connexion ? Mot de passe = <strong>Univ2024</strong>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-login">
-                    <i class="fa-solid fa-right-to-bracket me-2"></i>
-                    Se connecter
-                </button>
-            </form>
-
-            <div class="back-link">
-                <div>
-                    Pas encore de compte ? <a href="{% url 'inscription' %}"
-                        style="font-weight: 700; text-decoration: underline;">S'inscrire</a>
-                </div>
-                <div style="margin-top: 10px;">
-                    <a href="{% url 'accueil' %}">
-                        <i class="fa-solid fa-arrow-left me-1"></i>
-                        Retour à l'accueil
-                    </a>
-                </div>
-            </div>
-
-            <div class="help-box">
-                <p>
-                    <i class="fa-solid fa-circle-info me-1"></i>
-                    Problème de connexion ? Contactez le service de scolarité du Centre Informatique UGANC.
-                </p>
-            </div>
+      <div class="mb-3">
+        <label class="form-label" for="matricule"><i class="fa-solid fa-id-card me-1" style="color:#7B1E3A;"></i>Matricule</label>
+        <div class="input-group">
+          <i class="input-icon fa-solid fa-id-card"></i>
+          <input type="text" id="matricule" name="matricule" class="form-input with-icon"
+                 placeholder="Ex: 664217742389" autocomplete="username" required>
         </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="password"><i class="fa-solid fa-lock me-1" style="color:#7B1E3A;"></i>Mot de passe</label>
+        <div class="input-group">
+          <i class="input-icon fa-solid fa-lock"></i>
+          <input type="password" id="password" name="password" class="form-input with-icon"
+                 placeholder="Votre mot de passe" autocomplete="current-password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login">
+        <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+      </button>
+    </form>
+
+    <div class="divider"></div>
+    <div class="login-footer-links">
+      <a href="{% url 'inscription' %}" class="link-text"><i class="fa-solid fa-user-plus me-1"></i>S'inscrire</a>
+      <a href="{% url 'login_admin' %}" class="link-text"><i class="fa-solid fa-shield-halved me-1"></i>Administration</a>
     </div>
-
-    <script>
-        // Détection automatique du rôle en temps réel
-        function detectRole(value) {
-            const indicator = document.getElementById('detectIndicator');
-            const text = document.getElementById('detectText');
-            const inputIcon = document.querySelector('.input-icon');
-            const v = value.trim().toUpperCase();
-
-            indicator.className = 'detect-indicator';
-
-            if (v.length === 0) {
-                indicator.style.display = 'none';
-                inputIcon.className = 'fa-solid fa-user input-icon';
-                return;
-            }
-
-            // Pattern matricule étudiant : 2 chiffres + NT ou DL + chiffres
-            const isStudent = /^\d{2}(NT|DL)\d{0,3}$/i.test(v);
-
-            if (isStudent) {
-                indicator.className = 'detect-indicator student';
-                text.textContent = 'Détecté : Étudiant — Connexion via matricule';
-                inputIcon.className = 'fa-solid fa-user-graduate input-icon';
-                inputIcon.style.color = 'var(--teal)';
-            } else {
-                indicator.className = 'detect-indicator admin';
-                text.textContent = 'Détecté : Administrateur — Connexion via identifiant';
-                inputIcon.className = 'fa-solid fa-user-tie input-icon';
-                inputIcon.style.color = 'var(--bleu-ci)';
-            }
-        }
-
-        // Toggle mot de passe
-        function togglePassword() {
-            const input = document.getElementById('passwordInput');
-            const icon = document.getElementById('eyeIcon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash text-muted';
-            } else {
-                input.type = 'password';
-                icon.className = 'fa-solid fa-eye text-muted';
-            }
-        }
-    </script>
-</body>
-
-</html>
+    <div style="text-align:center;margin-top:1rem;">
+      <a href="{% url 'accueil' %}" style="color:#64748B;font-size:0.82rem;text-decoration:none;">
+        <i class="fa-solid fa-arrow-left me-1"></i>Retour à l'accueil
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

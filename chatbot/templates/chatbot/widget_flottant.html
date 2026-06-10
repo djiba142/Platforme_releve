@@ -1,393 +1,225 @@
-<!-- ══ CHATBOT FLOTTANT ══ -->
-{% load static %}
 <style>
-    /* Toggle Button */
-    #chatbot-toggle {
-        position: fixed;
-        bottom: 28px;
-        right: 28px;
-        width: 58px;
-        height: 58px;
-        background: #1976D2;
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 6px 20px rgba(26, 39, 68, 0.35);
-        transition: all 0.3s ease;
-    }
+/* ── CHATBOT WIDGET — Charte Premium UGANC ── */
+#chatbot-toggle {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  width: 58px; height: 58px;
+  background: #7B1E3A;
+  border: 3px solid #D4AF37;
+  border-radius: 50%;
+  color: white; font-size: 1.4rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 9999;
+  box-shadow: 0 4px 20px rgba(123,30,58,0.45);
+  transition: all 0.25s;
+}
+#chatbot-toggle:hover { background: #5c1129; transform: scale(1.08); box-shadow: 0 6px 25px rgba(123,30,58,0.55); }
 
-    #chatbot-toggle:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
-    }
+#chatbot-window {
+  position: fixed; bottom: 5.5rem; right: 1.5rem;
+  width: 360px; max-width: calc(100vw - 2rem);
+  height: 500px; max-height: calc(100vh - 8rem);
+  display: none; flex-direction: column;
+  border-radius: 18px;
+  border: 2px solid #D4AF37;
+  box-shadow: 0 20px 60px rgba(26,35,126,0.3);
+  z-index: 9998; overflow: hidden;
+  font-family: 'Segoe UI', Inter, Arial, sans-serif;
+}
+#chatbot-window.open { display: flex; animation: slideUp 0.3s ease-out; }
+@keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-    #chatbot-toggle .close-icon {
-        display: none;
-    }
+/* En-tête */
+#chatbot-header {
+  background: #1565C0;
+  border-bottom: 3px solid #D4AF37;
+  color: white; padding: 0.9rem 1.1rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+#chatbot-header .bot-avatar {
+  width: 36px; height: 36px; background: rgba(212,175,55,0.2);
+  border: 2px solid #D4AF37; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+#chatbot-header .bot-info { flex: 1; }
+#chatbot-header .bot-name  { font-weight: 800; font-size: 0.95rem; }
+#chatbot-header .bot-status{ color: #D4AF37; font-size: 0.75rem; }
+#chatbot-header .btn-close-chat {
+  background: rgba(255,255,255,0.1); border: none; color: white;
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+#chatbot-header .btn-close-chat:hover { background: rgba(255,255,255,0.25); }
 
-    #chatbot-toggle.open .open-icon {
-        display: none;
-    }
+/* Corps messages */
+#chatbot-body {
+  flex: 1; overflow-y: auto; padding: 1rem;
+  background: #F8FAFC;
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+#chatbot-body::-webkit-scrollbar { width: 4px; }
+#chatbot-body::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 2px; }
 
-    #chatbot-toggle.open .close-icon {
-        display: inline;
-    }
+.msg-row-bot  { display: flex; align-items: flex-start; gap: 0.5rem; }
+.msg-row-user { display: flex; align-items: flex-start; gap: 0.5rem; flex-direction: row-reverse; }
 
-    /* Chat Window */
-    #chatbot-widget {
-        position: fixed;
-        bottom: 100px;
-        right: 28px;
-        width: 370px;
-        height: 500px;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 12px 40px rgba(26, 39, 68, 0.2);
-        z-index: 9998;
-        display: none;
-        flex-direction: column;
-        overflow: hidden;
-        animation: slideUp 0.3s ease;
-    }
+.msg-bot-avatar {
+  width: 28px; height: 28px; background: #1565C0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.75rem; flex-shrink: 0; margin-top: 2px;
+}
 
-    #chatbot-widget.show {
-        display: flex;
-    }
+/* Message bot */
+.msg-bot {
+  background: #E3F2FD;
+  color: #1A1A1A;
+  border-radius: 0 14px 14px 14px;
+  padding: 0.65rem 0.9rem;
+  max-width: 78%;
+  font-size: 0.87rem;
+  border-left: 3px solid #1565C0;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.1);
+  line-height: 1.5;
+}
+/* Message utilisateur */
+.msg-user {
+  background: #7B1E3A;
+  color: white;
+  border-radius: 14px 0 14px 14px;
+  padding: 0.65rem 0.9rem;
+  max-width: 78%;
+  font-size: 0.87rem;
+  box-shadow: 0 2px 8px rgba(123,30,58,0.2);
+  line-height: 1.5;
+}
 
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
+/* Pied du chat */
+#chatbot-footer {
+  background: white;
+  border-top: 2px solid #ECEFF1;
+  padding: 0.7rem;
+  display: flex; gap: 0.5rem;
+}
+#chatbot-input {
+  flex: 1; border: 2px solid #e0e0e0; border-radius: 10px;
+  padding: 0.55rem 0.9rem; font-size: 0.88rem;
+  outline: none; transition: border-color 0.2s;
+  font-family: inherit;
+}
+#chatbot-input:focus { border-color: #1565C0; box-shadow: 0 0 0 3px rgba(21,101,192,0.12); }
+#chatbot-send {
+  background: #1565C0; color: white; border: none;
+  border-radius: 10px; padding: 0.55rem 1rem;
+  font-weight: 700; font-size: 0.88rem;
+  cursor: pointer; transition: background 0.2s;
+}
+#chatbot-send:hover { background: #1A237E; }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Widget Header */
-    .widget-header {
-        background: #1976D2;
-        padding: 14px 18px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .widget-header .w-avatar {
-        width: 38px;
-        height: 38px;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-    }
-
-    .widget-header .w-info h6 {
-        color: white;
-        font-size: 0.88rem;
-        font-weight: 700;
-        margin: 0;
-    }
-
-    .widget-header .w-info p {
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 0.7rem;
-        margin: 0;
-    }
-
-    .w-online-dot {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        background: #00C3A3;
-        border-radius: 50%;
-        margin-right: 4px;
-        animation: wPulse 1.5s infinite;
-    }
-
-    @keyframes wPulse {
-
-        0%,
-        100% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: 0.4;
-        }
-    }
-
-    /* Messages Area */
-    .widget-messages {
-        flex: 1;
-        overflow-y: auto;
-        padding: 16px;
-        background: #F8FAFF;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .widget-messages::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .widget-messages::-webkit-scrollbar-thumb {
-        background: #CBD5E1;
-        border-radius: 10px;
-    }
-
-    /* Chat Bubbles */
-    .w-msg {
-        max-width: 85%;
-        font-size: 0.84rem;
-        line-height: 1.55;
-    }
-
-    .w-msg-bot {
-        background: white;
-        color: #1A2744;
-        padding: 10px 14px;
-        border-radius: 16px 16px 16px 4px;
-        box-shadow: 0 2px 8px rgba(26, 39, 68, 0.07);
-        align-self: flex-start;
-    }
-
-    .w-msg-user {
-        background: #1976D2;
-        color: white;
-        padding: 10px 14px;
-        border-radius: 16px 16px 4px 16px;
-        align-self: flex-end;
-    }
-
-    /* Typing Indicator */
-    .w-typing {
-        display: flex;
-        gap: 4px;
-        padding: 10px 14px;
-        background: white;
-        border-radius: 16px 16px 16px 4px;
-        width: fit-content;
-        box-shadow: 0 2px 8px rgba(26, 39, 68, 0.07);
-    }
-
-    .w-typing span {
-        width: 6px;
-        height: 6px;
-        background: #1976D2;
-        border-radius: 50%;
-        animation: wBounce 1.2s infinite;
-    }
-
-    .w-typing span:nth-child(2) {
-        animation-delay: 0.2s;
-    }
-
-    .w-typing span:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-
-    @keyframes wBounce {
-
-        0%,
-        80%,
-        100% {
-            transform: translateY(0);
-        }
-
-        40% {
-            transform: translateY(-6px);
-        }
-    }
-
-    /* Input Area */
-    .widget-input {
-        padding: 12px 14px;
-        background: white;
-        border-top: 1px solid #E8F0FB;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .widget-input input {
-        flex: 1;
-        border: 1.5px solid #D4E0F0;
-        border-radius: 22px;
-        padding: 9px 16px;
-        font-size: 0.85rem;
-        outline: none;
-        transition: border 0.2s;
-    }
-
-    .widget-input input:focus {
-        border-color: #1976D2;
-    }
-
-    .widget-input button {
-        width: 38px;
-        height: 38px;
-        background: #1976D2;
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 14px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-        flex-shrink: 0;
-    }
-
-    .widget-input button:hover {
-        background: #1565C0;
-    }
-
-    /* Responsive */
-    @media (max-width: 480px) {
-        #chatbot-widget {
-            width: calc(100% - 20px);
-            right: 10px;
-            bottom: 90px;
-            height: 65vh;
-        }
-    }
+/* Typing indicator */
+.typing-indicator { display: flex; gap: 4px; padding: 0.5rem 0.6rem; }
+.typing-indicator span {
+  width: 7px; height: 7px; background: #1565C0;
+  border-radius: 50%; animation: bounce 1.2s infinite;
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-8px)} }
 </style>
 
-<!-- Toggle Button -->
-<button id="chatbot-toggle" title="CI Assistant">
-    <i class="fa-solid fa-robot open-icon"></i>
-    <i class="fa-solid fa-xmark close-icon"></i>
+<!-- ── Toggle Button ── -->
+<button id="chatbot-toggle" title="Assistant UGANC" onclick="toggleChatbot()">
+  <i class="fa-solid fa-robot" id="chatbot-icon"></i>
 </button>
 
-<!-- Chat Widget -->
-<div id="chatbot-widget">
-    <div class="widget-header">
-        <div class="w-avatar">
-            <i class="fa-solid fa-robot" style="color:white;font-size:16px;"></i>
-        </div>
-        <div class="w-info">
-            <h6><span class="w-online-dot"></span> CI Assistant</h6>
-            <p>Centre Informatique • En ligne</p>
-        </div>
+<!-- ── Chatbot Window ── -->
+<div id="chatbot-window">
+  <div id="chatbot-header">
+    <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+    <div class="bot-info">
+      <div class="bot-name">Assistant UGANC</div>
+      <div class="bot-status"><i class="fa-solid fa-circle" style="font-size:0.5rem;margin-right:4px;"></i>En ligne</div>
     </div>
+    <button class="btn-close-chat" onclick="toggleChatbot()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
 
-    <div class="widget-messages" id="widget-messages">
-        <div class="w-msg w-msg-bot">
-            👋 Bonjour ! Je suis votre assistant académique.<br>
-            Tapez <strong>bonjour</strong> pour commencer ou <strong>aide</strong> pour voir les commandes.
-        </div>
+  <div id="chatbot-body">
+    <div class="msg-row-bot">
+      <div class="msg-bot-avatar"><i class="fa-solid fa-robot"></i></div>
+      <div class="msg-bot">
+        👋 Bonjour ! Je suis votre assistant UGANC.<br>
+        Je peux vous aider à :<br>
+        • Obtenir votre <strong>relevé de notes</strong><br>
+        • Consulter vos <strong>résultats</strong><br>
+        • Connaître votre <strong>statut de demande</strong><br><br>
+        Tapez <em>aide</em> pour toutes les commandes.
+      </div>
     </div>
+  </div>
 
-    <div class="widget-input">
-        {% csrf_token %}
-        <input type="text" id="widget-input" placeholder="Votre message...">
-        <button id="widget-send"><i class="fa-solid fa-paper-plane"></i></button>
-    </div>
+  <div id="chatbot-footer">
+    <input id="chatbot-input" type="text" placeholder="Tapez votre message..." autocomplete="off"
+           onkeydown="if(event.key==='Enter') sendMessage()">
+    <button id="chatbot-send" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
 </div>
 
 <script>
-    (function () {
-        const toggle = document.getElementById('chatbot-toggle');
-        const widget = document.getElementById('chatbot-widget');
-        const input = document.getElementById('widget-input');
-        const sendBtn = document.getElementById('widget-send');
-        const msgBox = document.getElementById('widget-messages');
+function toggleChatbot() {
+  const win  = document.getElementById('chatbot-window');
+  const icon = document.getElementById('chatbot-icon');
+  const open = win.classList.toggle('open');
+  icon.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-robot';
+  if (open) document.getElementById('chatbot-input').focus();
+}
 
-        // Toggle open / close
-        toggle.addEventListener('click', function () {
-            const wasOpen = toggle.classList.contains('open');
-            toggle.classList.toggle('open');
-            widget.classList.toggle('show');
-            if (widget.classList.contains('show')) {
-                input.focus();
-            } else if (wasOpen) {
-                // Trigger backend clear
-                const csrfEl = widget.querySelector('[name=csrfmiddlewaretoken]');
-                const csrfToken = csrfEl ? csrfEl.value : '';
+function addMsg(text, type) {
+  const body = document.getElementById('chatbot-body');
+  const row  = document.createElement('div');
+  row.className = type === 'user' ? 'msg-row-user' : 'msg-row-bot';
+  if (type === 'bot') {
+    const av = document.createElement('div'); av.className='msg-bot-avatar';
+    av.innerHTML='<i class="fa-solid fa-robot"></i>'; row.appendChild(av);
+  }
+  const bubble = document.createElement('div');
+  bubble.className = type === 'user' ? 'msg-user' : 'msg-bot';
+  bubble.innerHTML = text;
+  row.appendChild(bubble);
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+}
 
-                fetch("{% url 'chatbot_api' %}", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-                    body: JSON.stringify({ action: 'clear' })
-                }).then(() => {
-                    // Reset UI to default state
-                    msgBox.innerHTML = '<div class="w-msg w-msg-bot">👋 Bonjour ! Je suis votre assistant académique.<br>Tapez <strong>bonjour</strong> pour commencer ou <strong>aide</strong> pour voir les commandes.</div>';
-                    input.value = '';
-                }).catch(e => console.error(e));
-            }
-        });
+function sendMessage() {
+  const inp = document.getElementById('chatbot-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  addMsg(msg, 'user');
+  inp.value = '';
 
-        // Send message
-        function widgetSend() {
-            const text = input.value.trim();
-            if (!text) return;
+  // Typing indicator
+  const body = document.getElementById('chatbot-body');
+  const typing = document.createElement('div'); typing.id='typing'; typing.className='msg-row-bot';
+  typing.innerHTML='<div class="msg-bot-avatar"><i class="fa-solid fa-robot"></i></div><div class="msg-bot"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';
+  body.appendChild(typing); body.scrollTop=body.scrollHeight;
 
-            // User bubble
-            const uDiv = document.createElement('div');
-            uDiv.className = 'w-msg w-msg-user';
-            uDiv.textContent = text;
-            msgBox.appendChild(uDiv);
-            input.value = '';
-            scrollBottom();
+  fetch("{% url 'chatbot_api' %}", {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+    body: JSON.stringify({ message: msg })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('typing')?.remove();
+    addMsg(data.response || data.reponse || 'Désolé, je n\'ai pas compris.', 'bot');
+  })
+  .catch(() => {
+    document.getElementById('typing')?.remove();
+    addMsg('<span style="color:#C62828;">⚠️ Erreur de connexion. Veuillez réessayer.</span>', 'bot');
+  });
+}
 
-            // Typing indicator
-            const tDiv = document.createElement('div');
-            tDiv.className = 'w-typing';
-            tDiv.innerHTML = '<span></span><span></span><span></span>';
-            msgBox.appendChild(tDiv);
-            scrollBottom();
-
-            // CSRF token
-            const csrfEl = widget.querySelector('[name=csrfmiddlewaretoken]');
-            const csrfToken = csrfEl ? csrfEl.value : '';
-
-            fetch("{% url 'chatbot_api' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
-                },
-                body: JSON.stringify({ message: text })
-            })
-                .then(r => r.json())
-                .then(data => {
-                    tDiv.remove();
-                    const bDiv = document.createElement('div');
-                    bDiv.className = 'w-msg w-msg-bot';
-                    bDiv.innerHTML = data.reponse;
-                    msgBox.appendChild(bDiv);
-                    scrollBottom();
-                })
-                .catch(() => {
-                    tDiv.remove();
-                    const bDiv = document.createElement('div');
-                    bDiv.className = 'w-msg w-msg-bot';
-                    bDiv.innerHTML = '❌ Erreur de connexion.';
-                    msgBox.appendChild(bDiv);
-                    scrollBottom();
-                });
-        }
-
-        function scrollBottom() {
-            msgBox.scrollTop = msgBox.scrollHeight;
-        }
-
-        sendBtn.addEventListener('click', widgetSend);
-        input.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') widgetSend();
-        });
-    })();
+function getCookie(name) {
+  const m = document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');
+  return m ? m.pop() : '';
+}
 </script>

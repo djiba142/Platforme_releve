@@ -1,162 +1,179 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>DGA — UGANC</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <style>
-    body{background:#EFF4FB;font-family:'Segoe UI',sans-serif;margin:0;}
-    .sidebar{width:240px;min-height:100vh;background:#0D2137;position:fixed;top:0;left:0;z-index:100;}
-    .sidebar-logo{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.08);text-align:center;}
-    .sidebar-logo h6{color:#fff;font-weight:800;font-size:.9rem;margin:8px 0 2px;}
-    .sidebar-logo small{color:rgba(255,255,255,.4);font-size:.72rem;}
-    .menu-label{color:rgba(255,255,255,.3);font-size:.65rem;font-weight:700;letter-spacing:2px;padding:12px 18px 5px;text-transform:uppercase;}
-    .menu-item{display:flex;align-items:center;gap:10px;padding:10px 18px;color:rgba(255,255,255,.6);text-decoration:none;font-size:.88rem;transition:all .2s;border-left:3px solid transparent;}
-    .menu-item:hover,.menu-item.active{color:#fff;background:rgba(25,118,210,.1);border-left-color:#1976D2;}
-    .main{margin-left:240px;padding:25px;}
-    .topbar{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:14px 22px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-bottom:24px;}
-    .stat-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(26,39,68,.07);height:100%;}
-    .stat-val{font-size:2rem;font-weight:900;}
-    .stat-lbl{font-size:.8rem;color:#64748B;margin-top:2px;}
-    .content-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 10px rgba(26,39,68,.07);margin-bottom:20px;}
-    .content-card h6{color:#1565C0;font-weight:800;font-size:.95rem;padding-bottom:10px;border-bottom:2px solid #EFF4FB;margin-bottom:16px;}
-    table thead th{background:#1565C0;color:#fff;font-size:.8rem;font-weight:700;padding:10px 14px;}
-    table tbody td{font-size:.88rem;padding:10px 14px;vertical-align:middle;}
-    table tbody tr:hover{background:#F8FAFC;}
-    .btn-valider{background:rgba(0,195,163,.1);color:#0D8A73;border:1px solid rgba(0,195,163,.2);border-radius:7px;padding:5px 12px;font-size:.8rem;font-weight:700;cursor:pointer;}
-    .btn-rejeter{background:rgba(220,53,69,.1);color:#dc3545;border:1px solid rgba(220,53,69,.2);border-radius:7px;padding:5px 12px;font-size:.8rem;font-weight:700;cursor:pointer;}
-    .workflow-badge{display:inline-flex;align-items:center;gap:6px;background:#EFF9F7;color:#0D8A73;border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:700;}
-    @media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}}
-  </style>
-</head>
-<body>
-<div class="sidebar">
-  <div class="sidebar-logo">
-    <div style="font-size:32px;">🏛️</div>
-    <h6>Direction Générale Adj.</h6>
-    <small>UGANC Centre Informatique</small>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Tableau de bord — UGANC{% endblock %}
+
+{% block extra_css %}
+<style>
+body { background: #ECEFF1; display: flex; min-height: 100vh; margin: 0; }
+.admin-sidebar {
+  background: linear-gradient(180deg, #1A237E 0%, #0D1B6E 100%);
+  border-right: 3px solid #D4AF37;
+  width: 250px; min-height: 100vh; position: fixed; top: 0; left: 0;
+  display: flex; flex-direction: column; z-index: 100;
+}
+.sidebar-logo-zone { background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(212,175,55,0.25); padding: 1.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+.sidebar-logo-box  { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 0.6rem 0.9rem; display: flex; align-items: center; gap: 0.7rem; width: 100%; }
+.brand-text { color: #fff; font-weight: 800; font-size: 0.92rem; }
+.brand-sub  { color: #D4AF37; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.5px; }
+.sidebar-nav { flex: 1; padding: 0.75rem 0; }
+.nav-lbl { padding: 0.6rem 1.4rem 0.2rem; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(212,175,55,0.55); }
+.sidebar-link { display: flex; align-items: center; gap: 0.6rem; margin: 2px 10px; padding: 0.65rem 1rem; color: rgba(255,255,255,0.82); text-decoration: none; border-radius: 10px; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+.sidebar-link:hover, .sidebar-link.active { background: rgba(212,175,55,0.15); color: #D4AF37; border-left: 3px solid #D4AF37; }
+.sidebar-link i { width: 18px; text-align: center; }
+.admin-main { margin-left: 250px; flex: 1; background: #ECEFF1; min-height: 100vh; }
+.topbar { background: #fff; border-bottom: 3px solid #D4AF37; box-shadow: 0 2px 12px rgba(26,35,126,0.07); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.topbar h4 { color: #1A237E; font-weight: 800; margin: 0; }
+.admin-badge { background: #1A237E; color: #D4AF37; padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+.page-content { padding: 1.5rem 2rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card { background: #fff; border-radius: 14px; border: 1px solid #e0e0e0; border-top: 4px solid #1A237E; box-shadow: 0 4px 15px rgba(26,35,126,0.07); padding: 1.3rem; }
+.stat-num  { color: #1A237E; font-weight: 900; font-size: 2rem; }
+.stat-lbl  { color: #263238; font-size: 0.83rem; }
+.stat-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.section-card { background: #fff; border-radius: 16px; border: 1px solid #e0e0e0; box-shadow: 0 2px 12px rgba(26,35,126,0.05); overflow: hidden; margin-bottom: 1.5rem; }
+.section-header { background: #1A237E; color: #D4AF37; padding: 0.9rem 1.4rem; font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; gap: 0.6rem; justify-content: space-between; }
+.table-std { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.table-std thead tr { background: #ECEFF1; }
+.table-std thead th { color: #263238; font-weight: 700; padding: 0.75rem 1rem; border-bottom: 2px solid #D4AF37; }
+.table-std tbody tr:hover { background: rgba(26,35,126,0.03); }
+.table-std tbody td { padding: 0.7rem 1rem; border-bottom: 1px solid #f0f0f0; color: #263238; }
+.badge-valide  { background: rgba(46,125,50,0.1); color: #2E7D32; border: 1px solid #2E7D32; border-radius: 20px; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; }
+.badge-attente { background: rgba(212,175,55,0.1); color: #8B6914; border: 1px solid #D4AF37; border-radius: 20px; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; }
+.badge-rejete  { background: rgba(198,40,40,0.1); color: #C62828; border: 1px solid #C62828; border-radius: 20px; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; }
+.btn-action { padding: 0.45rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.83rem; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; cursor: pointer; }
+.btn-validate { background: #2E7D32 !important; color: #fff !important; }
+.btn-validate:hover { background: #1B5E20 !important; }
+.btn-delete   { background: #C62828 !important; color: #fff !important; }
+.btn-navy     { background: #1A237E !important; color: #D4AF37 !important; }
+.btn-blue     { background: #1565C0 !important; color: #fff !important; }
+</style>
+{% endblock %}
+
+{% block body %}
+<aside class="admin-sidebar">
+  <div class="sidebar-logo-zone">
+    <div class="sidebar-logo-box">
+      <img src="{% static 'images/logos_uganc.png' %}" height="34" alt="UGANC" style="object-fit:contain;">
+      <div style="width:1px;height:26px;background:#E0E8F5;border-radius:2px;"></div>
+      <img src="{% static 'images/logosCI.png' %}" height="28" alt="CI" style="object-fit:contain;">
+    </div>
+    <div class="brand-text">
+      {% with profil=request.user.profiladmin %}{{ profil.get_role_display }}{% endwith %}
+    </div>
+    <div class="brand-sub">UGANC · Centre Informatique</div>
   </div>
-  <nav>
-    <div class="menu-label">Navigation</div>
-    <a href="{% url 'dashboard_dga' %}" class="menu-item active"><i class="fas fa-gauge-high"></i> Tableau de bord</a>
-    <a href="{% url 'gestion_inscriptions' %}" class="menu-item"><i class="fas fa-user-check"></i> Inscriptions</a>
-    <a href="{% url 'liste_etudiants' %}" class="menu-item"><i class="fas fa-users"></i> Étudiants</a>
-    <a href="{% url 'gestion_notes' %}" class="menu-item"><i class="fas fa-book"></i> Notes</a>
-    <a href="{% url 'gestion_demandes' %}" class="menu-item"><i class="fas fa-file-lines"></i> Demandes relevé</a>
-    <div class="menu-label">Compte</div>
-    <a href="{% url 'logout' %}" class="menu-item" style="color:#ff8a8a;"><i class="fas fa-right-from-bracket"></i> Déconnexion</a>
+  <nav class="sidebar-nav">
+    <div class="nav-lbl">Navigation</div>
+    <a href="{% url 'admin_dashboard' %}" class="sidebar-link"><i class="fa-solid fa-chart-pie"></i> Vue d'ensemble</a>
+    <a href="{% url 'gestion_inscriptions' %}" class="sidebar-link"><i class="fa-solid fa-user-clock"></i> Inscriptions</a>
+    <a href="{% url 'liste_etudiants' %}" class="sidebar-link"><i class="fa-solid fa-users"></i> Étudiants</a>
+    <a href="{% url 'gestion_demandes' %}" class="sidebar-link"><i class="fa-solid fa-file-lines"></i> Demandes</a>
+    <a href="{% url 'gestion_notes' %}" class="sidebar-link"><i class="fa-solid fa-book-open"></i> Notes</a>
+    <hr style="border-color:rgba(212,175,55,0.15);margin:0.8rem 1.2rem;">
+    <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
   </nav>
-</div>
+</aside>
 
-<div class="main">
+<div class="admin-main">
   <div class="topbar">
-    <div>
-      <h5 style="margin:0;font-weight:800;color:#0D2137;">Direction Générale Adjointe</h5>
-      <small style="color:#64748B;">UGANC — Centre Informatique</small>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="text-align:right;">
-        <div style="font-weight:700;font-size:.9rem;color:#0D2137;">{{ request.user.get_full_name }}</div>
-        <small style="color:#64748B;">DGA</small>
-      </div>
-      <div style="width:40px;height:40px;background:#1565C0;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;">
-        {{ request.user.first_name.0 }}{{ request.user.last_name.0 }}
-      </div>
-    </div>
+    <h4>
+      <i class="fa-solid fa-user-tie me-2" style="color:#D4AF37;"></i>
+      {% with profil=request.user.profiladmin %}Bienvenue, {{ profil.prenom }} {{ profil.nom }}{% endwith %}
+    </h4>
+    <span class="admin-badge">{{ request.user.profiladmin.get_role_display }}</span>
   </div>
 
-  {% if messages %}{% for m in messages %}
-  <div class="alert alert-{% if m.tags == 'error' %}danger{% elif m.tags == 'warning' %}warning{% else %}success{% endif %} mb-3" style="border-radius:10px;">{{ m }}</div>
-  {% endfor %}{% endif %}
+  <div class="page-content">
+    {% if messages %}
+    {% for msg in messages %}
+    <div style="background:{% if 'error' in msg.tags %}rgba(198,40,40,0.08){% else %}rgba(46,125,50,0.08){% endif %};border-left:4px solid {% if 'error' in msg.tags %}#C62828{% else %}#2E7D32{% endif %};padding:0.85rem 1.2rem;border-radius:10px;margin-bottom:1rem;color:{% if 'error' in msg.tags %}#C62828{% else %}#2E7D32{% endif %};font-weight:600;display:flex;align-items:center;gap:0.5rem;">
+    <i class="fa-solid fa-circle-{% if 'error' in msg.tags %}exclamation{% else %}check{% endif %}"></i>{{ msg }}</div>
+    {% endfor %}
+    {% endif %}
 
-  <!-- Workflow info -->
-  <div style="background:linear-gradient(135deg,#F0F8FF,#E8F4FB);border:1px solid #C3D9F0;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
-    <div style="font-size:1.6rem;">🔄</div>
-    <div>
-      <strong style="color:#0D2137;font-size:.9rem;">Workflow de validation des inscriptions</strong>
-      <div style="font-size:.8rem;color:#64748B;margin-top:2px;">
-        Étudiant s'inscrit → <strong>Chef de Département valide</strong> → <strong>DGA/DG active le compte</strong> → Étudiant peut se connecter
+    <!-- Statistiques -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="color:#1A237E;"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-num">{{ nb_etudiants|default:"—" }}</div>
+        <div class="stat-lbl">Étudiants</div>
+      </div>
+      <div class="stat-card" style="border-top-color:#D4AF37;">
+        <div class="stat-icon" style="color:#D4AF37;"><i class="fa-solid fa-user-clock"></i></div>
+        <div class="stat-num" style="color:#8B6914;">{{ nb_en_attente|default:"—" }}</div>
+        <div class="stat-lbl">En attente</div>
+      </div>
+      <div class="stat-card" style="border-top-color:#7B1E3A;">
+        <div class="stat-icon" style="color:#7B1E3A;"><i class="fa-solid fa-file-pdf"></i></div>
+        <div class="stat-num" style="color:#7B1E3A;">{{ nb_demandes|default:"—" }}</div>
+        <div class="stat-lbl">Demandes</div>
+      </div>
+      <div class="stat-card" style="border-top-color:#2E7D32;">
+        <div class="stat-icon" style="color:#2E7D32;"><i class="fa-solid fa-chart-bar"></i></div>
+        <div class="stat-num" style="color:#2E7D32;">{{ nb_notes|default:"—" }}</div>
+        <div class="stat-lbl">Notes</div>
       </div>
     </div>
-  </div>
 
-  <!-- Stats -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="stat-val" style="color:#F59E0B;">{{ nb_att_dg }}</div>
-        <div class="stat-lbl">⏳ Pré-validés par Chef (à activer)</div>
+    <!-- Inscriptions en attente -->
+    {% if inscriptions_attente %}
+    <div class="section-card">
+      <div class="section-header">
+        <span><i class="fa-solid fa-user-clock"></i> Inscriptions à valider</span>
+        <span class="badge-attente">{{ inscriptions_attente|length }}</span>
       </div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="stat-val" style="color:#0D8A73;">{{ nb_etudiants }}</div>
-        <div class="stat-lbl">✅ Étudiants actifs</div>
-      </div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="stat-val" style="color:#1976D2;">{{ nb_imports_att }}</div>
-        <div class="stat-lbl">📋 Imports notes à valider</div>
-      </div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="stat-card">
-        <div class="stat-val" style="color:#7C3AED;">0</div>
-        <div class="stat-lbl">🔔 Notifications</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Inscriptions pré-validées en attente DGA -->
-  <div class="content-card">
-    <h6><i class="fas fa-user-check me-2"></i>Inscriptions pré-validées par Chef de Département — À activer</h6>
-    {% if inscriptions_att %}
-    <p style="font-size:.85rem;color:#64748B;margin-bottom:14px;">
-      <i class="fas fa-info-circle me-1"></i>
-      Ces inscriptions ont déjà été vérifiées par le Chef de Département. Vous pouvez les activer définitivement.
-    </p>
-    <div class="table-responsive">
-      <table class="table table-hover mb-0">
-        <thead><tr><th>Matricule</th><th>Étudiant</th><th>Département</th><th>Niveau</th><th>Date</th><th>Statut Chef</th><th class="text-end">Actions</th></tr></thead>
+      <table class="table-std">
+        <thead><tr><th>Matricule</th><th>Nom complet</th><th>Niveau</th><th>Date</th><th style="text-align:right;">Actions</th></tr></thead>
         <tbody>
-          {% for e in inscriptions_att %}
-          <tr>
-            <td><span style="font-family:monospace;color:#1976D2;font-weight:700;">{{ e.matricule }}</span></td>
-            <td><div style="font-weight:600;color:#0D2137;">{{ e.prenom }} {{ e.nom }}</div></td>
-            <td>{{ e.departement.nom|default:"—" }}</td>
-            <td>{{ e.niveau.nom|default:"—" }}</td>
-            <td style="color:#64748B;font-size:.82rem;">{{ e.date_inscription|date:"d/m/Y" }}</td>
-            <td><span class="workflow-badge"><i class="fas fa-check"></i> Chef OK</span></td>
-            <td class="text-end">
-              <form method="POST" action="{% url 'valider_inscription_dga' e.id %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn-valider" onclick="return confirm('Activer le compte de {{ e.prenom }} {{ e.nom }} ?');">
-                  <i class="fas fa-user-check"></i> Activer
-                </button>
-              </form>
-              <form method="POST" action="{% url 'rejeter_inscription_dga' e.id %}" style="display:inline;margin-left:5px;">
-                {% csrf_token %}
-                <button type="submit" class="btn-rejeter" onclick="return confirm('Rejeter et supprimer {{ e.prenom }} {{ e.nom }} ?');">
-                  <i class="fas fa-xmark"></i> Rejeter
-                </button>
-              </form>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="7" class="text-center py-4 text-muted"><i class="fas fa-check-circle me-2"></i>Aucune inscription en attente d'activation.</td></tr>
-          {% endfor %}
+        {% for etud in inscriptions_attente %}
+        <tr>
+          <td style="font-family:monospace;font-weight:700;color:#1565C0;">{{ etud.matricule }}</td>
+          <td style="font-weight:600;">{{ etud.prenom }} {{ etud.nom }}</td>
+          <td>{% if etud.niveau %}{{ etud.niveau.nom }}{% else %}—{% endif %}</td>
+          <td style="font-size:0.82rem;color:#64748B;">{{ etud.date_inscription|date:"d M Y" }}</td>
+          <td style="text-align:right;">
+            <a href="{% url 'valider_inscription' etud.id %}" class="btn-action btn-validate"><i class="fa-solid fa-check"></i> Valider</a>
+            <a href="{% url 'rejeter_inscription' etud.id %}" class="btn-action btn-delete ms-1"><i class="fa-solid fa-xmark"></i></a>
+          </td>
+        </tr>
+        {% endfor %}
         </tbody>
       </table>
     </div>
-    {% else %}
-    <div class="text-center py-4 text-muted">
-      <i class="fas fa-check-circle" style="font-size:2.5rem;color:#0D8A73;display:block;margin-bottom:10px;"></i>
-      Aucune inscription en attente d'activation.
-    </div>
     {% endif %}
+
+    <!-- Demandes récentes -->
+    <div class="section-card">
+      <div class="section-header">
+        <span><i class="fa-solid fa-file-lines"></i> Demandes récentes</span>
+        <a href="{% url 'gestion_demandes' %}" style="color:rgba(212,175,55,0.8);font-size:0.82rem;text-decoration:none;">Tout voir →</a>
+      </div>
+      <table class="table-std">
+        <thead><tr><th>Étudiant</th><th>Matricule</th><th>Date</th><th>Statut</th><th style="text-align:right;">Action</th></tr></thead>
+        <tbody>
+        {% for demande in dernières_demandes %}
+        <tr>
+          <td style="font-weight:600;">{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</td>
+          <td style="font-family:monospace;color:#1565C0;font-weight:700;">{{ demande.etudiant.matricule }}</td>
+          <td style="font-size:0.82rem;color:#64748B;">{{ demande.date_demande|date:"d M y" }}</td>
+          <td>{% if demande.statut == 'en_attente' %}<span class="badge-attente">En attente</span>{% elif demande.statut == 'validee' %}<span class="badge-valide">Validée</span>{% else %}<span class="badge-rejete">Rejetée</span>{% endif %}</td>
+          <td style="text-align:right;">
+            {% if demande.statut == 'en_attente' %}
+            <a href="{% url 'valider_demande' demande.id %}" class="btn-action btn-validate" style="font-size:0.8rem;"><i class="fa-solid fa-check"></i></a>
+            <a href="{% url 'rejeter_demande' demande.id %}" class="btn-action btn-delete ms-1" style="font-size:0.8rem;"><i class="fa-solid fa-xmark"></i></a>
+            {% else %}
+            <a href="{% url 'gestion_demandes' %}" class="btn-action btn-navy" style="font-size:0.8rem;"><i class="fa-solid fa-eye"></i></a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:2rem;color:#64748B;">Aucune demande.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>
-</body>
-</html>
+{% endblock %}

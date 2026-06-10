@@ -1,22 +1,8 @@
-# Framework
 django>=4.2,<5.0
-
-# Base de données MySQL
 pymysql>=1.1.0
-cryptography>=41.0.0
-
-# PDF
+django-environ>=0.11.0
 reportlab>=4.0.0
-
-# CSV / Excel
 pandas>=2.0.0
 openpyxl>=3.1.0
-
-# Images
-Pillow>=10.0.0
-
-# Variables d'environnement
-django-environ>=0.11.0
-
-# Utilitaires
-python-docx>=1.1.0
+pillow>=10.0.0
+python-slugify>=8.0.0

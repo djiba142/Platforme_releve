@@ -1,57 +1,117 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Connexion Administration{% endblock %}
+{% block title %}Accès Administration — UGANC{% endblock %}
+{% block chatbot_widget %}{% endblock %}
+
+{% block extra_css %}
+<style>
+body {
+  background: linear-gradient(135deg, #0D1B6E 0%, #1A237E 50%, #263238 100%);
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.admin-login-card {
+  background: white; border-radius: 20px; border-top: 5px solid #D4AF37;
+  box-shadow: 0 25px 70px rgba(13,27,110,0.45);
+  width: 100%; max-width: 430px; overflow: hidden;
+}
+.alc-header {
+  background: linear-gradient(135deg, #1A237E, #0D1B6E);
+  padding: 1.8rem 2rem; text-align: center; border-bottom: 3px solid #D4AF37;
+}
+.alc-logos {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  background: white; border-radius: 12px; padding: 0.7rem 1.5rem;
+  margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.alc-title { color: white; font-weight: 800; font-size: 1.2rem; margin: 0; }
+.alc-sub   { color: #D4AF37; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 0.3rem; }
+.alc-body  { padding: 2rem; }
+
+.form-label { color: #1A237E; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; display: block; }
+.form-input {
+  width: 100%; border: 2px solid #e0e0e0; border-radius: 10px;
+  padding: 0.7rem 1rem 0.7rem 2.5rem; font-size: 0.95rem;
+  outline: none; transition: all 0.2s; font-family: inherit;
+}
+.form-input:focus { border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
+.input-wrap { position: relative; }
+.input-wrap i { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: #1A237E; font-size: 0.9rem; }
+
+.btn-admin-login {
+  width: 100%; background: linear-gradient(135deg, #1A237E, #0D1B6E);
+  color: #D4AF37; border: 2px solid #D4AF37;
+  border-radius: 12px; padding: 0.85rem;
+  font-weight: 800; font-size: 1rem; cursor: pointer;
+  transition: all 0.25s; margin-top: 1.2rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.btn-admin-login:hover { background: #D4AF37; color: #1A237E; transform: translateY(-1px); }
+
+.security-note {
+  background: rgba(26,35,126,0.04); border: 1px solid rgba(26,35,126,0.12);
+  border-radius: 10px; padding: 0.75rem 1rem; margin-top: 1.2rem;
+  text-align: center; color: #64748B; font-size: 0.8rem;
+}
+.alert-error {
+  background: rgba(198,40,40,0.08); border-left: 4px solid #C62828;
+  color: #C62828; padding: 0.75rem 1rem; border-radius: 8px;
+  margin-bottom: 1rem; font-size: 0.88rem; font-weight: 600;
+}
+</style>
+{% endblock %}
 
 {% block body %}
-<!-- ══ NAVBAR ══ -->
-<nav class="nav-landing">
-    <div class="nav-container">
-        <a href="/" class="nav-brand">
-            <i class="fa-solid fa-graduation-cap"></i>
-            Plateforme Relevés
-        </a>
-        <div class="nav-links">
-            <a href="{% url 'login' %}" class="nav-link-text">
-                Connexion Étudiant
-            </a>
-            <a href="/" class="nav-link-outline">
-                <i class="fa-solid fa-arrow-left"></i> Retour
-            </a>
-        </div>
+<div class="admin-login-card">
+  <div class="alc-header">
+    <div class="alc-logos">
+      <img src="{% static 'images/logos_uganc.png' %}" height="42" alt="UGANC" style="object-fit:contain;">
+      <div style="width:1px;height:32px;background:#ECEFF1;border-radius:2px;"></div>
+      <img src="{% static 'images/logosCI.png' %}" height="36" alt="CI" style="object-fit:contain;">
     </div>
-</nav>
+    <h1 class="alc-title"><i class="fa-solid fa-shield-halved me-2"></i>Accès Administration</h1>
+    <p class="alc-sub">Réservé au personnel autorisé</p>
+  </div>
 
-<div class="auth-page">
-    <div class="auth-card" style="box-shadow: 0 20px 60px rgba(0, 195, 163, 0.2);">
-        <h3><i class="fa-solid fa-shield-halved" style="color:var(--navy);"></i> Administration</h3>
-        <p class="auth-subtitle">Accès sécurisé pour le personnel</p>
+  <div class="alc-body">
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="alert-error"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ msg }}</div>
+    {% endfor %}
+    {% endif %}
 
-        {% if messages %}
-        {% for msg in messages %}
-        <div
-            class="alert-custom {% if msg.tags == 'error' %}alert-error-custom{% elif msg.tags == 'success' %}alert-success-custom{% else %}alert-warning-custom{% endif %}">
-            <i class="fa-solid fa-circle-info"></i> {{ msg }}
+    <form method="post" action="{% url 'login_admin' %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label" for="username"><i class="fa-solid fa-user-tie me-1"></i>Identifiant</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-user-tie"></i>
+          <input type="text" id="username" name="username" class="form-input"
+                 placeholder="Nom d'utilisateur" autocomplete="username" required>
         </div>
-        {% endfor %}
-        {% endif %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password"><i class="fa-solid fa-key me-1"></i>Mot de passe</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" id="password" name="password" class="form-input"
+                 placeholder="Mot de passe sécurisé" autocomplete="current-password" required>
+        </div>
+      </div>
+      <button type="submit" class="btn-admin-login">
+        <i class="fa-solid fa-lock-open"></i> Accéder au panneau d'administration
+      </button>
+    </form>
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label><i class="fa-solid fa-user-tie"></i> Identifiant</label>
-                <input type="text" name="username" placeholder="Nom d'utilisateur admin" required>
-            </div>
-            <div class="form-group">
-                <label><i class="fa-solid fa-key"></i> Mot de passe</label>
-                <input type="password" name="password" placeholder="••••••••" required>
-            </div>
-
-            <button type="submit" class="btn-submit"
-                style="background: linear-gradient(135deg, var(--navy), var(--navy-light));">
-                Accéder au panel <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            </button>
-        </form>
+    <div class="security-note">
+      <i class="fa-solid fa-shield-halved" style="color:#1A237E;margin-right:0.4rem;"></i>
+      Connexion sécurisée — Réservée aux cadres UGANC
     </div>
+    <div style="text-align:center;margin-top:1rem;">
+      <a href="{% url 'accueil' %}" style="color:#64748B;font-size:0.82rem;text-decoration:none;">
+        <i class="fa-solid fa-arrow-left me-1"></i>Retour à l'accueil
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}
