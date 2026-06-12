@@ -1,539 +1,868 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Plateforme Relevés de Notes — UGANC CI</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <style>
-    /* === VARIABLES PREMIUM INSTITUTIONNEL === */
-    :root {
-      --navy:       #1A237E;
-      --navy-dark:  #0D1757;
-      --navy-light: #283593;
-      --gold:       #D4AF37;
-      --gold-light: #F0D060;
-      --gold-dark:  #B8960F;
-      --white:      #FFFFFF;
-      --gray-light: #ECEFF1;
-      --gray-mid:   #B0BEC5;
-      --gray-text:  #546E7A;
-      --uganc-blue: #1565C0;
-      --bordeaux:   #7B1E3A;
-      --success:    #2E7D32;
-      --error:      #C62828;
-      --dark:       #263238;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UGANC — Plateforme de Gestion des Relevés</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: var(--white); color: var(--dark); }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-    /* ── NAVBAR ── */
-    .navbar {
-      background: var(--navy-dark);
-      padding: 0;
-      position: sticky; top: 0; z-index: 1000;
-      border-bottom: 3px solid var(--gold);
-      box-shadow: 0 2px 20px rgba(0,0,0,.35);
-    }
-    .navbar-inner { padding: 12px 0; }
-    .navbar-brand {
-      color: var(--white) !important;
-      font-weight: 900; font-size: 1.2rem;
-      display: flex; align-items: center; gap: 12px;
-      text-decoration: none; letter-spacing: .5px;
-    }
-    .alc-logos {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .alc-logos img { object-fit: contain; filter: brightness(1); }
-    .alc-logos .logo-sep {
-      width: 1px; height: 32px;
-      background: rgba(212,175,55,.4); border-radius: 2px;
-    }
+        /* ── COULEURS UGANC ── */
+        :root {
+            --teal: #00C3A3;
+            --navy: #1A2744;
+            --bleu-ci: #1565C0;
+            --bleu-ci-light: #1976D2;
+            --white: #FFFFFF;
+            --light: #F0F4FA;
+            --gray: #64748B;
+            --dark: #1A2744;
+        }
 
-    .nav-links a {
-      color: rgba(255,255,255,.72);
-      text-decoration: none; font-size: .88rem;
-      padding: 7px 14px; border-radius: 8px; transition: .2s;
-    }
-    .nav-links a:hover { background: rgba(255,255,255,.08); color: var(--white); }
+        /* ── NAVBAR ── */
+        .navbar {
+            background: var(--navy);
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 3px solid var(--teal);
+        }
 
-    .btn-nav-login {
-      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-      color: var(--navy-dark) !important;
-      border-radius: 8px; padding: 8px 20px;
-      font-weight: 800; font-size: .88rem;
-      text-decoration: none; transition: .2s;
-      box-shadow: 0 2px 10px rgba(212,175,55,.35);
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn-nav-login:hover {
-      background: linear-gradient(135deg, var(--gold-light), var(--gold));
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(212,175,55,.45);
-    }
+        .navbar-brand-text h6 {
+            color: white;
+            font-weight: 800;
+            margin: 0;
+            font-size: 0.95rem;
+        }
 
-    /* Bande décorative dorée sous la navbar */
-    .navbar-stripe {
-      height: 4px;
-      background: linear-gradient(90deg, var(--navy-dark), var(--gold), var(--navy-dark));
-    }
+        .navbar-brand-text small {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.72rem;
+        }
 
-    /* ── HERO ── */
-    .hero {
-      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
-      padding: 96px 0 80px; color: var(--white);
-      overflow: hidden; position: relative;
-    }
-    /* Motif de fond subtil */
-    .hero::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background-image: radial-gradient(rgba(212,175,55,.08) 1px, transparent 1px);
-      background-size: 30px 30px;
-    }
-    /* Bordure dorée en bas du hero */
-    .hero::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 0.88rem;
+            transition: color 0.2s;
+        }
 
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(212,175,55,.15);
-      border: 1px solid rgba(212,175,55,.35);
-      padding: 6px 18px; border-radius: 30px; font-size: .78rem;
-      margin-bottom: 22px; color: var(--gold-light);
-      font-weight: 600; letter-spacing: .5px;
-    }
-    .hero h1 {
-      font-size: 2.8rem; font-weight: 900; line-height: 1.15;
-      margin-bottom: 18px;
-    }
-    .hero h1 span { color: var(--gold); }
-    .hero p {
-      color: rgba(255,255,255,.78); font-size: 1rem;
-      margin-bottom: 34px; max-width: 540px; line-height: 1.7;
-    }
+        .nav-link:hover {
+            color: var(--teal) !important;
+        }
 
-    .btn-hero-primary {
-      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-      color: var(--navy-dark); font-weight: 800;
-      padding: 14px 28px; border-radius: 12px;
-      text-decoration: none; font-size: 1rem;
-      display: inline-flex; align-items: center; gap: 8px; transition: .2s;
-      box-shadow: 0 4px 16px rgba(212,175,55,.4);
-    }
-    .btn-hero-primary:hover {
-      background: linear-gradient(135deg, var(--gold-light), var(--gold));
-      transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(212,175,55,.5);
-      color: var(--navy-dark);
-    }
-    .btn-hero-secondary {
-      background: rgba(255,255,255,.1);
-      color: var(--white); border: 1px solid rgba(212,175,55,.3);
-      font-weight: 700; padding: 14px 28px; border-radius: 12px;
-      text-decoration: none; font-size: .95rem;
-      display: inline-flex; align-items: center; gap: 8px; transition: .2s;
-    }
-    .btn-hero-secondary:hover {
-      background: rgba(212,175,55,.15);
-      border-color: rgba(212,175,55,.6); color: var(--white);
-    }
+        .btn-nav-login {
+            background: var(--bleu-ci);
+            color: white !important;
+            border-radius: 6px;
+            padding: 7px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            transition: all 0.2s;
+        }
 
-    /* Carte processus dans le hero */
-    .hero-card {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(212,175,55,.2);
-      border-radius: 20px; padding: 30px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 32px rgba(0,0,0,.2);
-    }
-    .hero-card .card-label {
-      color: var(--gold);
-      font-size: .7rem; font-weight: 700;
-      letter-spacing: 1.8px; text-transform: uppercase;
-      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
-    }
-    .hero-card .card-label::after {
-      content: ''; flex: 1;
-      height: 1px; background: rgba(212,175,55,.25);
-    }
-    .hero-card .step {
-      display: flex; align-items: center; gap: 14px;
-      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .hero-card .step:last-child { border-bottom: none; }
-    .hero-card .step-num {
-      width: 34px; height: 34px; flex-shrink: 0;
-      background: rgba(212,175,55,.15);
-      border: 1px solid rgba(212,175,55,.3);
-      border-radius: 50%; display: flex;
-      align-items: center; justify-content: center;
-      font-weight: 800; font-size: .85rem; color: var(--gold);
-    }
-    .hero-card .step-text { color: rgba(255,255,255,.82); font-size: .88rem; }
+        .btn-nav-login:hover {
+            background: var(--bleu-ci-light);
+            color: white !important;
+        }
 
-    /* ── STATS ── */
-    .stats-bar {
-      background: var(--navy);
-      border-bottom: 3px solid var(--gold);
-      padding: 28px 0;
-    }
-    .stat-item { text-align: center; }
-    .stat-num {
-      font-size: 2rem; font-weight: 900; color: var(--gold);
-      display: block; line-height: 1;
-    }
-    .stat-label {
-      font-size: .78rem; color: rgba(255,255,255,.65);
-      margin-top: 4px; text-transform: uppercase; letter-spacing: .8px;
-    }
-    .stat-divider {
-      width: 1px; background: rgba(212,175,55,.2); height: 48px;
-      margin: auto;
-    }
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg,
+                    var(--navy) 0%,
+                    #1E3055 50%,
+                    #233D6A 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* ── FEATURES ── */
-    .features { padding: 88px 0; background: var(--gray-light); }
-    .section-title {
-      font-weight: 900; color: var(--navy); font-size: 2rem;
-      margin-bottom: 10px;
-    }
-    .section-title span { color: var(--gold); }
-    .section-sub { color: var(--gray-text); max-width: 520px; margin: 0 auto; }
-    .section-ornament {
-      width: 60px; height: 3px;
-      background: linear-gradient(90deg, var(--navy), var(--gold));
-      border-radius: 2px; margin: 14px auto 48px;
-    }
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle,
+                    rgba(0, 195, 163, 0.15) 0%,
+                    transparent 70%);
+            top: -150px;
+            right: -150px;
+            border-radius: 50%;
+        }
 
-    .feature-card {
-      background: var(--white);
-      border-radius: 18px; padding: 30px;
-      box-shadow: 0 4px 20px rgba(26,35,126,.07);
-      height: 100%; transition: .25s;
-      border-bottom: 3px solid transparent;
-    }
-    .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 36px rgba(26,35,126,.13);
-      border-bottom-color: var(--gold);
-    }
-    .feature-icon {
-      width: 54px; height: 54px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; margin-bottom: 18px;
-    }
-    .fi-navy  { background: rgba(26,35,126,.08); color: var(--navy); }
-    .fi-gold  { background: rgba(212,175,55,.12); color: var(--gold-dark); }
-    .fi-bord  { background: rgba(123,30,58,.09);  color: var(--bordeaux); }
-    .fi-green { background: rgba(46,125,50,.09);  color: var(--success); }
-    .fi-blue  { background: rgba(21,101,192,.1);  color: var(--uganc-blue); }
-    .fi-dark  { background: rgba(38,50,56,.08);   color: var(--dark); }
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle,
+                    rgba(21, 101, 192, 0.12) 0%,
+                    transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            border-radius: 50%;
+        }
 
-    .feature-card h5 { font-weight: 800; color: var(--navy); font-size: .98rem; margin-bottom: 8px; }
-    .feature-card p  { color: var(--gray-text); font-size: .86rem; line-height: 1.65; }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 195, 163, 0.2);
+            border: 1px solid rgba(0, 195, 163, 0.4);
+            color: #00C3A3;
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
 
-    /* ── WORKFLOW ── */
-    .workflow { padding: 88px 0; background: var(--white); }
-    .workflow-step { text-align: center; padding: 20px 14px; }
-    .workflow-num {
-      width: 60px; height: 60px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; font-weight: 900; border-radius: 50%;
-      margin: 0 auto 16px;
-      box-shadow: 0 4px 14px rgba(0,0,0,.15);
-    }
-    .wn-1 { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: var(--white); }
-    .wn-2 { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: var(--navy-dark); }
-    .wn-3 { background: linear-gradient(135deg, var(--bordeaux), #9C2750); color: var(--white); }
-    .wn-4 { background: linear-gradient(135deg, var(--success), #43A047); color: var(--white); }
-    .workflow-step h6 { font-weight: 800; color: var(--navy); font-size: .95rem; margin-bottom: 6px; }
-    .workflow-step p  { color: var(--gray-text); font-size: .82rem; line-height: 1.55; }
-    .workflow-connector {
-      height: 2px; flex: 1;
-      background: linear-gradient(90deg, var(--navy-light), var(--gold), var(--navy-light));
-      opacity: .35; margin-top: 30px;
-    }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
 
-    /* ── CTA ── */
-    .cta-section {
-      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
-      padding: 76px 0; color: var(--white); text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .cta-section::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background-image: radial-gradient(rgba(212,175,55,.06) 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
-    .cta-section::after {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-    .cta-section h2 { font-size: 2.1rem; font-weight: 900; margin-bottom: 12px; position: relative; }
-    .cta-section h2 span { color: var(--gold); }
-    .cta-section p { color: rgba(255,255,255,.72); margin-bottom: 32px; font-size: 1rem; position: relative; }
+        .hero h1 span {
+            color: #00C3A3;
+        }
 
-    /* ── FOOTER ── */
-    footer {
-      background: var(--navy-dark);
-      border-top: 3px solid var(--gold);
-      color: rgba(255,255,255,.5);
-      padding: 32px 0; text-align: center; font-size: .83rem;
-    }
-    footer strong { color: var(--gold); }
-    footer .footer-links a {
-      color: rgba(255,255,255,.45); text-decoration: none;
-      transition: .2s; font-size: .8rem;
-    }
-    footer .footer-links a:hover { color: var(--gold); }
-    footer .footer-divider { color: rgba(212,175,55,.3); margin: 0 8px; }
-  </style>
+        .hero p {
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 1rem;
+            line-height: 1.75;
+            margin-bottom: 35px;
+            max-width: 520px;
+        }
+
+        .btn-hero-primary {
+            background: var(--bleu-ci);
+            color: white;
+            border: none;
+            padding: 13px 30px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(21, 101, 192, 0.4);
+        }
+
+        .btn-hero-primary:hover {
+            background: var(--bleu-ci-light);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-hero-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-hero-secondary:hover {
+            border-color: #00C3A3;
+            color: #00C3A3;
+        }
+
+        /* Stats */
+        .hero-stats {
+            display: flex;
+            gap: 35px;
+            margin-top: 40px;
+            padding-top: 35px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .hero-stat h3 {
+            color: #00C3A3;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .hero-stat p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.78rem;
+            margin: 3px 0 0;
+        }
+
+        /* Mockup */
+        .dashboard-mockup {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mockup-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+
+        .mockup-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        .mockup-url {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 5px;
+            height: 14px;
+            margin-left: 8px;
+        }
+
+        .mockup-card {
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 13px;
+            margin-bottom: 9px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mockup-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .mockup-text h6 {
+            color: white;
+            margin: 0;
+            font-size: 0.82rem;
+        }
+
+        .mockup-text p {
+            color: rgba(255, 255, 255, 0.45);
+            margin: 2px 0 0;
+            font-size: 0.72rem;
+        }
+
+        .mockup-badge {
+            margin-left: auto;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .mockup-stats {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .mockup-stat {
+            flex: 1;
+            border-radius: 9px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .mockup-stat .val {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .mockup-stat .lbl {
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* ── SECTION FEATURES ── */
+        .features {
+            padding: 90px 0;
+            background: var(--light);
+        }
+
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(0, 195, 163, 0.08);
+            border: 1px solid rgba(0, 195, 163, 0.15);
+            color: var(--teal);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            color: var(--navy);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .section-desc {
+            color: var(--gray);
+            font-size: 0.95rem;
+            max-width: 520px;
+            margin: 0 auto 50px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            height: 100%;
+            border: 1px solid #EDE0DC;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--navy));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px rgba(26, 39, 68, 0.15);
+        }
+
+        .feature-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            margin-bottom: 18px;
+        }
+
+        .feature-card h5 {
+            color: var(--navy);
+            font-weight: 700;
+            margin-bottom: 9px;
+            font-size: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.87rem;
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        /* ── STEPS ── */
+        .steps-section {
+            padding: 90px 0;
+            background: white;
+        }
+
+        .step-item {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .step-num {
+            width: 58px;
+            height: 58px;
+            background: var(--teal);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin: 0 auto 18px;
+            box-shadow: 0 8px 20px rgba(0, 195, 163, 0.3);
+        }
+
+        .step-item h5 {
+            color: var(--navy);
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .step-item p {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .step-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--teal);
+            font-size: 1.4rem;
+        }
+
+        /* ── CTA ── */
+        .cta-section {
+            background: linear-gradient(135deg,
+                    var(--navy),
+                    var(--teal));
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 195, 163, 0.1);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
+        }
+
+        .cta-section h2 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 32px;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--dark);
+            padding: 50px 0 22px;
+        }
+
+        .footer-title {
+            color: #00C3A3;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            display: block;
+            color: rgba(255, 255, 255, 0.45);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: #00C3A3;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding-top: 20px;
+            margin-top: 38px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.8rem;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="container navbar-inner d-flex justify-content-between align-items-center">
-    <a class="navbar-brand" href="#">
-      <div class="alc-logos">
-        <img src="{% static 'images/logos_uganc.png' %}" height="42" alt="UGANC">
-        <div class="logo-sep"></div>
-        <img src="{% static 'images/logosCI.png' %}" height="36" alt="CI">
-      </div>
-    </a>
-    <div class="nav-links d-flex align-items-center gap-1">
-      <a href="#fonctionnalites"><i class="fas fa-th-large me-1" style="font-size:.75rem;"></i>Fonctionnalités</a>
-      <a href="#workflow"><i class="fas fa-route me-1" style="font-size:.75rem;"></i>Comment ça marche</a>
-      <a href="{% url 'inscription' %}" style="color:rgba(255,255,255,.72);text-decoration:none;padding:7px 14px;border-radius:8px;transition:.2s;">
-        <i class="fas fa-user-plus me-1" style="font-size:.75rem;"></i>S'inscrire
-      </a>
-      <a href="{% url 'login' %}" class="btn-nav-login ms-2">
-        <i class="fas fa-sign-in-alt"></i> Connexion
-      </a>
-    </div>
-  </div>
-</nav>
-<div class="navbar-stripe"></div>
+    <!-- ══════════════ NAVBAR ══════════════ -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
 
-<!-- HERO -->
-<section class="hero">
-  <div class="container">
-    <div class="row align-items-center g-5">
-      <!-- Texte gauche -->
-      <div class="col-lg-6" style="position:relative;z-index:1;">
-        <div class="hero-badge">
-          <i class="fas fa-graduation-cap"></i>
-          Plateforme Académique Officielle UGANC
-        </div>
-        <h1>Votre relevé de notes <span>en quelques clics</span></h1>
-        <p>La plateforme officielle du Centre Informatique de l'UGANC pour la gestion et la délivrance des relevés de notes pour les filières NTIC et Développement Logiciel.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;">
-          <a href="{% url 'inscription' %}" class="btn-hero-primary">
-            <i class="fas fa-user-plus"></i> S'inscrire
-          </a>
-          <a href="{% url 'login' %}" class="btn-hero-secondary">
-            <i class="fas fa-sign-in-alt"></i> Se connecter
-          </a>
-        </div>
-      </div>
-      <!-- Carte processus droite -->
-      <div class="col-lg-5 offset-lg-1" style="position:relative;z-index:1;">
-        <div class="hero-card">
-          <div class="card-label">
-            <i class="fas fa-tasks" style="color:var(--gold);"></i> Processus de validation
-          </div>
-          <div class="step">
-            <div class="step-num">1</div>
-            <div class="step-text">L'étudiant crée son compte avec son matricule</div>
-          </div>
-          <div class="step">
-            <div class="step-num" style="background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.25);">2</div>
-            <div class="step-text">Le Chef de Département vérifie et pré-valide</div>
-          </div>
-          <div class="step">
-            <div class="step-num" style="background:rgba(123,30,58,.15);border-color:rgba(123,30,58,.3);">3</div>
-            <div class="step-text">La Direction Générale active le compte définitivement</div>
-          </div>
-          <div class="step">
-            <div class="step-num" style="background:rgba(46,125,50,.15);border-color:rgba(46,125,50,.3);color:#81C784;">✓</div>
-            <div class="step-text">L'étudiant accède à ses notes et ses relevés PDF</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+            <!-- Logos -->
+            <a class="navbar-brand d-flex align-items-center gap-3" href="#">
+                <img src="{% static 'images/logos_uganc.png' %}" height="45" alt="UGANC">
+                <img src="{% static 'images/logosCI.png' %}" height="40" alt="Centre Informatique" style="opacity:0.9;">
+                <div class="navbar-brand-text">
+                    <h6>Centre Informatique</h6>
+                    <small>UGANC — Gestion des Relevés</small>
+                </div>
+            </a>
 
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="container">
-    <div class="row align-items-center text-center g-3">
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <span class="stat-num">2</span>
-          <span class="stat-label">Filières disponibles</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <span class="stat-num">PDF</span>
-          <span class="stat-label">Relevés officiels</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <span class="stat-num">3</span>
-          <span class="stat-label">Niveaux de validation</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <span class="stat-num">24/7</span>
-          <span class="stat-label">Accès en ligne</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+                style="border-color:rgba(255,255,255,0.3);">
+                <i class="fa-solid fa-bars" style="color:white;"></i>
+            </button>
 
-<!-- FEATURES -->
-<section class="features" id="fonctionnalites">
-  <div class="container">
-    <div class="text-center">
-      <h2 class="section-title">Tout ce dont vous avez <span>besoin</span></h2>
-      <p class="section-sub">Une plateforme complète pour étudiants et personnel administratif.</p>
-      <div class="section-ornament"></div>
-    </div>
-    <div class="row g-4">
-      <div class="col-md-6 col-lg-4">
-        <div class="feature-card">
-          <div class="feature-icon fi-navy"><i class="fas fa-file-pdf"></i></div>
-          <h5>Relevés PDF officiels</h5>
-          <p>Téléchargez vos relevés de notes officiels en PDF, prêts à soumettre pour des candidatures ou des demandes de bourse.</p>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav mx-auto gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#accueil">
+                            <i class="fa-solid fa-house me-1"></i>Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">
+                            <i class="fa-solid fa-star me-1"></i>Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#comment">
+                            <i class="fa-solid fa-circle-question me-1"></i>
+                            Comment ça marche
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">
+                            <i class="fa-solid fa-envelope me-1"></i>Contact
+                        </a>
+                    </li>
+                </ul>
+                <a href="{% url 'login' %}" class="btn btn-nav-login">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>
+                    Connexion
+                </a>
+            </div>
         </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="feature-card">
-          <div class="feature-icon fi-green"><i class="fas fa-shield-halved"></i></div>
-          <h5>Validation hiérarchique</h5>
-          <p>Chaque inscription passe par le Chef de Département puis la Direction pour garantir l'intégrité des données.</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="feature-card">
-          <div class="feature-icon fi-bord"><i class="fas fa-robot"></i></div>
-          <h5>Assistant IA</h5>
-          <p>Un chatbot intelligent pour répondre à vos questions, consulter vos notes et demander votre relevé sans naviguer.</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="feature-card">
-          <div class="feature-icon fi-gold"><i class="fas fa-file-csv"></i></div>
-          <h5>Import CSV par les profs</h5>
-          <p>Les enseignants importent les notes via fichier CSV avec un workflow de validation DGA → DG avant publication.</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="feature-card">
-          <div class="feature-icon fi-blue"><i class="fas fa-chart-bar"></i></div>
-          <h5>Statistiques en temps réel</h5>
-          <p>Tableaux de bord dédiés pour chaque rôle : chef, DGA, DG avec vue globale sur les étudiants et les demandes.</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="feature-card">
-          <div class="feature-icon fi-dark"><i class="fas fa-mobile-screen"></i></div>
-          <h5>Responsive & accessible</h5>
-          <p>Interface adaptée à tous les écrans — ordinateur, tablette ou mobile — pour un accès n'importe où.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </nav>
 
-<!-- WORKFLOW -->
-<section class="workflow" id="workflow">
-  <div class="container">
-    <div class="text-center">
-      <h2 class="section-title">Comment <span>ça marche</span></h2>
-      <p class="section-sub">Du compte à votre relevé en 4 étapes simples.</p>
-      <div class="section-ornament"></div>
-    </div>
-    <div class="row align-items-start g-0">
-      <div class="col-6 col-md-3">
-        <div class="workflow-step">
-          <div class="workflow-num wn-1">1</div>
-          <h6>Inscription</h6>
-          <p>Créez votre compte avec votre matricule, département et niveau.</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="workflow-step">
-          <div class="workflow-num wn-2">2</div>
-          <h6>Validation Chef</h6>
-          <p>Votre chef de département vérifie et approuve votre inscription.</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="workflow-step">
-          <div class="workflow-num wn-3">3</div>
-          <h6>Activation DGA</h6>
-          <p>La Direction active votre compte définitivement.</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="workflow-step">
-          <div class="workflow-num wn-4">4</div>
-          <h6>Accès & Relevé</h6>
-          <p>Consultez vos notes et téléchargez vos relevés PDF officiels.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- ══════════════ HERO ══════════════ -->
+    <section class="hero" id="accueil">
+        <div class="container">
+            <div class="row align-items-center g-5">
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="container" style="position:relative;z-index:1;">
-    <h2>Prêt à accéder à vos <span>résultats</span> ?</h2>
-    <p>Rejoignez la plateforme du Centre Informatique de l'UGANC dès maintenant.</p>
-    <a href="{% url 'inscription' %}" class="btn-hero-primary d-inline-flex me-3">
-      <i class="fas fa-user-plus"></i> Créer mon compte
-    </a>
-    <a href="{% url 'login' %}" class="btn-hero-secondary d-inline-flex">
-      <i class="fas fa-sign-in-alt"></i> Se connecter
-    </a>
-  </div>
-</section>
+                <!-- Texte -->
+                <div class="col-lg-6" style="position:relative;z-index:2;">
 
-<!-- FOOTER -->
-<footer>
-  <div class="container">
-    <div class="mb-2">
-      <strong>UGANC — Centre Informatique</strong>
-      &nbsp;·&nbsp; Plateforme Relevés de Notes &nbsp;·&nbsp; Filières NTIC &amp; DL
-    </div>
-    <div class="footer-links mb-2">
-      <a href="#">Mentions légales</a>
-      <span class="footer-divider">|</span>
-      <a href="#">Politique de confidentialité</a>
-      <span class="footer-divider">|</span>
-      <a href="#">Contact</a>
-    </div>
-    <small style="opacity:.5;">Université Gamal Abdel Nasser de Conakry · {{ "now"|date:"Y" }}</small>
-  </div>
-</footer>
 
+                    <h1>
+                        Gérez vos <span>relevés de notes</span>
+                        sans vous déplacer
+                    </h1>
+
+                    <p>
+                        La plateforme intelligente du Centre Informatique
+                        de l'UGANC vous permet de demander, consulter et
+                        télécharger vos relevés de notes officiels en ligne,
+                        24h/24 et 7j/7.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'login' %}" class="btn-hero-primary">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            Accéder à la plateforme
+                        </a>
+                        <a href="#services" class="btn-hero-secondary">
+                            <i class="fa-solid fa-circle-info"></i>
+                            En savoir plus
+                        </a>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <h3>24h/24</h3>
+                            <p>Disponibilité</p>
+                        </div>
+                        <div class="hero-stat">
+                            <h3>100%</h3>
+                            <p>En ligne</p>
+                        </div>
+                        <div class="hero-stat">
+                            <h3>PDF</h3>
+                            <p>Instantané</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Accueil -->
+                <div class="col-lg-6 text-center" style="position:relative;z-index:2;">
+                    <img src="{% static 'images/etudiant_demande.png' %}" alt="Étudiants" class="img-fluid"
+                        style="border-radius:15px; box-shadow:0 15px 35px rgba(0,0,0,0.15);">
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ SERVICES ══════════════ -->
+    <section class="features" id="services">
+        <div class="container">
+            <div class="text-center">
+                <div class="section-tag">
+                    <i class="fa-solid fa-star"></i>
+                    Services
+                </div>
+                <h2 class="section-title">
+                    Nos services académiques
+                </h2>
+                <p class="section-desc">
+                    Une plateforme complète pour moderniser et automatiser
+                    la gestion des relevés de notes à l'UGANC.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:rgba(21,101,192,0.1);">
+                            <i class="fa-solid fa-robot" style="color:#1565C0;"></i>
+                        </div>
+                        <h5>CI Assistant — Chatbot</h5>
+                        <p>Assistant virtuel intelligent disponible 24h/24
+                            pour guider les étudiants dans leurs demandes
+                            de relevés de notes.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:rgba(212,82,10,0.1);">
+                            <i class="fa-solid fa-file-pdf" style="color:#D4520A;"></i>
+                        </div>
+                        <h5>Relevés PDF officiels</h5>
+                        <p>Génération automatique de relevés de notes
+                            officiels avec signature administrative,
+                            moyennes et décision académique.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:rgba(26,39,68,0.08);">
+                            <i class="fa-solid fa-shield-halved" style="color:#1A2744;"></i>
+                        </div>
+                        <h5>Accès sécurisé</h5>
+                        <p>Authentification par matricule UGANC avec
+                            gestion des rôles étudiant, administration
+                            et super administrateur.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:rgba(21,101,192,0.1);">
+                            <i class="fa-solid fa-file-import" style="color:#1565C0;"></i>
+                        </div>
+                        <h5>Import CSV & Excel</h5>
+                        <p>Importation en masse des notes étudiantes
+                            via fichiers CSV ou Excel avec création
+                            automatique des comptes.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:rgba(212,82,10,0.1);">
+                            <i class="fa-solid fa-chart-pie" style="color:#D4520A;"></i>
+                        </div>
+                        <h5>Dashboard Admin</h5>
+                        <p>Tableau de bord administratif complet avec
+                            statistiques en temps réel et gestion
+                            centralisée des demandes.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:rgba(26,39,68,0.08);">
+                            <i class="fa-solid fa-id-card" style="color:#1A2744;"></i>
+                        </div>
+                        <h5>Matricules intelligents</h5>
+                        <p>Système de matricules structurés par filière
+                            (NT, DL) pour une identification rapide
+                            et une gestion organisée.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ COMMENT ══════════════ -->
+    <section class="steps-section" id="comment">
+        <div class="container">
+            <div class="text-center">
+                <div class="section-tag">
+                    <i class="fa-solid fa-circle-question"></i>
+                    Processus
+                </div>
+                <h2 class="section-title">Comment obtenir votre relevé ?</h2>
+                <p class="section-desc">
+                    4 étapes simples pour recevoir votre relevé officiel
+                    sans quitter votre domicile.
+                </p>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <h5>Connexion</h5>
+                        <p>Matricule UGANC + mot de passe</p>
+                    </div>
+                </div>
+                <div class="col-md-1 step-arrow d-none d-md-flex">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <h5>Chatbot</h5>
+                        <p>Discutez avec CI Assistant</p>
+                    </div>
+                </div>
+                <div class="col-md-1 step-arrow d-none d-md-flex">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <h5>Validation</h5>
+                        <p>L'admin valide la demande</p>
+                    </div>
+                </div>
+                <div class="col-md-1 step-arrow d-none d-md-flex">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+                <div class="col-md-2">
+                    <div class="step-item">
+                        <div class="step-num" style="background:var(--bleu-ci);">4</div>
+                        <h5>Téléchargement</h5>
+                        <p>PDF officiel instantané</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ CTA ══════════════ -->
+    <section class="cta-section">
+        <div class="container" style="position:relative;z-index:2;">
+            <img src="{% static 'images/logos_uganc.png' %}" height="70" alt="UGANC" class="mb-3">
+            <h2>Accédez à votre espace académique</h2>
+            <p>
+                Étudiants NTIC et DL — Connectez-vous avec
+                votre matricule UGANC
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'login' %}" class="btn-hero-primary">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    Espace Étudiant
+                </a>
+                <a href="{% url 'admin_dashboard' %}" class="btn-hero-secondary"
+                    style="border-color:rgba(255,255,255,0.4);color:white;">
+                    <i class="fa-solid fa-user-tie"></i>
+                    Espace Administration
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ FOOTER ══════════════ -->
+    <footer id="contact">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="{% static 'images/logos_uganc.png' %}" height="50" alt="UGANC">
+                        <img src="{% static 'images/logosCI.png' %}" height="45" alt="CI" style="
+                                opacity:0.8;">
+                    </div>
+                    <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;">
+                        Centre Informatique<br>
+                        Université Gamal Abdel Nasser de Conakry<br>
+                        Plateforme de gestion des relevés de notes
+                    </p>
+                </div>
+                <div class="col-md-2">
+                    <p class="footer-title">Navigation</p>
+                    <a href="#accueil" class="footer-link">Accueil</a>
+                    <a href="#services" class="footer-link">Services</a>
+                    <a href="#comment" class="footer-link">
+                        Comment ça marche
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <p class="footer-title">Accès rapide</p>
+                    <a href="{% url 'login' %}" class="footer-link">
+                        <i class="fa-solid fa-user-graduate me-2" style="color:#00C3A3;"></i>
+                        Espace Étudiant
+                    </a>
+                    <a href="{% url 'admin_dashboard' %}" class="footer-link">
+                        <i class="fa-solid fa-user-tie me-2" style="color:#00C3A3;"></i>
+                        Espace Administration
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <p class="footer-title">Contact</p>
+                    <p class="footer-link">
+                        <i class="fa-solid fa-envelope me-2" style="color:#00C3A3;"></i>
+                        ci@uganc.edu.gn
+                    </p>
+                    <p class="footer-link">
+                        <i class="fa-solid fa-phone me-2" style="color:#00C3A3;"></i>
+                        +224 XXX XXX XXX
+                    </p>
+                    <p class="footer-link">
+                        <i class="fa-solid fa-location-dot me-2" style="color:#00C3A3;"></i>
+                        Conakry, République de Guinée
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <i class="fa-regular fa-copyright me-1"></i>
+                2026 Centre Informatique — UGANC — Tous droits réservés
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

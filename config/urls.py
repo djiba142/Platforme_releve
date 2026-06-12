@@ -1,10 +1,9 @@
-from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', include('administration.urls')),
     path('', include('etudiants.urls')),
     path('notes/', include(('notes.urls', 'notes'))),
     path('demandes/', include('demandes.urls')),

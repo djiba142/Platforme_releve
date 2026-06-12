@@ -1,151 +1,264 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Dashboard Admin — Centre Informatique UGANC{% endblock %}
+{% block title %}Dashboard Admin — Centre Informatique{% endblock %}
 
 {% block extra_css %}
 <style>
-body { background: #ECEFF1; display: flex; min-height: 100vh; margin: 0; overflow-x: hidden; }
+    body {
+        background: #EFF4FB;
+        display: flex;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
 
-/* ── Sidebar Admin ── */
-.admin-sidebar {
-  background: linear-gradient(180deg, #1A237E 0%, #0D1B6E 100%);
-  border-right: 3px solid #D4AF37;
-  width: 260px; min-height: 100vh;
-  position: fixed; top: 0; left: 0;
-  display: flex; flex-direction: column;
-  z-index: 100; overflow-y: auto;
-}
-.sidebar-logo-zone {
-  background: rgba(0,0,0,0.2);
-  border-bottom: 1px solid rgba(212,175,55,0.25);
-  padding: 1.2rem;
-  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
-}
-.sidebar-logo-box {
-  background: rgba(255,255,255,0.95); border-radius: 12px;
-  padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.75rem;
-  width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-}
-.brand-text { color: #FFFFFF; font-weight: 800; font-size: 0.95rem; }
-.brand-sub  { color: #D4AF37; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.5px; }
+    .admin-sidebar {
+        width: 260px;
+        background: var(--navy);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        color: white;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+    }
 
-.sidebar-nav { flex: 1; padding: 0.75rem 0; }
-.nav-section-lbl { padding: 0.6rem 1.4rem 0.2rem; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(212,175,55,0.55); }
-.sidebar-link {
-  display: flex; align-items: center; gap: 0.6rem;
-  margin: 2px 10px; padding: 0.65rem 1rem;
-  color: rgba(255,255,255,0.82); text-decoration: none;
-  border-radius: 10px; font-size: 0.9rem; font-weight: 500;
-  transition: all 0.2s;
-}
-.sidebar-link:hover, .sidebar-link.active {
-  background: rgba(212,175,55,0.15); color: #D4AF37;
-  border-left: 3px solid #D4AF37;
-}
-.sidebar-link i { width: 18px; text-align: center; }
-.sidebar-link-ext { background: rgba(21,101,192,0.12); }
-.sidebar-link-ext:hover { background: rgba(21,101,192,0.25) !important; }
+    .admin-sidebar-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
 
-/* ── Main ── */
-.admin-main { margin-left: 260px; flex: 1; min-height: 100vh; background: #ECEFF1; }
-.topbar {
-  background: #FFFFFF; border-bottom: 3px solid #D4AF37;
-  box-shadow: 0 2px 12px rgba(26,35,126,0.08);
-  padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-}
-.topbar h4 { color: #1A237E; font-weight: 800; margin: 0; font-size: 1.1rem; }
-.admin-badge {
-  background: #1A237E; color: #D4AF37;
-  padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
-}
+    .admin-sidebar-nav {
+        padding: 1rem 0;
+        flex: 1;
+        overflow-y: auto;
+    }
 
-.page-content { padding: 1.5rem 2rem; }
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.9rem 1.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: var(--transition);
+        border-left: 3px solid transparent;
+    }
 
-/* ── Stat cards ── */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-.stat-card {
-  background: #FFFFFF; border-radius: 14px;
-  border: 1px solid #e0e0e0; border-top: 4px solid #1A237E;
-  box-shadow: 0 4px 15px rgba(26,35,126,0.07);
-  padding: 1.3rem; transition: transform 0.2s;
-}
-.stat-card:hover { transform: translateY(-3px); }
-.stat-card.gold-top  { border-top-color: #D4AF37 !important; }
-.stat-card.bord-top  { border-top-color: #7B1E3A !important; }
-.stat-card.green-top { border-top-color: #2E7D32 !important; }
-.stat-card.blue-top  { border-top-color: #1565C0 !important; }
-.stat-num   { color: #1A237E; font-weight: 900; font-size: 2.2rem; line-height: 1; }
-.stat-lbl   { color: #263238; font-size: 0.83rem; margin-top: 0.3rem; }
-.stat-icon  { font-size: 1.5rem; margin-bottom: 0.6rem; }
+    .sidebar-link:hover,
+    .sidebar-link.active {
+        background: rgba(25, 118, 210, 0.08);
+        color: white;
+        border-left-color: #1976D2;
+    }
 
-/* ── Section cards ── */
-.section-card {
-  background: #FFFFFF; border-radius: 16px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 12px rgba(26,35,126,0.06);
-  overflow: hidden; margin-bottom: 1.5rem;
-}
-.section-card-header {
-  background: #1A237E; color: #D4AF37;
-  padding: 1rem 1.5rem; font-weight: 800; font-size: 1rem;
-  display: flex; align-items: center; gap: 0.6rem;
-  justify-content: space-between;
-}
-.section-card-body { padding: 1.2rem 1.5rem; }
+    .sidebar-link i {
+        width: 20px;
+        text-align: center;
+    }
 
-/* ── Tables ── */
-.table-cadres { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-.table-cadres thead tr { background: #ECEFF1; }
-.table-cadres thead th { color: #263238; font-weight: 700; padding: 0.75rem 1rem; border-bottom: 2px solid #D4AF37; }
-.table-cadres tbody tr:hover { background: rgba(26,35,126,0.03); }
-.table-cadres tbody td { padding: 0.7rem 1rem; border-bottom: 1px solid #f0f0f0; color: #263238; }
+    .admin-main {
+        flex: 1;
+        margin-left: 260px;
+        padding: 2rem 3rem;
+        width: calc(100% - 260px);
+        /* Prevents flex children from blowing out widths */
+        display: block;
+    }
 
-/* ── Badges ── */
-.badge-valide   { background: rgba(46,125,50,0.1); color: #2E7D32; border: 1px solid #2E7D32; border-radius: 20px; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; }
-.badge-attente  { background: rgba(212,175,55,0.1); color: #8B6914; border: 1px solid #D4AF37; border-radius: 20px; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; }
-.badge-rejete   { background: rgba(198,40,40,0.1); color: #C62828; border: 1px solid #C62828; border-radius: 20px; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; }
-.badge-role     { background: rgba(26,35,126,0.1); color: #1A237E; border: 1px solid rgba(26,35,126,0.3); border-radius: 20px; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; }
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 1rem 2rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
 
-/* ── Boutons ── */
-.btn-action { padding: 0.5rem 1.1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; cursor: pointer; }
-.btn-validate { background: #2E7D32 !important; color: #FFFFFF !important; }
-.btn-validate:hover { background: #1B5E20 !important; }
-.btn-delete   { background: #C62828 !important; color: #FFFFFF !important; }
-.btn-delete:hover { background: #B71C1C !important; }
-.btn-navy     { background: #1A237E !important; color: #D4AF37 !important; }
-.btn-navy:hover { background: #0D1B6E !important; }
-.btn-blue     { background: #1565C0 !important; color: #FFFFFF !important; }
-.btn-blue:hover { background: #0D47A1 !important; }
-.btn-bordeaux { background: #7B1E3A !important; color: #FFFFFF !important; }
-.btn-bordeaux:hover { background: #5c1129 !important; }
-.btn-gold-outline { background: transparent !important; border: 2px solid #D4AF37 !important; color: #1A237E !important; font-weight: 700 !important; border-radius: 8px !important; padding: 0.45rem 1rem !important; }
+    .metric-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+    }
 
-/* ── Quick access ── */
-.quick-access { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-.qa-btn {
-  background: #FFFFFF; border: 1px solid #e0e0e0; border-top: 4px solid;
-  border-radius: 12px; padding: 0.9rem 1.2rem; flex: 1; min-width: 160px;
-  text-decoration: none; transition: all 0.2s; text-align: center;
-  box-shadow: 0 2px 8px rgba(26,35,126,0.05);
-}
-.qa-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(26,35,126,0.1); }
-.qa-btn.qb-navy  { border-top-color: #1A237E; }
-.qa-btn.qb-bord  { border-top-color: #7B1E3A; }
-.qa-btn.qb-green { border-top-color: #2E7D32; }
-.qa-btn .qb-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
-.qa-btn.qb-navy .qb-icon  { color: #1A237E; }
-.qa-btn.qb-bord .qb-icon  { color: #7B1E3A; }
-.qa-btn.qb-green .qb-icon { color: #2E7D32; }
-.qa-btn .qb-label { color: #1A237E; font-weight: 700; font-size: 0.88rem; }
-.qa-btn .qb-sub   { color: #64748B; font-size: 0.76rem; }
+    .metric-card:hover {
+        transform: translateY(-3px);
+    }
 
-@media (max-width: 900px) {
-  .admin-sidebar { width: 100%; min-height: auto; position: relative; }
-  .admin-main { margin-left: 0; }
-  body { flex-direction: column; }
-}
+    .metric-card .metric-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .metric-card h2 {
+        font-weight: 800;
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .metric-card p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #64748B;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .section-card h5 {
+        font-weight: 800;
+        color: #0D2137;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .form-row-grid .form-group label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748B;
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .form-row-grid .form-group input,
+    .form-row-grid .form-group select {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 1.5px solid #E0E8F5;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-row-grid .form-group input:focus,
+    .form-row-grid .form-group select:focus {
+        border-color: #1976D2;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    }
+
+    .table-cadres {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-cadres thead th {
+        background: #F1F5F9;
+        padding: 0.8rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748B;
+        text-align: left;
+    }
+
+    .table-cadres thead th:first-child {
+        border-radius: 8px 0 0 0;
+    }
+
+    .table-cadres thead th:last-child {
+        border-radius: 0 8px 0 0;
+    }
+
+    .table-cadres tbody td {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid #F1F5F9;
+        font-size: 0.9rem;
+    }
+
+    .table-cadres tbody tr:hover {
+        background: rgba(25, 118, 210, 0.03);
+    }
+
+    .badge-role {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .badge-role-dg {
+        background: rgba(25, 118, 210, 0.1);
+        color: #1565C0;
+    }
+
+    .badge-role-dga {
+        background: rgba(21, 101, 192, 0.1);
+        color: #0D47A1;
+    }
+
+    .badge-role-chef {
+        background: rgba(46, 125, 50, 0.1);
+        color: #2E7D32;
+    }
+
+    .badge-active {
+        background: rgba(46, 125, 50, 0.1);
+        color: #2E7D32;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-inactive {
+        background: rgba(211, 47, 47, 0.1);
+        color: #D32F2F;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .btn-submit-user {
+        background: #1976D2;
+        color: white;
+        border: none;
+        padding: 0.7rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-submit-user:hover {
+        background: #1565C0;
+    }
+
+    .si-primary {
+        background: rgba(25, 118, 210, 0.1);
+        color: #1565C0;
+    }
 </style>
 {% endblock %}
 
@@ -153,245 +266,446 @@ body { background: #ECEFF1; display: flex; min-height: 100vh; margin: 0; overflo
 
 {% block body %}
 <!-- ── SIDEBAR ── -->
-<aside class="admin-sidebar">
-  <div class="sidebar-logo-zone">
-    <div class="sidebar-logo-box">
-      <img src="{% static 'images/logos_uganc.png' %}" height="36" alt="UGANC" style="object-fit:contain;">
-      <div style="width:1px;height:28px;background:#E0E8F5;border-radius:2px;"></div>
-      <img src="{% static 'images/logosCI.png' %}" height="30" alt="CI" style="object-fit:contain;">
+<div class="admin-sidebar">
+    <div class="admin-sidebar-header"
+        style="flex-direction: column; text-align: center; padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); gap: 0.5rem;">
+        <div class="d-flex flex-row align-items-center justify-content-center gap-3 mb-2"
+            style="background: white; padding: 1rem; border-radius: 12px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="{% static 'images/logos_uganc.png' %}" height="45" alt="UGANC"
+                style="object-fit: contain; max-width: 45%;">
+            <div style="width: 2px; height: 40px; background: #E0E8F5; border-radius: 2px;"></div>
+            <img src="{% static 'images/logosCI.png' %}" height="40" alt="CI"
+                style="object-fit: contain; max-width: 45%;">
+        </div>
+        <div style="color:white; font-weight:800; font-size:1.05rem; letter-spacing: 0.5px; margin-top: 0.5rem;">
+            Centre Informatique
+        </div>
+        <div
+            style="color:#1976D2; font-size:0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            UGANC • Super Admin
+        </div>
     </div>
-    <div class="brand-text">Administration</div>
-    <div class="brand-sub">UGANC · Centre Informatique</div>
-  </div>
+    <div class="admin-sidebar-nav">
+        <!-- Sections internes au dashboard -->
+        <div
+            style="padding:0.5rem 1.5rem 0.2rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.35);">
+            Vue rapide</div>
+        <a href="#overview-section" class="sidebar-link active">
+            <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
+        </a>
+        <a href="#gestion-acces-section" class="sidebar-link">
+            <i class="fa-solid fa-user-gear"></i> Gestion des Accès
+        </a>
+        <a href="#demandes-section" class="sidebar-link">
+            <i class="fa-solid fa-file-lines"></i> Demandes Récentes
+        </a>
 
-  <nav class="sidebar-nav">
-    <div class="nav-section-lbl">Vue rapide</div>
-    <a href="#overview-section" class="sidebar-link active">
-      <i class="fa-solid fa-chart-pie"></i> Vue d'ensemble
-    </a>
-    <a href="#access-section" class="sidebar-link">
-      <i class="fa-solid fa-user-gear"></i> Gestion des Accès
-    </a>
-    <a href="#demandes-section" class="sidebar-link">
-      <i class="fa-solid fa-file-lines"></i> Demandes Récentes
-    </a>
+        <!-- Navigation vers pages complètes -->
+        <hr style="border-color:rgba(255,255,255,0.1); margin:0.8rem 1.5rem;">
+        <div
+            style="padding:0.3rem 1.5rem 0.2rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.35);">
+            Gestion complète</div>
+        <a href="{% url 'liste_etudiants' %}" class="sidebar-link" style="background:rgba(25,118,210,0.15);">
+            <i class="fa-solid fa-users"></i> Tous les Étudiants
+            <i class="fa-solid fa-arrow-up-right-from-square"
+                style="margin-left:auto; font-size:0.65rem; opacity:0.6;"></i>
+        </a>
+        <a href="{% url 'gestion_demandes' %}" class="sidebar-link" style="background:rgba(25,118,210,0.15);">
+            <i class="fa-solid fa-clipboard-list"></i> Toutes les Demandes
+            <i class="fa-solid fa-arrow-up-right-from-square"
+                style="margin-left:auto; font-size:0.65rem; opacity:0.6;"></i>
+        </a>
+        <a href="{% url 'gestion_notes' %}" class="sidebar-link" style="background:rgba(25,118,210,0.15);">
+            <i class="fa-solid fa-book-open"></i> Toutes les Notes
+            <i class="fa-solid fa-arrow-up-right-from-square"
+                style="margin-left:auto; font-size:0.65rem; opacity:0.6;"></i>
+        </a>
 
-    <hr style="border-color:rgba(212,175,55,0.15);margin:0.8rem 1.2rem;">
-    <div class="nav-section-lbl">Gestion complète</div>
-    <a href="{% url 'liste_etudiants' %}" class="sidebar-link sidebar-link-ext">
-      <i class="fa-solid fa-users"></i> Tous les Étudiants
-      <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:0.65rem;opacity:0.5;"></i>
-    </a>
-    <a href="{% url 'gestion_demandes' %}" class="sidebar-link sidebar-link-ext">
-      <i class="fa-solid fa-clipboard-list"></i> Toutes les Demandes
-      <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:0.65rem;opacity:0.5;"></i>
-    </a>
-    <a href="{% url 'gestion_notes' %}" class="sidebar-link sidebar-link-ext">
-      <i class="fa-solid fa-book-open"></i> Toutes les Notes
-      <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:0.65rem;opacity:0.5;"></i>
-    </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:0.8rem 1.5rem;">
+        <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </div>
+</div>
 
-    <hr style="border-color:rgba(212,175,55,0.15);margin:0.8rem 1.2rem;">
-    <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ff8a8a;">
-      <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
-    </a>
-  </nav>
-</aside>
-
-<!-- ── MAIN ── -->
+<!-- ── MAIN CONTENT ── -->
 <div class="admin-main">
-  <!-- Topbar -->
-  <div class="topbar">
-    <h4><i class="fa-solid fa-shield-halved me-2" style="color:#D4AF37;"></i> Tableau de bord — Super Admin</h4>
-    <div style="display:flex;align-items:center;gap:0.75rem;">
-      <span class="admin-badge"><i class="fa-solid fa-star me-1"></i>{{ request.user.username }}</span>
-    </div>
-  </div>
+    <div class="container-fluid p-0">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h4 style="margin:0; font-weight:800; color:var(--navy);">
+                <i class="fa-solid fa-shield-halved text-muted me-2"></i> Panneau de Contrôle
+            </h4>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <div style="text-align:right;">
+                    <h6 style="margin:0; font-weight:700;">{{ request.user.username }}</h6>
+                    <small class="text-muted">Super Administrateur</small>
+                </div>
+                <div
+                    style="width:40px; height:40px; background:#1976D2; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+            </div>
+        </div>
 
-  <div class="page-content">
-
-    {% if messages %}
-    {% for msg in messages %}
-    <div style="background:{% if msg.tags == 'error' %}rgba(198,40,40,0.08){% else %}rgba(46,125,50,0.08){% endif %};border-left:4px solid {% if msg.tags == 'error' %}#C62828{% else %}#2E7D32{% endif %};padding:0.85rem 1.2rem;border-radius:10px;margin-bottom:1rem;color:{% if msg.tags == 'error' %}#C62828{% else %}#2E7D32{% endif %};font-weight:600;display:flex;align-items:center;gap:0.5rem;">
-      <i class="fa-solid fa-{% if msg.tags == 'error' %}circle-exclamation{% else %}circle-check{% endif %}"></i>{{ msg }}
-    </div>
-    {% endfor %}
-    {% endif %}
-
-    <!-- Accès rapide CTA -->
-    <div class="quick-access">
-      <a href="{% url 'liste_etudiants' %}" class="qa-btn qb-navy">
-        <div class="qb-icon"><i class="fa-solid fa-users"></i></div>
-        <div class="qb-label">Gérer Étudiants</div>
-        <div class="qb-sub">{{ nb_etudiants }} inscrits</div>
-      </a>
-      <a href="{% url 'gestion_demandes' %}" class="qa-btn qb-bord">
-        <div class="qb-icon"><i class="fa-solid fa-file-lines"></i></div>
-        <div class="qb-label">Gérer Demandes</div>
-        <div class="qb-sub">{{ nb_demandes_attente }} en attente</div>
-      </a>
-      <a href="{% url 'gestion_notes' %}" class="qa-btn qb-green">
-        <div class="qb-icon"><i class="fa-solid fa-book-open"></i></div>
-        <div class="qb-label">Gérer Notes</div>
-        <div class="qb-sub">{{ nb_notes }} notes</div>
-      </a>
-      <a href="{% url 'gestion_inscriptions' %}" class="qa-btn" style="border-top-color:#D4AF37;">
-        <div class="qb-icon" style="color:#D4AF37;"><i class="fa-solid fa-user-clock"></i></div>
-        <div class="qb-label" style="color:#1A237E;">Inscriptions</div>
-        <div class="qb-sub" style="color:#64748B;">{{ nb_inscriptions_attente }} en attente</div>
-      </a>
-    </div>
-
-    <!-- ── SECTION 1 : STATISTIQUES ── -->
-    <div id="overview-section">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="color:#1A237E;"><i class="fa-solid fa-users"></i></div>
-          <div class="stat-num">{{ nb_etudiants }}</div>
-          <div class="stat-lbl">Étudiants inscrits</div>
-        </div>
-        <div class="stat-card blue-top">
-          <div class="stat-icon" style="color:#1565C0;"><i class="fa-solid fa-user-check"></i></div>
-          <div class="stat-num" style="color:#1565C0;">{{ nb_actifs }}</div>
-          <div class="stat-lbl">Comptes actifs</div>
-        </div>
-        <div class="stat-card gold-top">
-          <div class="stat-icon" style="color:#D4AF37;"><i class="fa-solid fa-user-clock"></i></div>
-          <div class="stat-num" style="color:#8B6914;">{{ nb_en_attente }}</div>
-          <div class="stat-lbl">En attente validation</div>
-        </div>
-        <div class="stat-card bord-top">
-          <div class="stat-icon" style="color:#7B1E3A;"><i class="fa-solid fa-file-lines"></i></div>
-          <div class="stat-num" style="color:#7B1E3A;">{{ nb_demandes }}</div>
-          <div class="stat-lbl">Demandes de relevés</div>
-        </div>
-        <div class="stat-card green-top">
-          <div class="stat-icon" style="color:#2E7D32;"><i class="fa-solid fa-file-pdf"></i></div>
-          <div class="stat-num" style="color:#2E7D32;">{{ nb_releves }}</div>
-          <div class="stat-lbl">Relevés générés</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="color:#D4AF37;"><i class="fa-solid fa-chart-bar"></i></div>
-          <div class="stat-num">{{ nb_notes }}</div>
-          <div class="stat-lbl">Notes en base</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── SECTION 2 : GESTION DES ACCÈS ── -->
-    <div id="access-section">
-      {% if inscriptions_attente %}
-      <div class="section-card">
-        <div class="section-card-header">
-          <span><i class="fa-solid fa-user-clock"></i> Inscriptions en attente de validation</span>
-          <span class="badge-attente">{{ inscriptions_attente|length }} en attente</span>
-        </div>
-        <div class="section-card-body" style="padding:0;">
-          <div class="table-responsive">
-            <table class="table-cadres">
-              <thead><tr>
-                <th>Matricule</th><th>Nom complet</th><th>Département</th><th>Niveau</th><th>Date inscription</th><th style="text-align:right;">Actions</th>
-              </tr></thead>
-              <tbody>
-              {% for etud in inscriptions_attente %}
-              <tr>
-                <td style="font-family:monospace;font-weight:700;color:#1565C0;">{{ etud.matricule }}</td>
-                <td style="font-weight:600;">{{ etud.prenom }} {{ etud.nom }}</td>
-                <td>{% if etud.departement %}<span class="badge-role">{{ etud.departement.nom }}</span>{% else %}—{% endif %}</td>
-                <td>{% if etud.niveau %}{{ etud.niveau.nom }}{% else %}—{% endif %}</td>
-                <td style="font-size:0.82rem;color:#64748B;">{{ etud.date_inscription|date:"d M Y" }}</td>
-                <td style="text-align:right;">
-                  <a href="{% url 'valider_inscription' etud.id %}" class="btn-action btn-validate"><i class="fa-solid fa-check"></i> Valider</a>
-                  <a href="{% url 'rejeter_inscription' etud.id %}" class="btn-action btn-delete ms-1"><i class="fa-solid fa-xmark"></i></a>
-                </td>
-              </tr>
-              {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-
-      {% if cadres %}
-      <div class="section-card">
-        <div class="section-card-header">
-          <span><i class="fa-solid fa-id-badge"></i> Cadres administratifs</span>
-          <a href="{% url 'creer_utilisateur' %}" class="btn-action btn-gold-outline" style="font-size:0.82rem;"><i class="fa-solid fa-plus"></i> Ajouter</a>
-        </div>
-        <div class="section-card-body" style="padding:0;">
-          <table class="table-cadres">
-            <thead><tr>
-              <th>Nom</th><th>Rôle</th><th>Email</th><th>Statut</th><th style="text-align:right;">Actions</th>
-            </tr></thead>
-            <tbody>
-            {% for cadre in cadres %}
-            <tr>
-              <td style="font-weight:700;color:#1A237E;">{{ cadre.prenom }} {{ cadre.nom }}</td>
-              <td><span class="badge-role">{{ cadre.get_role_display }}</span></td>
-              <td style="font-size:0.85rem;color:#64748B;">{{ cadre.email }}</td>
-              <td>{% if cadre.user.is_active %}<span class="badge-valide">Actif</span>{% else %}<span class="badge-rejete">Inactif</span>{% endif %}</td>
-              <td style="text-align:right;">
-                {% if cadre.user.is_active %}
-                <a href="{% url 'toggle_utilisateur' cadre.user.id %}" class="btn-action btn-delete" style="font-size:0.8rem;"><i class="fa-solid fa-ban"></i> Désactiver</a>
+        <!-- Messages Django -->
+        {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"
+                style="border-radius:10px; font-weight:600; font-size:0.9rem;">
+                {% if message.tags == 'success' %}
+                <i class="fa-solid fa-circle-check me-2"></i>
+                {% elif message.tags == 'error' %}
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
                 {% else %}
-                <a href="{% url 'toggle_utilisateur' cadre.user.id %}" class="btn-action btn-validate" style="font-size:0.8rem;"><i class="fa-solid fa-check"></i> Activer</a>
+                <i class="fa-solid fa-info-circle me-2"></i>
                 {% endif %}
-              </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" style="text-align:center;padding:2rem;color:#64748B;">Aucun cadre enregistré.</td></tr>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             {% endfor %}
-            </tbody>
-          </table>
         </div>
-      </div>
-      {% endif %}
-    </div>
+        {% endif %}
 
-    <!-- ── SECTION 3 : DEMANDES RÉCENTES ── -->
-    <div id="demandes-section">
-      <div class="section-card">
-        <div class="section-card-header">
-          <span><i class="fa-solid fa-bolt"></i> Demandes récentes</span>
-          <a href="{% url 'gestion_demandes' %}" class="btn-action btn-gold-outline" style="font-size:0.82rem;">Tout voir <i class="fa-solid fa-arrow-right ms-1"></i></a>
-        </div>
-        <div class="section-card-body" style="padding:0;">
-          <table class="table-cadres">
-            <thead><tr>
-              <th>N°</th><th>Étudiant</th><th>Matricule</th><th>Session</th><th>Date</th><th>Statut</th><th style="text-align:right;">Actions</th>
-            </tr></thead>
-            <tbody>
-            {% for demande in dernières_demandes %}
-            <tr>
-              <td style="font-weight:700;color:#1A237E;">#{{ demande.id }}</td>
-              <td style="font-weight:600;">{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</td>
-              <td style="font-family:monospace;color:#1565C0;font-weight:700;">{{ demande.etudiant.matricule }}</td>
-              <td>{{ demande.session }}</td>
-              <td style="font-size:0.82rem;color:#64748B;">{{ demande.date_demande|date:"d M y, H:i" }}</td>
-              <td>
-                {% if demande.statut == 'en_attente' %}<span class="badge-attente">En attente</span>
-                {% elif demande.statut == 'validee' %}<span class="badge-valide">Validée</span>
-                {% else %}<span class="badge-rejete">Rejetée</span>{% endif %}
-              </td>
-              <td style="text-align:right;">
-                {% if demande.statut == 'en_attente' %}
-                <a href="{% url 'valider_demande' demande.id %}" class="btn-action btn-validate" style="font-size:0.8rem;"><i class="fa-solid fa-check"></i> Approuver</a>
-                <a href="{% url 'rejeter_demande' demande.id %}" class="btn-action btn-delete ms-1" style="font-size:0.8rem;"><i class="fa-solid fa-xmark"></i></a>
-                {% else %}
-                <a href="{% url 'gestion_demandes' %}" class="btn-action btn-navy" style="font-size:0.8rem;"><i class="fa-solid fa-eye"></i> Détail</a>
-                {% endif %}
-              </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7" style="text-align:center;padding:2rem;color:#64748B;">Aucune demande trouvée.</td></tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+        <!-- ═══════════════════════════════ -->
+        <!-- SECTION 1 : VUE D'ENSEMBLE     -->
+        <!-- ═══════════════════════════════ -->
+        <div id="overview-section">
+            <!-- Accès rapide pages complètes -->
+            <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+                <a href="{% url 'liste_etudiants' %}" class="btn-action btn-primary-custom"
+                    style="font-size:0.9rem; text-decoration:none;">
+                    <i class="fa-solid fa-users me-1"></i> Gérer les Étudiants
+                </a>
+                <a href="{% url 'gestion_demandes' %}" class="btn-action"
+                    style="font-size:0.9rem; text-decoration:none; background:#FF9800; color:white; padding:0.6rem 1.2rem; border-radius:10px; font-weight:700;">
+                    <i class="fa-solid fa-file-lines me-1"></i> Gérer les Demandes
+                </a>
+                <a href="{% url 'gestion_notes' %}" class="btn-action"
+                    style="font-size:0.9rem; text-decoration:none; background:#0D8A73; color:white; padding:0.6rem 1.2rem; border-radius:10px; font-weight:700;">
+                    <i class="fa-solid fa-book-open me-1"></i> Gérer les Notes
+                </a>
+            </div>
+            <div class="row g-3 mb-4">
+                <!-- Comptes Actifs -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(25,118,210,0.1);">
+                                <i class="fa-solid fa-user-shield" style="color:#1976D2;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#1976D2;">{{ nb_comptes_actifs }}</h2>
+                                <p>Comptes Actifs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-  </div><!-- /.page-content -->
-</div><!-- /.admin-main -->
+                <!-- Étudiants -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(13,33,55,0.08);">
+                                <i class="fa-solid fa-users" style="color:#0D2137;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#0D2137;">{{ nb_etudiants }}</h2>
+                                <p>Étudiants Inscrits</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relevés -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(21,101,192,0.1);">
+                                <i class="fa-solid fa-file-pdf" style="color:#1565C0;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#1565C0;">{{ nb_releves }}</h2>
+                                <p>Relevés Générés</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demandes en Attente -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="metric-icon" style="background:rgba(255,152,0,0.1);">
+                                <i class="fa-solid fa-hourglass-half" style="color:#FF9800;"></i>
+                            </div>
+                            <div>
+                                <h2 style="color:#FF9800;">{{ nb_attente }}</h2>
+                                <p>Demandes en Attente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Répartition des rôles -->
+            <div class="row g-3 mb-4 animate-up stagger-1">
+                <div class="col-md-4">
+                    <div class="metric-card" style="border-left: 4px solid #1976D2;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p style="font-weight:700; color:#0D2137; margin:0;">Directeur Général</p>
+                                <small class="text-muted">Autorité finale</small>
+                            </div>
+                            <h2 style="color:#1976D2; font-size:2rem;">{{ nb_dg }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card" style="border-left: 4px solid #0D47A1;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p style="font-weight:700; color:#0D2137; margin:0;">DGA</p>
+                                <small class="text-muted">Validation intermédiaire</small>
+                            </div>
+                            <h2 style="color:#0D47A1; font-size:2rem;">{{ nb_dga }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card" style="border-left: 4px solid #2E7D32;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p style="font-weight:700; color:#0D2137; margin:0;">Chefs de Département</p>
+                                <small class="text-muted">Dépôt des notes</small>
+                            </div>
+                            <h2 style="color:#2E7D32; font-size:2rem;">{{ nb_chef }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════ -->
+        <!-- SECTION 2 : GESTION DES ACCÈS  -->
+        <!-- ═══════════════════════════════ -->
+        <div id="gestion-acces-section" class="animate-up stagger-2">
+            <!-- Formulaire de création -->
+            <div class="section-card">
+                <h5>
+                    <i class="fa-solid fa-user-plus me-2" style="color:#1976D2;"></i>
+                    Créer un Nouveau Compte Cadre
+                </h5>
+                <form method="POST" action="{% url 'creer_utilisateur' %}">
+                    {% csrf_token %}
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label>Prénom *</label>
+                            <input type="text" name="prenom" placeholder="Ex: Mamadou" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nom *</label>
+                            <input type="text" name="nom" placeholder="Ex: Diallo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Institutionnel *</label>
+                            <input type="email" name="email" placeholder="Ex: m.diallo@uganc.edu.gn" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="tel" name="telephone" placeholder="Ex: +224 620 00 00 00">
+                        </div>
+                        <div class="form-group">
+                            <label>Rôle *</label>
+                            <select name="role" required>
+                                <option value="">— Sélectionner un rôle —</option>
+                                {% for value, label in role_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mot de passe *</label>
+                            <input type="password" name="password" placeholder="Minimum 8 caractères" required
+                                minlength="8">
+                        </div>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <button type="submit" class="btn-submit-user">
+                            <i class="fa-solid fa-user-plus me-1"></i> Créer le Compte
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tableau des cadres existants -->
+            <div class="section-card">
+                <h5>
+                    <i class="fa-solid fa-users-gear me-2" style="color:#1976D2;"></i>
+                    Cadres du Système ({{ cadres|length }} comptes)
+                </h5>
+                <div class="table-responsive">
+                    <table class="table-cadres">
+                        <thead>
+                            <tr>
+                                <th>Nom Complet</th>
+                                <th>Rôle</th>
+                                <th>Email</th>
+                                <th>Identifiant</th>
+                                <th>Dernière Connexion</th>
+                                <th>Statut</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cadre in cadres %}
+                            <tr>
+                                <td style="font-weight:700; color:#0D2137;">
+                                    {{ cadre.prenom }} {{ cadre.nom }}
+                                </td>
+                                <td>
+                                    {% if cadre.role == 'dg' %}
+                                    <span class="badge-role badge-role-dg">Directeur Général</span>
+                                    {% elif cadre.role == 'dga' %}
+                                    <span class="badge-role badge-role-dga">DGA</span>
+                                    {% else %}
+                                    <span class="badge-role badge-role-chef">{{ cadre.get_role_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="color:#64748B;">{{ cadre.email }}</td>
+                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
+                                    cadre.user.username }}</td>
+                                <td style="font-size:0.85rem; color:#64748B;">
+                                    {% if cadre.user.last_login %}
+                                    {{ cadre.user.last_login|date:"d/m/Y H:i" }}
+                                    {% else %}
+                                    <span class="text-muted">Jamais connecté</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if cadre.user.is_active %}
+                                    <span class="badge-active"><i class="fa-solid fa-circle"
+                                            style="font-size:0.5rem;"></i>
+                                        Actif</span>
+                                    {% else %}
+                                    <span class="badge-inactive"><i class="fa-solid fa-circle"
+                                            style="font-size:0.5rem;"></i> Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if cadre.user != request.user %}
+                                    <a href="{% url 'toggle_utilisateur' cadre.user.id %}"
+                                        class="btn btn-sm {% if cadre.user.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} fw-bold"
+                                        style="font-size:0.75rem; border-radius:6px;"
+                                        onclick="return confirm('{% if cadre.user.is_active %}Désactiver{% else %}Réactiver{% endif %} le compte de {{ cadre.prenom }} {{ cadre.nom }} ?')">
+                                        {% if cadre.user.is_active %}
+                                        <i class="fa-solid fa-ban"></i> Désactiver
+                                        {% else %}
+                                        <i class="fa-solid fa-rotate-right"></i> Réactiver
+                                        {% endif %}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted" style="font-size:0.8rem;">
+                                        <i class="fa-solid fa-lock"></i> Vous
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="fa-solid fa-user-slash fa-2x d-block mb-2" style="color:#D4E0F0;"></i>
+                                    Aucun cadre enregistré. Créez le premier compte ci-dessus.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════ -->
+        <!-- SECTION 3 : DEMANDES RÉCENTES  -->
+        <!-- ═══════════════════════════════ -->
+        <div id="demandes-section" class="animate-up stagger-3">
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-bolt me-2" style="color:#FF9800;"></i>
+                        Demandes Récentes (Activité en direct)
+                    </h5>
+                    <a href="{% url 'gestion_demandes' %}" class="btn btn-sm btn-outline-primary fw-bold"
+                        style="border-radius:8px;">
+                        Gérer tout <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-cadres">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Étudiant</th>
+                                <th>Matricule</th>
+                                <th>Session</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for demande in dernières_demandes %}
+                            <tr>
+                                <td style="font-weight:700;">#{{ demande.id }}</td>
+                                <td>{{ demande.etudiant.prenom }} {{ demande.etudiant.nom }}</td>
+                                <td style="font-family:monospace; font-weight:600; color:#1976D2;">{{
+                                    demande.etudiant.matricule }}</td>
+                                <td>{{ demande.session }}</td>
+                                <td style="font-size:0.85rem; color:#64748B;">{{ demande.date_demande|date:"d M y, H:i"
+                                    }}</td>
+                                <td>
+                                    {% if demande.statut == 'en_attente' %}
+                                    <span class="badge-role" style="background:rgba(255,152,0,0.1); color:#FF9800;">En
+                                        attente</span>
+                                    {% elif demande.statut == 'validee' %}
+                                    <span class="badge-role"
+                                        style="background:rgba(46,125,50,0.1); color:#2E7D32;">Validée</span>
+                                    {% else %}
+                                    <span class="badge-role"
+                                        style="background:rgba(211,47,47,0.1); color:#D32F2F;">Rejetée</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if demande.statut == 'en_attente' %}
+                                    <a href="{% url 'valider_demande' demande.id %}"
+                                        class="btn btn-sm btn-success fw-bold"
+                                        style="font-size:0.75rem; border-radius:6px;">
+                                        <i class="fa-solid fa-check"></i> Approuver
+                                    </a>
+                                    <a href="{% url 'rejeter_demande' demande.id %}"
+                                        class="btn btn-sm btn-danger fw-bold ms-1"
+                                        style="font-size:0.75rem; border-radius:6px;">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </a>
+                                    <a href="{% url 'gestion_demandes' %}" class="btn btn-sm btn-outline-info fw-bold"
+                                        style="font-size:0.8rem;" title="Voir toutes les demandes">
+                                        <i class="fa-solid fa-eye me-1"></i> Voir détail
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">Aucune demande trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End container-fluid -->
+</div>
 {% endblock %}

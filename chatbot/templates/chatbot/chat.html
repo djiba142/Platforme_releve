@@ -580,6 +580,439 @@
                 padding: 10px;
             }
         }
+
+        /* ══════════════════════════════════════
+   VOCAL — STYLES COMPLETS
+══════════════════════════════════════ */
+
+        /* Bouton microphone */
+        .btn-mic {
+            width: 46px;
+            height: 46px;
+            background: #EFF4FB;
+            border: 2px solid #D4E0F0;
+            border-radius: 50%;
+            color: #1A2744;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .btn-mic:hover {
+            background: #1A2744;
+            color: #00C3A3;
+            border-color: #1A2744;
+            transform: scale(1.05);
+        }
+
+        .btn-mic.recording {
+            background: #DC3545;
+            border-color: #DC3545;
+            color: white;
+            animation: pulse-mic 1.2s infinite;
+        }
+
+        .btn-mic.processing {
+            background: #FFC107;
+            border-color: #FFC107;
+            color: white;
+        }
+
+        @keyframes pulse-mic {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+
+        /* Compteur durée enregistrement */
+        .rec-timer {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #DC3545;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+
+        .btn-mic.recording .rec-timer {
+            display: flex;
+        }
+
+        /* Panneau vocal flottant */
+        .voice-panel {
+            position: absolute;
+            bottom: 75px;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            border-top: 3px solid #DC3545;
+            padding: 16px 20px;
+            display: none;
+            box-shadow: 0 -8px 30px rgba(26, 39, 68, 0.15);
+            z-index: 10;
+        }
+
+        .voice-panel.active {
+            display: block;
+        }
+
+        /* Visualiseur d'ondes */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: linear-gradient(to top, #1A2744, #00C3A3);
+            border-radius: 4px;
+            transition: height 0.1s ease;
+        }
+
+        .wave-bar.animate {
+            animation: waveAnim 0.6s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) {
+            animation-delay: 0.0s;
+        }
+
+        .wave-bar:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+
+        .wave-bar:nth-child(3) {
+            animation-delay: 0.1s;
+        }
+
+        .wave-bar:nth-child(4) {
+            animation-delay: 0.15s;
+        }
+
+        .wave-bar:nth-child(5) {
+            animation-delay: 0.2s;
+        }
+
+        .wave-bar:nth-child(6) {
+            animation-delay: 0.25s;
+        }
+
+        .wave-bar:nth-child(7) {
+            animation-delay: 0.3s;
+        }
+
+        .wave-bar:nth-child(8) {
+            animation-delay: 0.35s;
+        }
+
+        .wave-bar:nth-child(9) {
+            animation-delay: 0.4s;
+        }
+
+        .wave-bar:nth-child(10) {
+            animation-delay: 0.45s;
+        }
+
+        .wave-bar:nth-child(11) {
+            animation-delay: 0.5s;
+        }
+
+        .wave-bar:nth-child(12) {
+            animation-delay: 0.55s;
+        }
+
+        @keyframes waveAnim {
+
+            0%,
+            100% {
+                height: 6px;
+            }
+
+            50% {
+                height: 35px;
+            }
+        }
+
+        /* Texte reconnu en temps réel */
+        .voice-transcript {
+            text-align: center;
+            min-height: 32px;
+            font-size: 0.9rem;
+            color: #1A2744;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: #EFF4FB;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .voice-transcript.interim {
+            color: #64748B;
+            background: #F8FAFF;
+        }
+
+        /* Status vocal */
+        .voice-status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .voice-status-text {
+            font-size: 0.8rem;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #D4E0F0;
+        }
+
+        .status-dot.listening {
+            background: #DC3545;
+            animation: blink 1s infinite;
+        }
+
+        .status-dot.speaking {
+            background: #00C3A3;
+            animation: blink 0.8s infinite;
+        }
+
+        .status-dot.processing {
+            background: #FFC107;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Bouton annuler dans panneau */
+        .btn-cancel-voice {
+            background: #F8FAFF;
+            border: 1.5px solid #D4E0F0;
+            color: #64748B;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel-voice:hover {
+            background: #DC3545;
+            border-color: #DC3545;
+            color: white;
+        }
+
+        /* Commandes vocales suggérées */
+        .voice-commands {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #EFF4FB;
+        }
+
+        .voice-cmd {
+            background: #EFF4FB;
+            border: 1px solid #D4E0F0;
+            color: #1A2744;
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .voice-cmd:hover {
+            background: #1A2744;
+            border-color: #1A2744;
+            color: #00C3A3;
+        }
+
+        /* Bouton son dans input */
+        .btn-tts {
+            width: 38px;
+            height: 38px;
+            background: #EFF4FB;
+            border: 1.5px solid #D4E0F0;
+            border-radius: 50%;
+            color: #64748B;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-tts.active {
+            background: #00C3A3;
+            border-color: #00C3A3;
+            color: white;
+        }
+
+        .btn-tts:hover {
+            opacity: 0.8;
+        }
+
+        /* Badge vocal sur message */
+        .voice-msg-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(220, 53, 69, 0.08);
+            color: #DC3545;
+            padding: 2px 7px;
+            border-radius: 8px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* Indicateur TTS sur bulle bot */
+        .tts-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            color: #00C3A3;
+            margin-top: 5px;
+        }
+
+        .tts-indicator.speaking {
+            display: flex;
+        }
+
+        .tts-dot {
+            width: 5px;
+            height: 5px;
+            background: #00C3A3;
+            border-radius: 50%;
+            animation: blink 0.6s infinite;
+        }
+
+        .tts-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .tts-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Notification vocale */
+        .voice-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #1A2744;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 25px rgba(26, 39, 68, 0.3);
+            border-left: 3px solid #00C3A3;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Barre commandes vocales rapides */
+        .voice-shortcuts {
+            padding: 8px 18px;
+            background: #F0F4FF;
+            border-top: 1px solid #E0E8F5;
+            display: none;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .voice-shortcuts.visible {
+            display: flex;
+        }
+
+        .shortcut-btn {
+            background: white;
+            border: 1.5px solid #D4E0F0;
+            color: #1A2744;
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .shortcut-btn:hover {
+            background: #DC3545;
+            border-color: #DC3545;
+            color: white;
+        }
     </style>
 </head>
 
@@ -604,7 +1037,7 @@
                 </div>
             </a>
             <div class="d-flex gap-2">
-                <a href="{% url 'liste_notes' %}" class="btn btn-outline-light btn-sm">
+                <a href="{% url 'notes:liste_notes' %}" class="btn btn-outline-light btn-sm">
                     <i class="fa-solid fa-user me-1"></i> Profil
                 </a>
                 <a href="{% url 'historique_demandes' %}" class="btn btn-outline-light btn-sm">
@@ -697,7 +1130,7 @@
                     Accès rapide
                 </h6>
                 <div class="d-flex flex-column gap-2">
-                    <a href="{% url 'liste_notes' %}" class="btn btn-sm" style="background:#EFF4FB;color:#1A2744;
+                    <a href="{% url 'notes:liste_notes' %}" class="btn btn-sm" style="background:#EFF4FB;color:#1A2744;
                           border:1px solid #D4E0F0;text-align:left;">
                         <i class="fa-solid fa-chart-bar me-2" style="color:#00C3A3;"></i>
                         Mes notes
@@ -707,7 +1140,7 @@
                         <i class="fa-solid fa-clock-rotate-left me-2" style="color:#00C3A3;"></i>
                         Historique
                     </a>
-                    <a href="{% url 'liste_notes' %}" class="btn btn-sm" style="background:#EFF4FB;color:#1A2744;
+                    <a href="{% url 'notes:liste_notes' %}" class="btn btn-sm" style="background:#EFF4FB;color:#1A2744;
                           border:1px solid #D4E0F0;text-align:left;">
                         <i class="fa-solid fa-user me-2" style="color:#00C3A3;"></i>
                         Mon profil
@@ -763,12 +1196,100 @@
                     </div>
                 </div>
 
-                <!-- Saisie -->
-                <div class="chat-input-area">
-                    <input type="text" id="msgInput" placeholder="Tapez votre message..." onkeypress="handleKey(event)">
+                <!-- Toast notification vocal -->
+                <div class="voice-toast" id="voiceToast">
+                    <i class="fa-solid fa-microphone"></i>
+                    <span id="voiceToastText"></span>
+                </div>
+
+                <!-- Panneau vocal flottant -->
+                <div class="voice-panel" id="voicePanel">
+
+                    <!-- Visualiseur ondes -->
+                    <div class="waveform" id="waveform">
+                        {% for i in "123456789012" %}
+                        <div class="wave-bar" id="bar{{ forloop.counter }}" style="height:6px;"></div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Texte reconnu -->
+                    <div class="voice-transcript interim" id="voiceTranscript">
+                        Cliquez sur le micro et parlez...
+                    </div>
+
+                    <!-- Status + bouton annuler -->
+                    <div class="voice-status-row">
+                        <div class="voice-status-text">
+                            <div class="status-dot" id="statusDot"></div>
+                            <span id="statusText">Prêt</span>
+                        </div>
+                        <button class="btn-cancel-voice" onclick="cancelVoice()">
+                            <i class="fa-solid fa-xmark me-1"></i>
+                            Annuler
+                        </button>
+                    </div>
+
+                    <!-- Commandes vocales suggérées -->
+                    <div class="voice-commands">
+                        <div style="width:100%;font-size:0.72rem;
+                                    color:#64748B;margin-bottom:4px;">
+                            <i class="fa-solid fa-bolt me-1" style="color:#00C3A3;"></i>
+                            Commandes vocales :
+                        </div>
+                        <span class="voice-cmd" onclick="useVoiceCmd('je veux mon relevé')">
+                            <i class="fa-solid fa-file-pdf" style="color:#DC3545;font-size:10px;"></i> Mon relevé
+                        </span>
+                        <span class="voice-cmd" onclick="useVoiceCmd('afficher mes notes')">
+                            <i class="fa-solid fa-chart-bar" style="color:#1A2744;font-size:10px;"></i> Mes notes
+                        </span>
+                        <span class="voice-cmd" onclick="useVoiceCmd('parlez moi de ntic')">
+                            <i class="fa-solid fa-graduation-cap" style="color:#1565C0;font-size:10px;"></i> Filière
+                            NTIC
+                        </span>
+                        <span class="voice-cmd" onclick="useVoiceCmd('aide')">
+                            <i class="fa-solid fa-circle-info" style="color:#FFC107;font-size:10px;"></i> Aide
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Raccourcis vocaux rapides -->
+                <div class="voice-shortcuts" id="voiceShortcuts">
+                    <span style="font-size:0.72rem;color:#64748B;display:flex;align-items:center;gap:4px;">
+                        <i class="fa-solid fa-microphone" style="color:#DC3545;font-size:10px;"></i> Dites :
+                    </span>
+                    <button class="shortcut-btn" onclick="simulateVoice('je veux mon relevé')">🎤 Mon relevé</button>
+                    <button class="shortcut-btn" onclick="simulateVoice('mes notes')">🎤 Mes notes</button>
+                    <button class="shortcut-btn" onclick="simulateVoice('aide')">🎤 Aide</button>
+                </div>
+
+                <!-- Zone saisie enrichie -->
+                <div class="chat-input-area" style="position:relative;">
+                    <!-- Bouton micro avec timer -->
+                    <button class="btn-mic" id="btnMic" onclick="toggleVoice()" title="Cliquez pour parler">
+                        <i class="fa-solid fa-microphone" id="micIcon"></i>
+                        <span class="rec-timer" id="recTimer">0</span>
+                    </button>
+
+                    <!-- Input texte -->
+                    <input type="text" id="msgInput" placeholder="Tapez ou parlez en français..."
+                        onkeypress="handleKey(event)" oninput="handleInput(this)">
+
+                    <!-- Bouton TTS (text to speech) -->
+                    <button class="btn-tts" id="btnTts" onclick="toggleTTS()" title="Activer la réponse vocale">
+                        <i class="fa-solid fa-volume-xmark" id="ttsIcon"></i>
+                    </button>
+
+                    <!-- Bouton envoyer -->
                     <button class="btn-send" onclick="sendMessage()">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
+                </div>
+
+                <!-- Message navigateur non supporté -->
+                <div id="voiceNotSupported"
+                    style="display:none;padding:8px 18px;background:#FFF3CD;font-size:0.78rem;color:#856404;text-align:center;border-top:1px solid #FFE69C;">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Reconnaissance vocale non supportée. Utilisez
+                    Google Chrome ou Microsoft Edge.
                 </div>
 
             </div>
@@ -777,17 +1298,330 @@
     </div>
 
     <script>
-        // État du chatbot
+        // ══════════════════════════════════════════════
+        // VARIABLES GLOBALES
+        // ══════════════════════════════════════════════
         let chatState = 'accueil';
         let chatSession = null;
+        let recognition = null;
+        let synthesis = window.speechSynthesis;
+        let isRecording = false;
+        let ttsEnabled = false;
+        let recTimerInterval = null;
+        let recSeconds = 0;
+        let currentTtsUtterance = null;
+        let analyserInterval = null;
+
+        // ══════════════════════════════════════════════
+        // INITIALISATION
+        // ══════════════════════════════════════════════
+        window.onload = function () {
+            initVoiceRecognition();
+            loadVoices();
+            loadWelcomeMessage();
+        };
+
+        function loadVoices() {
+            if (synthesis) {
+                synthesis.onvoiceschanged = function () {
+                    synthesis.getVoices();
+                };
+            }
+        }
+
+        function loadWelcomeMessage() {
+            setTimeout(() => {
+                callApi('bonjour');
+            }, 500);
+
+            setTimeout(() => {
+                const wb = document.getElementById('welcomeBubble');
+                if (wb) wb.style.display = 'none';
+            }, 1200);
+        }
+
+        // ══════════════════════════════════════════════
+        // RECONNAISSANCE VOCALE
+        // ══════════════════════════════════════════════
+        function initVoiceRecognition() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) {
+                let vn = document.getElementById('voiceNotSupported');
+                let bm = document.getElementById('btnMic');
+                if (vn) vn.style.display = 'block';
+                if (bm) { bm.style.opacity = '0.4'; bm.style.cursor = 'not-allowed'; }
+                return;
+            }
+            recognition = new SR();
+            recognition.lang = 'fr-FR';
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.maxAlternatives = 3;
+
+            let initialInputVal = '';
+
+            recognition.onresult = function (event) {
+                let interim = '';
+                let finalText = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) finalText += transcript;
+                    else interim += transcript;
+                }
+                const el = document.getElementById('voiceTranscript');
+                let prefix = initialInputVal ? initialInputVal + ' ' : '';
+
+                if (interim) {
+                    el.textContent = interim;
+                    el.className = 'voice-transcript interim';
+                    document.getElementById('msgInput').value = prefix + interim;
+                }
+                if (finalText) {
+                    el.textContent = finalText;
+                    el.className = 'voice-transcript';
+                    document.getElementById('msgInput').value = prefix + finalText;
+                    initialInputVal = document.getElementById('msgInput').value.trim();
+                }
+            };
+
+            recognition.onend = function () {
+                const currentText = document.getElementById('msgInput').value.trim();
+                stopRecording();
+                if (currentText && currentText !== initialInputVal) {
+                    // Voice added new text
+                    setStatus('processing', 'Traitement en cours...');
+                    setTimeout(() => {
+                        sendMessage(true);
+                        closeVoicePanel();
+                    }, 400);
+                } else {
+                    // No new voice detected
+                    setStatus('idle', 'Aucune voix détectée.');
+                    setTimeout(closeVoicePanel, 2000);
+                }
+            };
+
+            recognition.onstart = function () {
+                isRecording = true;
+                initialInputVal = document.getElementById('msgInput').value.trim();
+                setStatus('listening', 'Je vous écoute...');
+                startWaveAnimation();
+                startRecTimer();
+                document.getElementById('voiceTranscript').textContent = 'Parlez maintenant...';
+                document.getElementById('voiceTranscript').className = 'voice-transcript interim';
+            };
+
+            recognition.onerror = function (event) {
+                stopRecording();
+                const errors = {
+                    'no-speech': '⚠️ Aucune voix détectée. Réessayez.',
+                    'not-allowed': '🔒 Microphone refusé. Autorisez l\'accès.',
+                    'network': '📡 Erreur réseau.',
+                    'aborted': 'ℹ️ Enregistrement annulé.',
+                };
+                const msg = errors[event.error] || '❌ Erreur microphone.';
+                document.getElementById('voiceTranscript').textContent = msg;
+                showToast(msg, '#DC3545');
+                setTimeout(closeVoicePanel, 2500);
+            };
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                showToast('Utilisez Chrome pour la reconnaissance vocale', '#FFC107');
+                return;
+            }
+            if (isRecording) recognition.stop();
+            else startVoiceSession();
+        }
+
+        function startVoiceSession() {
+            if (synthesis) synthesis.cancel();
+            openVoicePanel();
+            try {
+                recognition.start();
+                updateMicButton('recording');
+                showToast('🎤 Microphone activé', '#DC3545');
+            } catch (e) {
+                showToast('⚠️ Erreur microphone', '#FFC107');
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            updateMicButton('idle');
+            stopWaveAnimation();
+            stopRecTimer();
+        }
+
+        function cancelVoice() {
+            if (recognition) { try { recognition.stop(); } catch (e) { } }
+            document.getElementById('msgInput').value = '';
+            stopRecording();
+            closeVoicePanel();
+            setStatus('idle', 'Prêt');
+        }
+
+        function openVoicePanel() {
+            document.getElementById('voicePanel').classList.add('active');
+            document.getElementById('voiceShortcuts').classList.add('visible');
+        }
+
+        function closeVoicePanel() {
+            document.getElementById('voicePanel').classList.remove('active');
+            document.getElementById('voiceShortcuts').classList.remove('visible');
+            setStatus('idle', 'Prêt');
+        }
+
+        function updateMicButton(state) {
+            const btn = document.getElementById('btnMic');
+            const icon = document.getElementById('micIcon');
+            btn.classList.remove('recording', 'processing');
+            if (state === 'recording') {
+                btn.classList.add('recording');
+                icon.className = 'fa-solid fa-stop';
+            } else if (state === 'processing') {
+                btn.classList.add('processing');
+                icon.className = 'fa-solid fa-spinner fa-spin';
+            } else {
+                icon.className = 'fa-solid fa-microphone';
+            }
+        }
+
+        function setStatus(type, text) {
+            const dot = document.getElementById('statusDot');
+            const span = document.getElementById('statusText');
+            dot.className = 'status-dot ' + type;
+            span.textContent = text;
+        }
+
+        function startRecTimer() {
+            recSeconds = 0;
+            const timerEl = document.getElementById('recTimer');
+            recTimerInterval = setInterval(() => {
+                recSeconds++;
+                timerEl.textContent = recSeconds;
+                if (recSeconds >= 30) {
+                    recognition.stop();
+                    showToast('⏱️ Durée maximale atteinte', '#FFC107');
+                }
+            }, 1000);
+        }
+
+        function stopRecTimer() {
+            clearInterval(recTimerInterval);
+            recSeconds = 0;
+            document.getElementById('recTimer').textContent = '0';
+        }
+
+        function startWaveAnimation() {
+            const bars = document.querySelectorAll('.wave-bar');
+            bars.forEach(bar => bar.classList.add('animate'));
+            analyserInterval = setInterval(() => {
+                bars.forEach(bar => {
+                    const h = Math.floor(Math.random() * 40) + 5;
+                    bar.style.height = h + 'px';
+                });
+            }, 100);
+        }
+
+        function stopWaveAnimation() {
+            clearInterval(analyserInterval);
+            const bars = document.querySelectorAll('.wave-bar');
+            bars.forEach(bar => {
+                bar.classList.remove('animate');
+                bar.style.height = '6px';
+            });
+        }
+
+        function toggleTTS() {
+            ttsEnabled = !ttsEnabled;
+            const btn = document.getElementById('btnTts');
+            const icon = document.getElementById('ttsIcon');
+            if (ttsEnabled) {
+                btn.classList.add('active');
+                icon.className = 'fa-solid fa-volume-high';
+                showToast('🔊 Réponse vocale activée', '#00C3A3');
+                speakText('Mode vocal activé. Je répondrai à voix haute.');
+            } else {
+                btn.classList.remove('active');
+                icon.className = 'fa-solid fa-volume-xmark';
+                if (synthesis) synthesis.cancel();
+                showToast('🔇 Réponse vocale désactivée', '#64748B');
+            }
+        }
+
+        function speakText(text, onEnd = null) {
+            if (!synthesis) return;
+            synthesis.cancel();
+            const clean = text.replace(/<[^>]*>/g, ' ').replace(/&[^;]+;/g, ' ').replace(/[#\*\[\]]/g, '').replace(/\s+/g, ' ').substring(0, 500).trim();
+            if (!clean) return;
+            const utt = new SpeechSynthesisUtterance(clean);
+            utt.lang = 'fr-FR';
+            utt.rate = 0.92;   // Slightly slower for a gentler, calmer pace
+            utt.pitch = 1.05;  // Slightly higher pitch often sounds softer/friendlier
+            utt.volume = 1;
+
+            const voices = synthesis.getVoices();
+            // Try to find the softest/most natural French voice available
+            const frVoice = voices.find(v => v.lang === 'fr-FR' && v.name.includes('Google'))
+                || voices.find(v => v.lang === 'fr-FR' && v.name.includes('Julie'))
+                || voices.find(v => v.lang === 'fr-FR' && v.name.includes('Hortense'))
+                || voices.find(v => v.lang === 'fr-FR' && v.localService)
+                || voices.find(v => v.lang.startsWith('fr'));
+
+            if (frVoice) utt.voice = frVoice;
+
+            utt.onstart = () => { showTtsIndicator(true); };
+            utt.onend = () => { showTtsIndicator(false); if (onEnd) onEnd(); };
+            utt.onerror = () => { showTtsIndicator(false); };
+            currentTtsUtterance = utt;
+            synthesis.speak(utt);
+        }
+
+        function showTtsIndicator(show) {
+            const indicators = document.querySelectorAll('.tts-indicator');
+            indicators.forEach(el => { el.classList.toggle('speaking', show); });
+        }
+
+        function stopTTS() {
+            if (synthesis) synthesis.cancel();
+            showTtsIndicator(false);
+        }
+
+        function useVoiceCmd(text) {
+            document.getElementById('msgInput').value = text;
+            document.getElementById('voiceTranscript').textContent = text;
+            document.getElementById('voiceTranscript').className = 'voice-transcript';
+            setStatus('processing', 'Traitement...');
+            setTimeout(() => {
+                sendMessage(true);
+                closeVoicePanel();
+            }, 300);
+        }
+
+        function simulateVoice(text) {
+            document.getElementById('msgInput').value = text;
+            appendMessage(text, 'user', true);
+            document.getElementById('msgInput').value = '';
+            callApi(text, true);
+        }
+
+        function showToast(msg, color = '#1A2744') {
+            const toast = document.getElementById('voiceToast');
+            const text = document.getElementById('voiceToastText');
+            toast.style.borderColor = color;
+            text.textContent = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
+        }
 
         function getTime() {
             const d = new Date();
-            return String(d.getHours()).padStart(2, '0') + ':' +
-                String(d.getMinutes()).padStart(2, '0');
+            return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
         }
 
-        function appendMessage(html, type) {
+        function appendMessage(html, type, isVoice = false) {
             const container = document.getElementById('chatMessages');
             const typingRow = document.getElementById('typingRow');
 
@@ -796,14 +1630,15 @@
 
             const avatar = document.createElement('div');
             avatar.className = 'msg-avatar ' + type;
-            avatar.innerHTML = type === 'bot'
-                ? '<i class="fa-solid fa-robot"></i>'
-                : '<i class="fa-solid fa-user"></i>';
+            avatar.innerHTML = type === 'bot' ? '<i class="fa-solid fa-robot"></i>' : '<i class="fa-solid fa-user"></i>';
 
             const bubble = document.createElement('div');
             bubble.className = 'bubble ' + type;
-            bubble.innerHTML = html +
-                `<span class="time">${getTime()}</span>`;
+
+            const voiceBadge = isVoice ? '<span class="voice-msg-badge"><i class="fa-solid fa-microphone"></i> Vocal</span>' : '';
+            const ttsIndicator = type === 'bot' ? '<div class="tts-indicator"><div class="tts-dot"></div><div class="tts-dot"></div><div class="tts-dot"></div><span style="font-size:0.68rem; margin-left: 4px;">Lecture...</span></div>' : '';
+
+            bubble.innerHTML = html + voiceBadge + ttsIndicator + `<span class="time">${getTime()}</span>`;
 
             row.appendChild(avatar);
             row.appendChild(bubble);
@@ -817,40 +1652,34 @@
             tr.style.display = show ? 'flex' : 'none';
             te.style.display = show ? 'flex' : 'none';
             if (show) {
-                document.getElementById('chatMessages')
-                    .scrollTop = 99999;
+                document.getElementById('chatMessages').scrollTop = 99999;
             }
         }
 
         function updateStep(etat) {
-            const stepEl = document.getElementById('headerStep');
+            const el = document.getElementById('headerStep');
             const steps = {
                 'accueil': 'Accueil',
                 'menu': 'Menu principal',
                 'attente_session': '⟶ Choisir session',
                 'confirmation': '⟶ Confirmer demande',
             };
-            stepEl.innerHTML =
-                `<i class="fa-solid fa-robot me-1"></i>
-             ${steps[etat] || 'En cours...'}`;
+            el.innerHTML = `<i class="fa-solid fa-robot me-1"></i> ${steps[etat] || 'En cours...'}`;
 
-            // Sidebar process
             if (etat === 'attente_session') {
-                document.getElementById('step2')
-                    .classList.add('done');
+                let e = document.getElementById('step2'); if (e) e.classList.add('done');
             }
             if (etat === 'confirmation') {
-                document.getElementById('step3')
-                    .classList.add('done');
+                let e = document.getElementById('step3'); if (e) e.classList.add('done');
             }
             if (etat === 'menu') {
-                document.getElementById('step4')
-                    .classList.add('done');
+                let e = document.getElementById('step4'); if (e) e.classList.add('done');
             }
         }
 
-        function callApi(message) {
+        function callApi(message, isVoice = false) {
             showTyping(true);
+
             fetch("{% url 'chatbot_api' %}", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -868,33 +1697,35 @@
                         chatSession = data.session;
                         appendMessage(data.reponse, 'bot');
                         updateStep(data.etat);
+                        if (ttsEnabled || isVoice) {
+                            speakText(data.reponse);
+                        }
                     }, 600);
                 })
                 .catch(() => {
                     showTyping(false);
+                    const errMsg = 'Erreur de connexion au serveur.';
                     appendMessage(
-                        '<i class="fa-solid fa-triangle-exclamation" '
-                        + 'style="color:#DC3545;"></i> '
-                        + 'Erreur de connexion.',
+                        '<i class="fa-solid fa-triangle-exclamation" style="color:#DC3545;"></i> ' + errMsg,
                         'bot'
                     );
+                    if (ttsEnabled) speakText(errMsg);
                 });
         }
 
-        function sendMessage() {
+        function sendMessage(isVoice = false) {
             const input = document.getElementById('msgInput');
             const msg = input.value.trim();
             if (!msg) return;
-            appendMessage(msg, 'user');
+            stopTTS();
+            appendMessage(msg, 'user', isVoice);
             input.value = '';
-            callApi(msg);
+            callApi(msg, isVoice);
         }
 
         function sendQuick(text) {
-            // Pour les boutons avec pipe (confirmer|Session 1)
-            const display = text.includes('|')
-                ? text.split('|')[0] + ' ' + text.split('|')[1]
-                : text;
+            stopTTS();
+            const display = text.includes('|') ? text.split('|')[0] + ' ' + text.split('|')[1] : text;
             appendMessage(display, 'user');
             callApi(text);
         }
@@ -903,20 +1734,8 @@
             if (e.key === 'Enter') sendMessage();
         }
 
-        // ── Chargement du message d'accueil ──
-        window.onload = function () {
-            setTimeout(() => {
-                callApi('bonjour');
-                // Supprimer le bubble de chargement
-                // après la réponse
-            }, 500);
-
-            // Supprimer bubble chargement
-            setTimeout(() => {
-                const wb = document.getElementById('welcomeBubble');
-                if (wb) wb.style.display = 'none';
-            }, 1200);
-        };
+        function handleInput(input) {
+        }
     </script>
 </body>
 

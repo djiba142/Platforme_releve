@@ -1,326 +1,502 @@
-{% extends 'base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
 
-{% block title %}Mon Espace — {{ etudiant.prenom }} {{ etudiant.nom }}{% endblock %}
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Espace — UGANC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #EFF4FB;
+      font-family: 'Segoe UI', sans-serif;
+    }
 
-{% block extra_css %}
-<style>
-body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden; margin: 0; }
+    .navbar {
+      background: #0D2137;
+      border-bottom: none;
+    }
 
-/* ── Sidebar Étudiant ── */
-.student-sidebar {
-  background: linear-gradient(180deg, #1565C0 0%, #0D47A1 100%);
-  border-right: 3px solid #D4AF37;
-  width: 255px; min-height: 100vh;
-  position: fixed; top: 0; left: 0;
-  display: flex; flex-direction: column;
-  z-index: 100;
-}
-.sidebar-logo-box {
-  background: rgba(255,255,255,0.95);
-  border-radius: 12px;
-  padding: 0.7rem 1rem;
-  display: flex; align-items: center; gap: 0.75rem;
-  margin: 1.2rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-}
-.sidebar-brand-text { color: #FFFFFF; font-weight: 800; font-size: 0.95rem; padding: 0.5rem 1.2rem 0; }
-.sidebar-brand-sub  { color: #D4AF37; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 0 1.2rem 1rem; }
+    .stat-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      border: none;
+      box-shadow: 0 4px 15px rgba(26, 39, 68, 0.08);
+      transition: transform 0.2s;
+    }
 
-.sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; }
-.sidebar-nav .nav-section { padding: 0.6rem 1.5rem 0.2rem; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(212,175,55,0.55); }
-.sidebar-nav a {
-  display: flex; align-items: center; gap: 0.65rem;
-  padding: 0.65rem 1rem; margin: 2px 10px;
-  color: rgba(255,255,255,0.82); text-decoration: none;
-  border-radius: 10px; font-size: 0.91rem; font-weight: 500;
-  transition: all 0.2s;
-}
-.sidebar-nav a i { width: 18px; text-align: center; color: #7B1E3A; transition: color 0.2s; }
-.sidebar-nav a:hover, .sidebar-nav a.active {
-  background: rgba(255,255,255,0.15); color: #D4AF37;
-}
-.sidebar-nav a:hover i, .sidebar-nav a.active i { color: #D4AF37; }
-.sidebar-nav a.logout { color: #ff8a8a !important; }
-.sidebar-nav a.logout i { color: #ff8a8a !important; }
+    .stat-card:hover {
+      transform: translateY(-3px);
+    }
 
-/* ── Main ── */
-.student-main { margin-left: 255px; background: #FFFFFF; min-height: 100vh; flex: 1; }
-.topbar {
-  background: #FFFFFF; border-bottom: 3px solid #D4AF37;
-  box-shadow: 0 2px 12px rgba(26,35,126,0.07);
-  padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-}
-.topbar-title { color: #1A237E; font-weight: 800; font-size: 1.15rem; margin: 0; }
-.topbar-user { display: flex; align-items: center; gap: 0.75rem; }
-.user-avatar {
-  width: 40px; height: 40px; background: #7B1E3A;
-  color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 1rem; border: 2px solid #D4AF37;
-}
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
 
-.content-area { padding: 2rem; }
+    .content-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(26, 39, 68, 0.08);
+      margin-bottom: 20px;
+    }
 
-/* ── Profil card ── */
-.profile-card {
-  background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
-  border-radius: 18px; padding: 2rem;
-  color: white; position: relative; overflow: hidden;
-  box-shadow: 0 8px 30px rgba(26,35,126,0.25);
-  border: 2px solid rgba(212,175,55,0.3);
-  margin-bottom: 1.5rem;
-}
-.profile-card::before {
-  content: ''; position: absolute; top: -40px; right: -40px;
-  width: 150px; height: 150px; background: rgba(212,175,55,0.08);
-  border-radius: 50%;
-}
-.profile-avatar {
-  width: 70px; height: 70px; border-radius: 50%;
-  background: rgba(255,255,255,0.15); border: 3px solid #D4AF37;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; font-weight: 900; color: #D4AF37;
-  margin-bottom: 1rem;
-}
-.profile-name  { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.3rem; }
-.profile-matri { color: #D4AF37; font-family: 'Courier New', monospace; font-weight: 700; font-size: 1rem; }
-.profile-badge { background: rgba(212,175,55,0.15); border: 1px solid rgba(212,175,55,0.4); color: #D4AF37; padding: 0.25rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-block; margin-top: 0.5rem; }
+    .content-card h6 {
+      color: #1565C0;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #EFF4FB;
+    }
 
-/* ── Stat cards ── */
-.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-.stat-card {
-  background: #FFFFFF; border-radius: 14px;
-  border: 1px solid #e0e0e0; border-left: 5px solid #7B1E3A;
-  box-shadow: 0 4px 15px rgba(26,35,126,0.07);
-  padding: 1.2rem; transition: transform 0.2s;
-}
-.stat-card:hover { transform: translateY(-3px); }
-.stat-icon { color: #7B1E3A; font-size: 1.6rem; margin-bottom: 0.6rem; }
-.stat-val  { color: #1A237E; font-weight: 900; font-size: 2rem; }
-.stat-lbl  { color: #263238; font-size: 0.83rem; }
+    .action-btn {
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      width: 100%;
+      margin-bottom: 10px;
+    }
 
-/* ── Boutons ── */
-.btn-primary-uganc {
-  background: #1565C0; color: white; border: none; border-radius: 10px;
-  padding: 0.65rem 1.4rem; font-weight: 700; text-decoration: none; display: inline-flex;
-  align-items: center; gap: 0.5rem; transition: all 0.2s; cursor: pointer;
-}
-.btn-primary-uganc:hover { background: #1A237E; color: #D4AF37; }
-.btn-bordeaux {
-  background: #7B1E3A; color: white; border: none; border-radius: 10px;
-  padding: 0.65rem 1.4rem; font-weight: 700; text-decoration: none; display: inline-flex;
-  align-items: center; gap: 0.5rem; transition: all 0.2s; cursor: pointer;
-}
-.btn-bordeaux:hover { background: #5c1129; }
-.btn-gold {
-  background: #D4AF37; color: #1A237E; border: none; border-radius: 10px;
-  padding: 0.65rem 1.4rem; font-weight: 700; text-decoration: none; display: inline-flex;
-  align-items: center; gap: 0.5rem; transition: all 0.2s; cursor: pointer;
-}
-.btn-gold:hover { background: #c9a227; }
+    .btn-primary-custom {
+      background: #1565C0;
+      color: white;
+    }
 
-/* ── Notes table ── */
-.notes-section { background: #FFFFFF; border: 1px solid #e0e0e0; border-radius: 16px; box-shadow: 0 2px 12px rgba(26,35,126,0.05); overflow: hidden; }
-.notes-header { background: #1A237E; color: #D4AF37; padding: 1rem 1.5rem; font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.6rem; }
-.table-notes { width: 100%; border-collapse: collapse; }
-.table-notes thead tr { background: #ECEFF1; }
-.table-notes thead th { color: #263238; font-weight: 700; padding: 0.75rem 1rem; font-size: 0.88rem; border-bottom: 2px solid #D4AF37; }
-.table-notes tbody tr:hover { background: rgba(26,35,126,0.03); }
-.table-notes tbody td { padding: 0.7rem 1rem; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; color: #263238; }
-.note-val { font-weight: 700; font-size: 1rem; }
-.note-tb  { color: #2E7D32; }
-.note-b   { color: #1565C0; }
-.note-ab  { color: #F57F17; }
-.note-p   { color: #E65100; }
-.note-ins { color: #C62828; }
-.sem-divider { background: linear-gradient(90deg, #1A237E, #1565C0); color: #D4AF37; font-weight: 700; padding: 0.5rem 1rem; font-size: 0.85rem; }
+    .btn-primary-custom:hover {
+      background: #1976D2;
+      color: white;
+    }
 
-/* ── Quick actions ── */
-.quick-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-.action-card {
-  background: #FFFFFF; border: 1px solid #e0e0e0; border-top: 4px solid;
-  border-radius: 14px; padding: 1.2rem; flex: 1; min-width: 200px;
-  text-decoration: none; transition: all 0.2s;
-  box-shadow: 0 2px 10px rgba(26,35,126,0.06);
-}
-.action-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(26,35,126,0.12); }
-.action-card.ac-blue  { border-top-color: #1565C0; }
-.action-card.ac-bord  { border-top-color: #7B1E3A; }
-.action-card.ac-gold  { border-top-color: #D4AF37; }
-.action-card .ac-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
-.action-card.ac-blue .ac-icon { color: #1565C0; }
-.action-card.ac-bord .ac-icon { color: #7B1E3A; }
-.action-card.ac-gold .ac-icon { color: #D4AF37; }
-.action-card .ac-title { color: #1A237E; font-weight: 700; font-size: 0.95rem; }
-.action-card .ac-desc  { color: #64748B; font-size: 0.82rem; }
+    .btn-teal {
+      background: rgba(25, 118, 210, 0.08);
+      color: #1565C0;
+      border: 1.5px solid rgba(25, 118, 210, 0.25);
+    }
 
-@media (max-width: 768px) {
-  .student-sidebar { width: 100%; min-height: auto; position: relative; }
-  .student-main { margin-left: 0; }
-  body { flex-direction: column; }
-}
-</style>
-{% endblock %}
+    .btn-teal:hover {
+      background: #1976D2;
+      color: white;
+    }
 
-{% block body %}
-<!-- ── SIDEBAR ── -->
-<aside class="student-sidebar">
-  <div class="sidebar-logo-box">
-    <img src="{% static 'images/logos_uganc.png' %}" height="38" alt="UGANC" style="object-fit:contain;">
-    <div style="width:1px;height:30px;background:#E0E8F5;border-radius:2px;"></div>
-    <img src="{% static 'images/logosCI.png' %}" height="32" alt="CI" style="object-fit:contain;">
-  </div>
-  <div class="sidebar-brand-text">Espace Étudiant</div>
-  <div class="sidebar-brand-sub">UGANC · Centre Informatique</div>
+    thead th {
+      background: #1565C0 !important;
+      color: white;
+    }
 
-  <nav class="sidebar-nav">
-    <div class="nav-section">Mon espace</div>
-    <a href="{% url 'profil' %}" class="active"><i class="fa-solid fa-user"></i> Mon Profil</a>
-    <a href="{% url 'notes:liste_notes' %}"><i class="fa-solid fa-book-open"></i> Mes Notes</a>
-    <a href="{% url 'creer_demande' %}"><i class="fa-solid fa-file-circle-plus"></i> Demander un Relevé</a>
-    <a href="{% url 'historique_demandes' %}"><i class="fa-solid fa-clock-rotate-left"></i> Mes Demandes</a>
+    .badge-validee {
+      background: #1976D2;
+      color: white;
+    }
 
-    <div class="nav-section" style="margin-top:0.5rem;">Outils</div>
-    <a href="{% url 'notes:recherche_notes' %}"><i class="fa-solid fa-magnifying-glass"></i> Recherche Notes</a>
-    <a href="{% url 'changer_mot_de_passe' %}"><i class="fa-solid fa-key"></i> Mot de passe</a>
+    .badge-attente {
+      background: #FFC107;
+      color: #000;
+    }
 
-    <hr style="border-color:rgba(255,255,255,0.08);margin:1rem 1.2rem;">
-    <a href="{% url 'logout' %}" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
+    .badge-rejetee {
+      background: #DC3545;
+      color: white;
+    }
+
+    .welcome-banner {
+      background: linear-gradient(135deg, #1976D2, #1565C0);
+      border-radius: 16px;
+      padding: 25px 30px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-banner::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: rgba(0, 195, 163, 0.08);
+      border-radius: 50%;
+      top: -50px;
+      right: -50px;
+    }
+
+    .bg-admis {
+      background: rgba(0, 195, 163, 0.1) !important;
+    }
+
+    .bg-ajourne {
+      background: rgba(220, 53, 69, 0.1) !important;
+    }
+
+    .text-admis {
+      color: #1976D2 !important;
+    }
+
+    .text-ajourne {
+      color: #DC3545 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-dark">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <img src="/static/images/logos_uganc.png" height="36" alt="UGANC">
+        <div style="width:1px;height:28px;
+                        background:rgba(255,255,255,0.2);"></div>
+        <img src="/static/images/logosCI.png" height="30" alt="CI" style="filter:brightness(0) invert(1);
+                        opacity:0.9;">
+        <div>
+          <div style="color:white;font-weight:700;
+                            font-size:0.85rem;">
+            Espace Étudiant
+          </div>
+          <div style="color:#1976D2;font-size:0.68rem;">
+            UGANC — Centre Informatique
+          </div>
+        </div>
+      </a>
+      <div class="d-flex gap-2 align-items-center">
+        <span style="color:rgba(255,255,255,0.6);
+                         font-size:0.82rem;">
+          <i class="fa-solid fa-user me-1"></i>
+          {{ etudiant.prenom }} {{ etudiant.nom }}
+        </span>
+        <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
+          <i class="fa-solid fa-right-from-bracket me-1"></i>
+          Déconnexion
+        </a>
+      </div>
+    </div>
   </nav>
-</aside>
 
-<!-- ── MAIN ── -->
-<div class="student-main">
-  <!-- Topbar -->
-  <div class="topbar">
-    <h4 class="topbar-title"><i class="fa-solid fa-graduation-cap me-2" style="color:#D4AF37;"></i> Tableau de bord</h4>
-    <div class="topbar-user">
-      <div class="user-avatar">{{ etudiant.prenom|first|upper }}{{ etudiant.nom|first|upper }}</div>
-      <div>
-        <div style="font-weight:700;color:#1A237E;font-size:0.9rem;">{{ etudiant.prenom }} {{ etudiant.nom }}</div>
-        <div style="font-size:0.78rem;color:#64748B;font-family:monospace;">{{ etudiant.matricule }}</div>
+  <div class="container-fluid px-4 py-4">
+
+    <!-- BANNER BIENVENUE -->
+    <div class="welcome-banner">
+      <div style="position:relative;z-index:2;">
+        <div style="color:#1976D2;font-size:0.78rem;
+                        font-weight:700;letter-spacing:2px;
+                        margin-bottom:6px;">
+          TABLEAU DE BORD
+        </div>
+        <h4 style="color:white;font-weight:800;margin:0;">
+          Bonjour,
+          {{ etudiant.prenom }} {{ etudiant.nom }} 👋
+        </h4>
+        <p style="color:rgba(255,255,255,0.6);
+                      font-size:0.88rem;margin:6px 0 0;">
+          <i class="fa-solid fa-id-card me-1"></i>
+          {{ etudiant.matricule }}
+          &nbsp;•&nbsp;
+          <i class="fa-solid fa-graduation-cap me-1"></i>
+          {{ etudiant.departement.nom|default:"N/A" }}
+          &nbsp;•&nbsp;
+          <i class="fa-solid fa-layer-group me-1"></i>
+          {{ etudiant.niveau.nom|default:"N/A" }}
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- COLONNE GAUCHE -->
+      <div class="col-lg-8">
+
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3" style="background:rgba(26,39,68,0.08);">
+                <i class="fa-solid fa-list-ol" style="color:#1565C0;"></i>
+              </div>
+              <h3 style="color:#1565C0;font-weight:800;
+                                   margin:0;">
+                {{ nb_notes }}
+              </h3>
+              <p style="color:#64748B;font-size:0.8rem;
+                                  margin:4px 0 0;">
+                Modules
+              </p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3" style="background:rgba(25,118,210,0.08);">
+                <i class="fa-solid fa-chart-line" style="color:#1976D2;"></i>
+              </div>
+              <h3 style="color:#1565C0;font-weight:800;
+                                   margin:0;">
+                {{ moyenne }}/10
+              </h3>
+              <p style="color:#64748B;font-size:0.8rem;
+                                  margin:4px 0 0;">
+                Moyenne
+              </p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3" style="background:rgba(25,118,210,0.08);">
+                <i class="fa-solid fa-file-pdf" style="color:#1976D2;"></i>
+              </div>
+              <h3 style="color:#1565C0;font-weight:800;
+                                   margin:0;">
+                {{ nb_valides }}
+              </h3>
+              <p style="color:#64748B;font-size:0.8rem;
+                                  margin:4px 0 0;">
+                Relevés
+              </p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3 {% if admis %}bg-admis{% else %}bg-ajourne{% endif %}">
+                <i
+                  class="fa-solid {% if admis %}fa-circle-check text-admis{% else %}fa-circle-xmark text-ajourne{% endif %}"></i>
+              </div>
+              <h3 class="{% if admis %}text-admis{% else %}text-ajourne{% endif %}" style="font-weight:800; margin:0;">
+                {% if admis %}ADMIS{% else %}AJOURNÉ{% endif %}
+              </h3>
+              <p style="color:#64748B;font-size:0.8rem;
+                                  margin:4px 0 0;">
+                Décision
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dernières notes -->
+        <div class="content-card">
+          <h6>
+            <i class="fa-solid fa-list-ol me-2" style="color:#1976D2;"></i>
+            Mes dernières notes
+          </h6>
+          {% if notes %}
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Matière</th>
+                <th>Note /10</th>
+                <th>Session</th>
+                <th>Résultat</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for note in notes %}
+              <tr>
+                <td>{{ note.matiere }}</td>
+                <td>
+                  <strong>{{ note.note }}</strong>/10
+                </td>
+                <td>{{ note.session.nom }}</td>
+                <td>
+                  {% if note.note >= 5 %}
+                  <span class="badge" style="background:#1976D2;">
+                    <i class="fa-solid fa-check me-1"></i>
+                    Validé
+                  </span>
+                  {% else %}
+                  <span class="badge bg-danger">
+                    <i class="fa-solid fa-xmark me-1"></i>
+                    Ajourné
+                  </span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="text-center py-4 text-muted">
+            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block" style="color:#D4E0F0;"></i>
+            Aucune note disponible
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Historique demandes -->
+        <div class="content-card">
+          <h6>
+            <i class="fa-solid fa-clock-rotate-left me-2" style="color:#1976D2;"></i>
+            Mes demandes de relevés
+          </h6>
+          {% if demandes %}
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>N°</th>
+                <th>Session</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in demandes %}
+              <tr>
+                <td><strong>#{{ d.id|stringformat:"04d" }}</strong></td>
+                <td>{{ d.session }}</td>
+                <td>{{ d.date_demande|date:"d/m/Y" }}</td>
+                <td>
+                  {% if d.statut == 'validee' %}
+                  <span class="badge badge-validee">
+                    <i class="fa-solid fa-check me-1"></i>
+                    Disponible
+                  </span>
+                  {% elif d.statut == 'en_attente' %}
+                  <span class="badge badge-attente">
+                    <i class="fa-solid fa-hourglass-half me-1"></i>
+                    En attente
+                  </span>
+                  {% else %}
+                  <span class="badge badge-rejetee">
+                    <i class="fa-solid fa-xmark me-1"></i>
+                    Rejeté
+                  </span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if d.statut == 'validee' %}
+                  <a href="{% url 'telecharger_releve' d.id %}" class="btn btn-sm" style="background:#1565C0;
+                                          color:white;">
+                    <i class="fa-solid fa-file-pdf me-1" style="color:#1976D2;"></i>
+                    PDF
+                  </a>
+                  {% else %}
+                  <span class="text-muted small">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="text-center py-4 text-muted">
+            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block" style="color:#D4E0F0;"></i>
+            Aucune demande
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+
+      <!-- COLONNE DROITE -->
+      <div class="col-lg-4">
+
+        <!-- Actions rapides -->
+        <div class="content-card mb-4">
+          <h6>
+            <i class="fa-solid fa-bolt me-2" style="color:#1976D2;"></i>
+            Actions rapides
+          </h6>
+          <a href="{% url 'chatbot' %}" class="action-btn btn-primary-custom">
+            <i class="fa-solid fa-robot" style="color:#1976D2;font-size:18px;"></i>
+            <div>
+              <div>CI Assistant</div>
+              <small style="opacity:0.6;font-weight:400;">
+                Demander un relevé
+              </small>
+            </div>
+          </a>
+          <a href="{% url 'notes:liste_notes' %}" class="action-btn btn-teal">
+            <i class="fa-solid fa-chart-bar" style="font-size:18px;color:#1565C0;"></i>
+            <div>
+              <div>Mes notes</div>
+              <small style="opacity:0.6;font-weight:400;">
+                Voir toutes les notes
+              </small>
+            </div>
+          </a>
+          <a href="{% url 'historique_demandes' %}" class="action-btn btn-teal">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size:18px;color:#1565C0;"></i>
+            <div>
+              <div>Historique</div>
+              <small style="opacity:0.6;font-weight:400;">
+                Mes demandes
+              </small>
+            </div>
+          </a>
+          <a href="{% url 'changer_mot_de_passe' %}" class="action-btn btn-teal">
+            <i class="fa-solid fa-lock" style="font-size:18px;color:#1565C0;"></i>
+            <div>
+              <div>Sécurité</div>
+              <small style="opacity:0.6;font-weight:400;">
+                Changer mot de passe
+              </small>
+            </div>
+          </a>
+        </div>
+
+        <!-- Profil -->
+        <div class="content-card">
+          <h6>
+            <i class="fa-solid fa-user me-2" style="color:#1976D2;"></i>
+            Mon profil
+          </h6>
+          <div style="text-align:center;margin-bottom:16px;">
+            <div style="width:65px;height:65px;
+                                background:#1565C0;
+                                border-radius:50%;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                margin:0 auto 10px;
+                                font-size:26px;
+                                color:#1976D2;">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div style="font-weight:700;color:#1565C0;">
+              {{ etudiant.prenom }} {{ etudiant.nom }}
+            </div>
+            <div style="color:#1976D2;font-family:monospace;
+                                font-weight:700;">
+              {{ etudiant.matricule }}
+            </div>
+          </div>
+          <table class="table table-sm mb-0">
+            <tr>
+              <td class="text-muted" style="font-size:0.82rem;">
+                Filière
+              </td>
+              <td style="font-size:0.82rem;">
+                <strong>{{ etudiant.departement.nom|default:"N/A" }}</strong>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-muted" style="font-size:0.82rem;">
+                Niveau
+              </td>
+              <td style="font-size:0.82rem;">
+                <strong>{{ etudiant.niveau.nom|default:"N/A" }}</strong>
+              </td>
+            </tr>
+          </table>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <div class="content-area">
+  <!-- CHATBOT FLOTTANT -->
+  {% include 'chatbot/widget_flottant.html' %}
 
-    {% if messages %}
-    {% for msg in messages %}
-    <div style="background:{% if msg.tags == 'error' %}rgba(198,40,40,0.08){% else %}rgba(46,125,50,0.08){% endif %};border-left:4px solid {% if msg.tags == 'error' %}#C62828{% else %}#2E7D32{% endif %};padding:0.85rem 1.2rem;border-radius:10px;margin-bottom:1rem;color:{% if msg.tags == 'error' %}#C62828{% else %}#2E7D32{% endif %};font-weight:600;">
-      <i class="fa-solid fa-{% if msg.tags == 'error' %}circle-exclamation{% else %}circle-check{% endif %} me-2"></i>{{ msg }}
-    </div>
-    {% endfor %}
-    {% endif %}
+</body>
 
-    <!-- Profil card -->
-    <div class="profile-card">
-      <div class="profile-avatar">{{ etudiant.prenom|first|upper }}{{ etudiant.nom|first|upper }}</div>
-      <div class="profile-name">{{ etudiant.prenom }} {{ etudiant.nom }}</div>
-      <div class="profile-matri"><i class="fa-solid fa-id-card me-1"></i>{{ etudiant.matricule }}</div>
-      <div style="margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
-        {% if etudiant.departement %}<span class="profile-badge"><i class="fa-solid fa-building-columns me-1"></i>{{ etudiant.departement.nom }}</span>{% endif %}
-        {% if etudiant.niveau %}<span class="profile-badge"><i class="fa-solid fa-layer-group me-1"></i>{{ etudiant.niveau.nom }}</span>{% endif %}
-        <span class="profile-badge" style="background:rgba(46,125,50,0.15);border-color:rgba(46,125,50,0.4);color:#A5D6A7;"><i class="fa-solid fa-circle-check me-1"></i>Compte actif</span>
-      </div>
-    </div>
-
-    <!-- Statistiques -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
-        <div class="stat-val">{{ nb_notes }}</div>
-        <div class="stat-lbl">Notes enregistrées</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#1565C0;">
-        <div class="stat-icon" style="color:#1565C0;"><i class="fa-solid fa-calculator"></i></div>
-        <div class="stat-val" style="color:#1565C0;">{{ moyenne_generale }}<span style="font-size:1rem;color:#64748B;">/20</span></div>
-        <div class="stat-lbl">Moyenne générale</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#D4AF37;">
-        <div class="stat-icon" style="color:#D4AF37;"><i class="fa-solid fa-file-pdf"></i></div>
-        <div class="stat-val" style="color:#D4AF37;">{{ nb_demandes }}</div>
-        <div class="stat-lbl">Demandes soumises</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#2E7D32;">
-        <div class="stat-icon" style="color:#2E7D32;"><i class="fa-solid fa-book"></i></div>
-        <div class="stat-val" style="color:#2E7D32;">{{ nb_sessions }}</div>
-        <div class="stat-lbl">Semestres validés</div>
-      </div>
-    </div>
-
-    <!-- Actions rapides -->
-    <div class="quick-actions">
-      <a href="{% url 'creer_demande' %}" class="action-card ac-blue">
-        <div class="ac-icon"><i class="fa-solid fa-file-circle-plus"></i></div>
-        <div class="ac-title">Demander un relevé</div>
-        <div class="ac-desc">Soumettez une demande officielle de relevé de notes PDF</div>
-      </a>
-      <a href="#notes-section" class="action-card ac-bord">
-        <div class="ac-icon"><i class="fa-solid fa-chart-bar"></i></div>
-        <div class="ac-title">Voir mes notes</div>
-        <div class="ac-desc">Consultez l'ensemble de vos résultats académiques</div>
-      </a>
-      <a href="{% url 'notes:recherche_notes' %}" class="action-card ac-gold">
-        <div class="ac-icon"><i class="fa-solid fa-download"></i></div>
-        <div class="ac-title">Télécharger PDF</div>
-        <div class="ac-desc">Générez et téléchargez votre relevé de notes PDF officiel</div>
-      </a>
-    </div>
-
-    <!-- Notes par semestre -->
-    <div id="notes-section" class="notes-section">
-      <div class="notes-header">
-        <i class="fa-solid fa-book-open"></i> Mes Résultats Académiques
-        <span style="margin-left:auto;font-size:0.8rem;color:rgba(212,175,55,0.7);">{{ nb_notes }} notes · Moy. {{ moyenne_generale }}/20</span>
-      </div>
-
-      {% if notes_par_session %}
-        {% for session_nom, notes in notes_par_session.items %}
-        <div class="sem-divider">
-          <i class="fa-solid fa-calendar-days me-2"></i>{{ session_nom }}
-          {% with moy_sem=notes|length %}
-          {% endwith %}
-        </div>
-        <table class="table-notes">
-          <thead><tr>
-            <th>Matière</th>
-            <th style="text-align:center;">Note /20</th>
-            <th style="text-align:center;">Mention</th>
-          </tr></thead>
-          <tbody>
-          {% for note in notes %}
-          <tr>
-            <td><i class="fa-solid fa-circle-dot me-2" style="color:#ECEFF1;font-size:0.7rem;"></i>{{ note.matiere }}</td>
-            <td style="text-align:center;">
-              {% if note.note >= 16 %}<span class="note-val note-tb">{{ note.note }}</span>
-              {% elif note.note >= 14 %}<span class="note-val note-b">{{ note.note }}</span>
-              {% elif note.note >= 12 %}<span class="note-val note-ab">{{ note.note }}</span>
-              {% elif note.note >= 10 %}<span class="note-val note-p">{{ note.note }}</span>
-              {% else %}<span class="note-val note-ins">{{ note.note }}</span>{% endif %}
-            </td>
-            <td style="text-align:center;">
-              {% if note.note >= 16 %}<span style="background:rgba(46,125,50,0.1);color:#2E7D32;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Très Bien</span>
-              {% elif note.note >= 14 %}<span style="background:rgba(21,101,192,0.1);color:#1565C0;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Bien</span>
-              {% elif note.note >= 12 %}<span style="background:rgba(245,127,23,0.1);color:#F57F17;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Assez Bien</span>
-              {% elif note.note >= 10 %}<span style="background:rgba(230,81,0,0.1);color:#E65100;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Passable</span>
-              {% else %}<span style="background:rgba(198,40,40,0.1);color:#C62828;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Insuffisant</span>{% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-        {% endfor %}
-      {% else %}
-        <div style="padding:3rem;text-align:center;color:#64748B;">
-          <i class="fa-solid fa-inbox" style="font-size:3rem;opacity:0.3;margin-bottom:1rem;display:block;"></i>
-          Aucune note disponible pour le moment.
-        </div>
-      {% endif %}
-    </div><!-- /.notes-section -->
-
-  </div><!-- /.content-area -->
-</div><!-- /.student-main -->
-
-{% endblock %}
+</html>

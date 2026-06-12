@@ -131,7 +131,6 @@ def toggle_utilisateur(request, user_id):
     messages.success(request,f'Compte {"activé" if target.is_active else "désactivé"}.')
     return redirect('admin_dashboard')
 
-
 # ═══════════════════════════════════════════════
 # DASHBOARD CHEF DE DÉPARTEMENT
 # ═══════════════════════════════════════════════

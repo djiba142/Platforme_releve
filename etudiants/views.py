@@ -157,25 +157,6 @@ def login_etudiant(request):
     return render(request, 'etudiants/login.html')
 
 
-def login_admin(request):
-    """Connexion dédiée administration."""
-    if request.user.is_authenticated and request.user.is_staff:
-        return _redirect_apres_login(request.user)
-
-    if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '')
-        user = authenticate(request, username=username, password=password)
-        if user and user.is_staff:
-            login(request, user)
-            messages.success(request, 'Bienvenue !')
-            return _redirect_apres_login(user)
-        elif user:
-            messages.error(request, "Vous n'êtes pas autorisé à accéder à l'administration.")
-        else:
-            messages.error(request, 'Identifiants incorrects.')
-
-    return render(request, 'etudiants/login_admin.html')
 
 
 def logout_view(request):
