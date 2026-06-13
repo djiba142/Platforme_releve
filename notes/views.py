@@ -68,8 +68,8 @@ def _importer_lignes_df(df, import_obj, session_nom, annee):
                 continue
             try:
                 note_val = float(str(val).replace(',', '.').strip())
-                if not (0 <= note_val <= 20):
-                    erreurs.append(f"{matricule}/{col} : note {note_val} hors plage 0-20")
+                if not (0 <= note_val <= 10):
+                    erreurs.append(f"{matricule}/{col} : note {note_val} hors plage 0-10")
                     continue
                 Note.objects.update_or_create(
                     etudiant=etudiant,

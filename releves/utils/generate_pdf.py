@@ -136,10 +136,17 @@ def generer_releve(demande):
     # LOGOS + NOM UNIVERSITÉ
     # ════════════════════════════════════
     logo_uganc = os.path.join(
-        settings.BASE_DIR, 'static', 'image', 'logos_uganc.png'
+        settings.BASE_DIR,
+        'static',
+        'images',
+        'logos_uganc.png'
     )
+
     logo_ci = os.path.join(
-        settings.BASE_DIR, 'static', 'image', 'logosCI.png'
+        settings.BASE_DIR,
+        'static',
+        'images',
+        'logosCI.png'
     )
 
     entete_data = [[

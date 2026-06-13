@@ -183,8 +183,6 @@ def logout_view(request):
     return redirect('accueil')
 
 
-# ── Profil étudiant ───────────────────────────
-
 @login_required
 def profil_view(request):
     try:
@@ -197,30 +195,53 @@ def profil_view(request):
 
     from notes.models import Note
     from demandes.models import Demande
-    from django.db.models import Q
-
-    notes    = Note.objects.filter(etudiant=etudiant)
-    demandes = Demande.objects.filter(etudiant=etudiant).order_by('-date_demande')[:5]
-    moyenne  = round(sum(n.note for n in notes) / notes.count(), 2) if notes.exists() else 0
-
-    # Regrouper notes par session pour le dashboard
     from collections import defaultdict
+
+    notes = Note.objects.filter(etudiant=etudiant).select_related('session')
+    demandes = Demande.objects.filter(etudiant=etudiant).order_by('-date_demande')[:5]
+    
+    # Calcul de la moyenne générale
+    moyenne_gen = round(sum(n.note for n in notes) / notes.count(), 2) if notes.exists() else 0
+
+    # Regrouper les notes par session et attribuer les mentions individuelles sur 10
     notes_par_session = defaultdict(list)
-    for n in notes.select_related('session'):
+    for n in notes:
+        # Ajout dynamique de la mention et de sa classe CSS sur le barème de 10
+        if n.note >= 8.5:
+            n.mention_matiere = "Très Bien"
+            n.mention_class = "badge-tres-bien"
+        elif n.note >= 7.0:
+            n.mention_matiere = "Bien"
+            n.mention_class = "badge-bien"
+        elif n.note >= 6.0:
+            n.mention_matiere = "Assez Bien"
+            n.mention_class = "badge-assez-bien"
+        elif n.note >= 5.0:
+            n.mention_matiere = "Passable"
+            n.mention_class = "badge-passable"
+        else:
+            n.mention_matiere = "Insuffisant"
+            n.mention_class = "badge-insuffisant"
+            
         notes_par_session[str(n.session)].append(n)
 
-    nb_sessions = len(notes_par_session)
+    # Détermination du statut global de l'étudiant
+    if notes.exists():
+        statut_global = "ADMIS(E)" if moyenne_gen >= 5.0 else "AJOURNÉ(E)"
+    else:
+        statut_global = "Pas de note"
 
     return render(request, 'dashboards/etudiant.html', {
         'etudiant':          etudiant,
         'notes':             notes,
         'notes_par_session': dict(notes_par_session),
         'demandes':          demandes,
-        'moyenne_generale':  moyenne,
+        'moyenne_generale':  moyenne_gen, # Utilisation cohérente du nom
+        'statut_global':     statut_global,
         'nb_notes':          notes.count(),
         'nb_demandes':       Demande.objects.filter(etudiant=etudiant).count(),
         'nb_validees':       Demande.objects.filter(etudiant=etudiant, statut='validee').count(),
-        'nb_sessions':       nb_sessions,
+        'nb_sessions':       len(notes_par_session),
     })
 
 

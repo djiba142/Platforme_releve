@@ -51,21 +51,20 @@
         </a>
     </div>
 
-    <!-- Moyenne -->
-    <div class="moyenne-card" style="max-width:100%;">
-        <div>
-            <h4 style="margin:0; font-size:1.1rem; opacity:0.9;">Moyenne Générale Indicative</h4>
-            <span style="font-size:0.9rem; opacity:0.7;">
-                Statut global :
-                {% if moyenne >= 5 %}
-                <strong style="color:var(--teal-light);">ADMIS(E) ✅</strong>
-                {% else %}
-                <strong style="color:#ff8a8a;">AJOURNÉ(E) ❌</strong>
-                {% endif %}
-            </span>
-        </div>
-        <div class="moyenne-value" style="font-size:2.2rem;">{{ moyenne|floatformat:2 }} / 10</div>
+   <div class="moyenne-card" style="max-width:100%;">
+    <div>
+        <h4 style="margin:0; font-size:1.1rem; opacity:0.9;">Moyenne Générale Indicative</h4>
+        <span style="font-size:0.9rem; opacity:0.7;">
+            Statut global :
+            {% if moyenne_generale >= 5 %}
+            <strong style="color:#2ec4b6;">ADMIS(E) ✅</strong>
+            {% else %}
+            <strong style="color:#ff8a8a;">AJOURNÉ(E) ❌</strong>
+            {% endif %}
+        </span>
     </div>
+    <div class="moyenne-value" style="font-size:2.2rem;">{{ moyenne_generale|floatformat:2 }} / 10</div>
+</div>
 
     <!-- Tableau -->
     <div class="content-card">

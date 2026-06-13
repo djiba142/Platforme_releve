@@ -5,29 +5,57 @@
 
 {% block extra_css %}
 <style>
-body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden; margin: 0; }
+/* ── Configuration Globale Bourgeoise ── */
+body { 
+  background: #FFFFFF; 
+  display: flex; 
+  min-height: 100vh; 
+  overflow-x: hidden; 
+  margin: 0; 
+}
 
-/* ── Sidebar Étudiant ── */
+/* ── Layout Principal avec Flexbox ── */
 .student-sidebar {
   background: linear-gradient(180deg, #1565C0 0%, #0D47A1 100%);
   border-right: 3px solid #D4AF37;
-  width: 255px; min-height: 100vh;
-  position: fixed; top: 0; left: 0;
-  display: flex; flex-direction: column;
+  width: 255px; 
+  height: 100vh;
+  position: fixed; 
+  top: 0; 
+  left: 0;
+  display: flex; 
+  flex-direction: column;
   z-index: 100;
 }
+
+.student-main { 
+  margin-left: 255px; /* Laisse la place pour la sidebar sur desktop */
+  background: #FFFFFF; 
+  min-height: 100vh; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Composants Intérieurs de la Sidebar ── */
 .sidebar-logo-box {
   background: rgba(255,255,255,0.95);
   border-radius: 12px;
   padding: 0.7rem 1rem;
-  display: flex; align-items: center; gap: 0.75rem;
+  display: flex; 
+  align-items: center; 
+  gap: 0.75rem;
   margin: 1.2rem;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 .sidebar-brand-text { color: #FFFFFF; font-weight: 800; font-size: 0.95rem; padding: 0.5rem 1.2rem 0; }
 .sidebar-brand-sub  { color: #D4AF37; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 0 1.2rem 1rem; }
 
-.sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; }
+.sidebar-nav { 
+  flex: 1; 
+  padding: 0.5rem 0; 
+  overflow-y: auto; /* Permet de scroller dans la barre si elle est trop longue */
+}
 .sidebar-nav .nav-section { padding: 0.6rem 1.5rem 0.2rem; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(212,175,55,0.55); }
 .sidebar-nav a {
   display: flex; align-items: center; gap: 0.65rem;
@@ -44,8 +72,7 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
 .sidebar-nav a.logout { color: #ff8a8a !important; }
 .sidebar-nav a.logout i { color: #ff8a8a !important; }
 
-/* ── Main ── */
-.student-main { margin-left: 255px; background: #FFFFFF; min-height: 100vh; flex: 1; }
+/* ── Topbar ── */
 .topbar {
   background: #FFFFFF; border-bottom: 3px solid #D4AF37;
   box-shadow: 0 2px 12px rgba(26,35,126,0.07);
@@ -60,9 +87,9 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
   font-weight: 800; font-size: 1rem; border: 2px solid #D4AF37;
 }
 
-.content-area { padding: 2rem; }
+.content-area { padding: 2rem; flex: 1; }
 
-/* ── Profil card ── */
+/* ── Profil Card ── */
 .profile-card {
   background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
   border-radius: 18px; padding: 2rem;
@@ -87,7 +114,7 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
 .profile-matri { color: #D4AF37; font-family: 'Courier New', monospace; font-weight: 700; font-size: 1rem; }
 .profile-badge { background: rgba(212,175,55,0.15); border: 1px solid rgba(212,175,55,0.4); color: #D4AF37; padding: 0.25rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-block; margin-top: 0.5rem; }
 
-/* ── Stat cards ── */
+/* ── Stat Cards ── */
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
 .stat-card {
   background: #FFFFFF; border-radius: 14px;
@@ -120,8 +147,8 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
 }
 .btn-gold:hover { background: #c9a227; }
 
-/* ── Notes table ── */
-.notes-section { background: #FFFFFF; border: 1px solid #e0e0e0; border-radius: 16px; box-shadow: 0 2px 12px rgba(26,35,126,0.05); overflow: hidden; }
+/* ── Tableaux des Notes ── */
+.notes-section { background: #FFFFFF; border: 1px solid #e0e0e0; border-radius: 16px; box-shadow: 0 2px 12px rgba(26,35,126,0.05); overflow: hidden; margin-top: 1.5rem; }
 .notes-header { background: #1A237E; color: #D4AF37; padding: 1rem 1.5rem; font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.6rem; }
 .table-notes { width: 100%; border-collapse: collapse; }
 .table-notes thead tr { background: #ECEFF1; }
@@ -136,7 +163,7 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
 .note-ins { color: #C62828; }
 .sem-divider { background: linear-gradient(90deg, #1A237E, #1565C0); color: #D4AF37; font-weight: 700; padding: 0.5rem 1rem; font-size: 0.85rem; }
 
-/* ── Quick actions ── */
+/* ── Quick Actions ── */
 .quick-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
 .action-card {
   background: #FFFFFF; border: 1px solid #e0e0e0; border-top: 4px solid;
@@ -155,16 +182,49 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
 .action-card .ac-title { color: #1A237E; font-weight: 700; font-size: 0.95rem; }
 .action-card .ac-desc  { color: #64748B; font-size: 0.82rem; }
 
+/* ── RECORRECTION ET RESPONSIVE ── */
 @media (max-width: 768px) {
-  .student-sidebar { width: 100%; min-height: auto; position: relative; }
-  .student-main { margin-left: 0; }
-  body { flex-direction: column; }
+  body { 
+    flex-direction: column; 
+  }
+  
+  .student-sidebar { 
+    width: 100%; 
+    height: auto; 
+    min-height: auto; 
+    position: relative; /* Repasse dans le flux normal pour éviter de survoler le contenu */
+    border-right: none;
+    border-bottom: 3px solid #D4AF37;
+  }
+  
+  .sidebar-nav {
+    overflow-y: visible;
+    padding-bottom: 1rem;
+  }
+
+  .student-main { 
+    margin-left: 0; /* Plus de décalage sur mobile */
+  }
+  
+  .topbar {
+    padding: 1rem;
+    position: relative; /* Évite les conflits de superposition */
+  }
+  
+  .content-area {
+    padding: 1rem;
+  }
+  
+  .table-notes {
+    display: block;
+    overflow-x: auto; /* Permet au tableau de glisser horizontalement s'il est trop large */
+    white-space: nowrap;
+  }
 }
 </style>
 {% endblock %}
 
 {% block body %}
-<!-- ── SIDEBAR ── -->
 <aside class="student-sidebar">
   <div class="sidebar-logo-box">
     <img src="{% static 'images/logos_uganc.png' %}" height="38" alt="UGANC" style="object-fit:contain;">
@@ -190,9 +250,7 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
   </nav>
 </aside>
 
-<!-- ── MAIN ── -->
 <div class="student-main">
-  <!-- Topbar -->
   <div class="topbar">
     <h4 class="topbar-title"><i class="fa-solid fa-graduation-cap me-2" style="color:#D4AF37;"></i> Tableau de bord</h4>
     <div class="topbar-user">
@@ -214,7 +272,6 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
     {% endfor %}
     {% endif %}
 
-    <!-- Profil card -->
     <div class="profile-card">
       <div class="profile-avatar">{{ etudiant.prenom|first|upper }}{{ etudiant.nom|first|upper }}</div>
       <div class="profile-name">{{ etudiant.prenom }} {{ etudiant.nom }}</div>
@@ -226,7 +283,6 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
       </div>
     </div>
 
-    <!-- Statistiques -->
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
@@ -235,7 +291,7 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
       </div>
       <div class="stat-card" style="border-left-color:#1565C0;">
         <div class="stat-icon" style="color:#1565C0;"><i class="fa-solid fa-calculator"></i></div>
-        <div class="stat-val" style="color:#1565C0;">{{ moyenne_generale }}<span style="font-size:1rem;color:#64748B;">/20</span></div>
+        <div class="stat-val" style="color:#1565C0;">{{ moyenne_generale|floatformat:2 }}<span style="font-size:1rem;color:#64748B;">/10</span></div>
         <div class="stat-lbl">Moyenne générale</div>
       </div>
       <div class="stat-card" style="border-left-color:#D4AF37;">
@@ -246,11 +302,10 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
       <div class="stat-card" style="border-left-color:#2E7D32;">
         <div class="stat-icon" style="color:#2E7D32;"><i class="fa-solid fa-book"></i></div>
         <div class="stat-val" style="color:#2E7D32;">{{ nb_sessions }}</div>
-        <div class="stat-lbl">Semestres validés</div>
+        <div class="stat-lbl">Semestres enregistrés</div>
       </div>
     </div>
 
-    <!-- Actions rapides -->
     <div class="quick-actions">
       <a href="{% url 'creer_demande' %}" class="action-card ac-blue">
         <div class="ac-icon"><i class="fa-solid fa-file-circle-plus"></i></div>
@@ -269,24 +324,21 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
       </a>
     </div>
 
-    <!-- Notes par semestre -->
     <div id="notes-section" class="notes-section">
       <div class="notes-header">
         <i class="fa-solid fa-book-open"></i> Mes Résultats Académiques
-        <span style="margin-left:auto;font-size:0.8rem;color:rgba(212,175,55,0.7);">{{ nb_notes }} notes · Moy. {{ moyenne_generale }}/20</span>
+        <span style="margin-left:auto;font-size:0.8rem;color:rgba(212,175,55,0.7);">{{ nb_notes }} notes · Moy. {{ moyenne_generale|floatformat:2 }}/10</span>
       </div>
 
       {% if notes_par_session %}
         {% for session_nom, notes in notes_par_session.items %}
         <div class="sem-divider">
           <i class="fa-solid fa-calendar-days me-2"></i>{{ session_nom }}
-          {% with moy_sem=notes|length %}
-          {% endwith %}
         </div>
         <table class="table-notes">
           <thead><tr>
             <th>Matière</th>
-            <th style="text-align:center;">Note /20</th>
+            <th style="text-align:center;">Note /10</th>
             <th style="text-align:center;">Mention</th>
           </tr></thead>
           <tbody>
@@ -294,17 +346,17 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
           <tr>
             <td><i class="fa-solid fa-circle-dot me-2" style="color:#ECEFF1;font-size:0.7rem;"></i>{{ note.matiere }}</td>
             <td style="text-align:center;">
-              {% if note.note >= 16 %}<span class="note-val note-tb">{{ note.note }}</span>
-              {% elif note.note >= 14 %}<span class="note-val note-b">{{ note.note }}</span>
-              {% elif note.note >= 12 %}<span class="note-val note-ab">{{ note.note }}</span>
-              {% elif note.note >= 10 %}<span class="note-val note-p">{{ note.note }}</span>
-              {% else %}<span class="note-val note-ins">{{ note.note }}</span>{% endif %}
+              {% if note.note >= 8.5 %}<span class="note-val note-tb">{{ note.note|floatformat:1 }}</span>
+              {% elif note.note >= 7.0 %}<span class="note-val note-b">{{ note.note|floatformat:1 }}</span>
+              {% elif note.note >= 6.0 %}<span class="note-val note-ab">{{ note.note|floatformat:1 }}</span>
+              {% elif note.note >= 5.0 %}<span class="note-val note-p">{{ note.note|floatformat:1 }}</span>
+              {% else %}<span class="note-val note-ins">{{ note.note|floatformat:1 }}</span>{% endif %}
             </td>
             <td style="text-align:center;">
-              {% if note.note >= 16 %}<span style="background:rgba(46,125,50,0.1);color:#2E7D32;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Très Bien</span>
-              {% elif note.note >= 14 %}<span style="background:rgba(21,101,192,0.1);color:#1565C0;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Bien</span>
-              {% elif note.note >= 12 %}<span style="background:rgba(245,127,23,0.1);color:#F57F17;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Assez Bien</span>
-              {% elif note.note >= 10 %}<span style="background:rgba(230,81,0,0.1);color:#E65100;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Passable</span>
+              {% if note.note >= 8.5 %}<span style="background:rgba(46,125,50,0.1);color:#2E7D32;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Très Bien</span>
+              {% elif note.note >= 7.0 %}<span style="background:rgba(21,101,192,0.1);color:#1565C0;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Bien</span>
+              {% elif note.note >= 6.0 %}<span style="background:rgba(245,127,23,0.1);color:#F57F17;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Assez Bien</span>
+              {% elif note.note >= 5.0 %}<span style="background:rgba(230,81,0,0.1);color:#E65100;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Passable</span>
               {% else %}<span style="background:rgba(198,40,40,0.1);color:#C62828;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:700;">Insuffisant</span>{% endif %}
             </td>
           </tr>
@@ -318,9 +370,4 @@ body { background: #FFFFFF; display: flex; min-height: 100vh; overflow-x: hidden
           Aucune note disponible pour le moment.
         </div>
       {% endif %}
-    </div><!-- /.notes-section -->
-
-  </div><!-- /.content-area -->
-</div><!-- /.student-main -->
-
-{% endblock %}
+    </div></div></div>{% endblock %}
